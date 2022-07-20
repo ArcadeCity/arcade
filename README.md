@@ -6,7 +6,7 @@ We are open-sourcing our active codebases and consolidating into one monorepo.
 
 **Now:** Arcade City, the Bitcoin gig economy. Our [v6 mobile app](https://arcade.city/v6) is in [open beta](https://twitter.com/ArcadeCityHall/status/1549569278537437186).
 
-**Soon:** The Arcade, Bitcoin's [layer six](https://twitter.com/ArcadeCityHall/status/1533851554515767297).
+**Later:** The Arcade, Bitcoin's [layer six](https://twitter.com/ArcadeCityHall/status/1533851554515767297).
 
 ## Why
 
