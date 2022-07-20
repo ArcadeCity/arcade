@@ -1,0 +1,34 @@
+{
+  "name": "@arcadecity/arcade",
+  "version": "6.0.0",
+  "description": "The Bitcoin gig economy",
+  "main": "index.js",
+  "repository": "git@github.com:ArcadeCity/arcade.git",
+  "author": "Christopher David <chris@arcade.city>",
+  "license": "CC0-1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSameLine": true,
+    "bracketSpacing": true,
+    "embeddedLanguageFormatting": "auto",
+    "htmlWhitespaceSensitivity": "css",
+    "insertPragma": false,
+    "jsxBracketSameLine": false,
+    "jsxSingleQuote": true,
+    "printWidth": 100,
+    "proseWrap": "preserve",
+    "quoteProps": "as-needed",
+    "requirePragma": false,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false,
+    "vueIndentScriptAndStyle": false
+  }
+}
