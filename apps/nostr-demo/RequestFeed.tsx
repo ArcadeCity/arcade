@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { palette } from '@arcadecity/ui'
+import { palette, typography } from '@arcadecity/ui'
 import { RideRequest } from './RideRequest'
 import { RideRequest as RideRequestType } from './store'
 
@@ -10,7 +10,7 @@ export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
         style={{
           color: palette.moonRaker,
           fontSize: 34,
-          fontFamily: 'monospace',
+          fontFamily: typography.secondary,
           fontWeight: '700',
           marginVertical: 25,
         }}>

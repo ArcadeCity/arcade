@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@arcadecity/ui": "*",
+    "@expo-google-fonts/inter": "^0.2.2",
+    "@expo-google-fonts/lexend": "^0.2.2",
     "@expo/webpack-config": "^0.16.23",
     "@noble/secp256k1": "1.6.3",
     "@scure/bip32": "^1.1.0",
