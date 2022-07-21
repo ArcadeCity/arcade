@@ -4,9 +4,11 @@ import { RideRequest } from './RideRequest'
 import { RideRequest as RideRequestType } from './store'
 
 export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
-  const sortedRequests = requests.sort((a: RideRequestType, b: RideRequestType) => {
-    return b.expires - a.expires
-  })
+  const sortedRequests = requests
+    .sort((a: RideRequestType, b: RideRequestType) => {
+      return b.expires - a.expires
+    })
+    .slice(20)
   return (
     <View style={styles.container}>
       <Text

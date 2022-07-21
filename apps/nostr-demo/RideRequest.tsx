@@ -8,7 +8,7 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
   // const statusText = 'Waiting for driver'
   const fromNow = moment(request.expires * 1000).fromNow()
   const pickupText = `From: ${request.from.lat}, ${request.from.lng}`
-  const dropText = `To: Somewhere nearby`
+  const dropText = `To: ${request.to.lat}, ${request.to.lng}`
   // const dropDistance = `${distance(drop.coords)}mi SE`
   return (
     <TouchableOpacity

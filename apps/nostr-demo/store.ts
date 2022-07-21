@@ -13,6 +13,10 @@ export interface RideRequest {
   pubkey: string
   sig: string
   tags: string[]
+  to: {
+    lat: number
+    lng: number
+  }
   type: string
 }
 

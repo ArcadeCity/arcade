@@ -13,7 +13,7 @@ export const createNewAccount = () => {
   const seed = seedFromWords(mnemonic)
   const priv = privateKeyFromSeed(seed)
   pubkey = getPublicKey(Buffer.from(priv, 'hex'))
-  console.log({ mnemonic, seed, priv, pubkey })
+  // console.log({ mnemonic, seed, priv, pubkey })
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
   pool.addRelay('wss://relay.damus.io')
