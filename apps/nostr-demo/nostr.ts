@@ -22,7 +22,12 @@ export const createNewAccount = () => {
 export const subscribeToRides = () => {
   const onEvent = (event: any) => {
     const rideRequest = normalizeRideRequestEvent(event)
-    if (rideRequest) {
+    if (
+      rideRequest &&
+      // riderequest createdat is less than 3 days ago
+      rideRequest.created_at > Date.now() / 1000 - 3 * 24 * 60 * 60 &&
+      useStore.getState().requests.length < 150
+    ) {
       useStore.getState().addRequest(rideRequest)
     }
   }
