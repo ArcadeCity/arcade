@@ -1,6 +1,8 @@
+import { normalizeRideRequestEvent } from './normalize'
 import {
   generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
 } from './nostr-tools'
+import { useStore } from './store'
 
 let pubkey: string
 
@@ -20,7 +22,10 @@ export const createNewAccount = () => {
 export const subscribeToRides = () => {
   const onEvent = (event: any, relay: any) => {
     // console.log(`Received EVENT 60 ${event.id ?? ''}`)
-    console.log(event.content)
+    // console.log(event)
+    const rideRequest = normalizeRideRequestEvent(event)
+    useStore.getState().addRequest(rideRequest)
+    // console.log(event.content)
   }
   // @ts-ignore
   pool.sub({

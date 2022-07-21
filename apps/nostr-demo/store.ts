@@ -1,18 +1,24 @@
 import create from 'zustand'
 
-interface RideRequest {
-  type: string
+export interface RideRequest {
+  amount: number
+  created_at: number
+  expires: number
   from: {
     lat: number
     lng: number
   }
-  amount: number
+  id: string
   name: string
-  expires: number
+  pubkey: string
+  sig: string
+  tags: string[]
+  type: string
 }
 
 interface State {
   requests: RideRequest[]
+  addRequest: (request: RideRequest) => void
 }
 
 export const useStore = create<State>((set) => ({
