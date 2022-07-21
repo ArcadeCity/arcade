@@ -5,10 +5,10 @@ import { Feather } from '@expo/vector-icons'
 import { RideRequest as RideRequestType } from './store'
 
 export const RideRequest = ({ request }: { request: RideRequestType }) => {
-  const statusText = 'Unknown'
-  const fromNow = moment(request.expires).fromNow()
-  const pickupText = `2mi NW`
-  const dropText = `3mi SE`
+  const statusText = 'Waiting for driver'
+  const fromNow = moment(request.expires * 1000).fromNow()
+  const pickupText = `From: ${request.from.lat}, ${request.from.lng}`
+  const dropText = `To: Somewhere nearby`
   // const dropDistance = `${distance(drop.coords)}mi SE`
   return (
     <TouchableOpacity
@@ -19,6 +19,7 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
         padding: 20,
         backgroundColor: palette.purple,
         borderRadius: 8,
+        marginBottom: 20,
       }}
       onPress={() => {
         console.log('Clicked request', request.id)
@@ -26,7 +27,7 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'column' }}>
           <Text text={'Ride request'} preset='bold' />
-          <Text text={`Expires ${fromNow}`} preset='descriptionSlim' />
+          <Text text={`Expiration ${fromNow}`} preset='descriptionSlim' />
         </View>
 
         <View
@@ -34,9 +35,9 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
             flexDirection: 'column',
             alignItems: 'flex-end',
           }}>
-          <Text text={`${statusText}`} preset='bold' />
+          {/* <Text text={`${statusText}`} preset='bold' /> */}
           <Text
-            text={`Paying: ${request.amount} sats`}
+            text={`${request.amount} sats`}
             // text={`${request?.chatroom?.messages.length ?? 0} ${translate(
             //   'service.comments'
             // )}`}
