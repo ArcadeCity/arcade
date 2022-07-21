@@ -1,15 +1,18 @@
 {
-  "name": "@arcadecity/nostr-demo",
+  "name": "@arcadecity/bullrun-demo",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "dev": "yarn web"
   },
   "dependencies": {
     "@arcadecity/ui": "*",
+    "@expo-google-fonts/inter": "^0.2.2",
+    "@expo-google-fonts/lexend": "^0.2.2",
     "@expo/webpack-config": "^0.16.23",
     "@noble/secp256k1": "1.6.3",
     "@scure/bip32": "^1.1.0",
@@ -17,19 +20,20 @@
     "expo": "~46.0.0-beta.6",
     "expo-random": "~12.3.0",
     "expo-status-bar": "~1.4.0",
+    "moment": "2.29.4",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.1",
     "react-native-web": "~0.18.7",
-    "text-encoding-polyfill": "^0.6.7",
     "tiny-secp256k1": "^2.2.1",
-    "websocket-polyfill": "^0.0.3"
+    "websocket-polyfill": "^0.0.3",
+    "zustand": "^4.0.0-rc.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
-    "typescript": "~4.3.5"
+    "typescript": "^4.7.4"
   },
   "private": true
 }

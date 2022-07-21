@@ -1,6 +1,8 @@
+import { normalizeRideRequestEvent } from './normalize'
 import {
   generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
 } from './nostr-tools'
+import { useStore } from './store'
 
 let pubkey: string
 
@@ -11,16 +13,23 @@ export const createNewAccount = () => {
   const seed = seedFromWords(mnemonic)
   const priv = privateKeyFromSeed(seed)
   pubkey = getPublicKey(Buffer.from(priv, 'hex'))
-  console.log({ mnemonic, seed, priv, pubkey })
+  // console.log({ mnemonic, seed, priv, pubkey })
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
   pool.addRelay('wss://relay.damus.io')
 }
 
 export const subscribeToRides = () => {
-  const onEvent = (event: any, relay: any) => {
-    // console.log(`Received EVENT 60 ${event.id ?? ''}`)
-    console.log(event.content)
+  const onEvent = (event: any) => {
+    const rideRequest = normalizeRideRequestEvent(event)
+    if (
+      rideRequest &&
+      // riderequest createdat is less than 3 days ago
+      rideRequest.created_at > Date.now() / 1000 - 3 * 24 * 60 * 60 &&
+      useStore.getState().requests.length < 150
+    ) {
+      useStore.getState().addRequest(rideRequest)
+    }
   }
   // @ts-ignore
   pool.sub({
