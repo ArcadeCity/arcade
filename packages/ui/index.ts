@@ -1,1 +1,2 @@
-export * from './palette'
+export * from './atoms'
+export * from './theme'
