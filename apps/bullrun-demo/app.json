@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nostr-demo",
-    "slug": "nostr-demo",
+    "name": "bullrun-demo",
+    "slug": "bullrun-demo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
