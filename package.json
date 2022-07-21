@@ -11,6 +11,10 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "start": "yarn workspace @arcadecity/nostr-demo start",
+    "postinstall": "npx patch-package"
+  },
   "prettier": {
     "arrowParens": "always",
     "bracketSameLine": true,
