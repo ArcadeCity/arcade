@@ -82,6 +82,6 @@ const styles = StyleSheet.create({
     backgroundColor: palette.haiti,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: spacing[6],
+    padding: spacing[6],
   },
 })

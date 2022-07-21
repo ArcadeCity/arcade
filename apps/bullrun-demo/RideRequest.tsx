@@ -7,15 +7,21 @@ import { RideRequest as RideRequestType } from './store'
 export const RideRequest = ({ request }: { request: RideRequestType }) => {
   // const statusText = 'Waiting for driver'
   const fromNow = moment(request.expires * 1000).fromNow()
-  const pickupText = `From: ${request.from.lat}, ${request.from.lng}`
-  const dropText = `To: ${request.to.lat}, ${request.to.lng}`
+  const roundToDec = 5
+  const fromLat = request.from.lat.toFixed(roundToDec)
+  const fromLng = request.from.lng.toFixed(roundToDec)
+  const toLat = request.to.lat.toFixed(roundToDec)
+  const toLng = request.to.lng.toFixed(roundToDec)
+  const pickupText = `From: ${fromLat}, ${fromLng}`
+  const dropText = `To: ${toLat}, ${toLng}`
   // const dropDistance = `${distance(drop.coords)}mi SE`
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       key={request.id}
       style={{
-        width: 480,
+        width: '100%',
+        minWidth: 320,
         padding: 20,
         backgroundColor: palette.purple,
         borderRadius: 8,
