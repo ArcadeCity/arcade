@@ -1,0 +1,14 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "references": [
+    {
+      "path": "./app/nostr-demo"
+    },
+    {
+      "path": "./packages/ui"
+    }
+  ]
+}

@@ -5,12 +5,8 @@
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
+    "noEmit": false,
     "outDir": "./dist",
     "strict": true
-  },
-  "references": [
-    {
-      "path": "../../packages/ui"
-    }
-  ]
+  }
 }
