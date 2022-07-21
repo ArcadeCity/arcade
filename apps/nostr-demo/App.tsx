@@ -3,11 +3,12 @@ import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { greeting } from '@arcadecity/ui'
-import { createNewAccount } from './nostr'
+import { createNewAccount, subscribeToRides } from './nostr'
 
 export default function App() {
   useEffect(() => {
     createNewAccount()
+    subscribeToRides()
   }, [])
   return (
     <View style={styles.container}>
