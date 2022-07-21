@@ -23,6 +23,7 @@ export const normalizeRideRequestEvent = (event: any) => {
       },
       type: content.type,
     }
+    console.log(rideRequest)
     return rideRequest
   } catch (e) {
     console.log('Could not normalize.', e)
