@@ -21,7 +21,6 @@
     "react-dom": "18.0.0",
     "react-native": "0.69.1",
     "react-native-web": "~0.18.7",
-    "text-encoding-polyfill": "^0.6.7",
     "tiny-secp256k1": "^2.2.1",
     "websocket-polyfill": "^0.0.3",
     "zustand": "^4.0.0-rc.4"
