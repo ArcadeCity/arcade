@@ -3,15 +3,18 @@ import { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { greeting } from '@arcadecity/ui'
 import { createNewAccount, subscribeToRides } from './nostr'
+import { RequestFeed } from './RequestFeed'
+import { useStore } from './store'
 
 export default function App() {
   useEffect(() => {
     createNewAccount()
     subscribeToRides()
   }, [])
+  const requests = useStore((s) => s.requests)
   return (
     <View style={styles.container}>
-      <Text>{greeting}</Text>
+      <RequestFeed requests={requests} />
       <StatusBar style='auto' />
     </View>
   )
