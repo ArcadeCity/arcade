@@ -1,14 +1,23 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { RideRequest } from './store'
+import { palette } from '@arcadecity/ui'
+import { RideRequest } from './RideRequest'
+import { RideRequest as RideRequestType } from './store'
 
-export const RequestFeed = ({ requests }: { requests: RideRequest[] }) => {
+export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
   return (
     <View style={styles.container}>
+      <Text
+        style={{
+          color: palette.moonRaker,
+          fontSize: 34,
+          fontFamily: 'monospace',
+          fontWeight: '700',
+          marginVertical: 25,
+        }}>
+        Bullrun Ride Requests
+      </Text>
       {requests.map((request) => (
-        <Text key={request.id}>
-          {request.id} - {request.amount}
-        </Text>
-        // <Request key={request.id} request={request} />
+        <RideRequest key={request.id} request={request} />
       ))}
     </View>
   )
@@ -17,7 +26,8 @@ export const RequestFeed = ({ requests }: { requests: RideRequest[] }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    paddingVertical: 20,
+    // backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },

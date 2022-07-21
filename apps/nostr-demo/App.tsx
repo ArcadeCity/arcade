@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { greeting } from '@arcadecity/ui'
+import { StyleSheet, View } from 'react-native'
+import { palette } from '@arcadecity/ui'
 import { createNewAccount, subscribeToRides } from './nostr'
 import { RequestFeed } from './RequestFeed'
 import { useStore } from './store'
@@ -23,7 +23,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: palette.haiti,
     alignItems: 'center',
     justifyContent: 'center',
   },
