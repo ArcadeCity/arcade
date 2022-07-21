@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons'
 import { RideRequest as RideRequestType } from './store'
 
 export const RideRequest = ({ request }: { request: RideRequestType }) => {
-  const statusText = 'Waiting for driver'
+  // const statusText = 'Waiting for driver'
   const fromNow = moment(request.expires * 1000).fromNow()
   const pickupText = `From: ${request.from.lat}, ${request.from.lng}`
   const dropText = `To: Somewhere nearby`
@@ -15,11 +15,11 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
       activeOpacity={0.8}
       key={request.id}
       style={{
-        width: '96%',
+        width: 480,
         padding: 20,
         backgroundColor: palette.purple,
         borderRadius: 8,
-        marginBottom: 20,
+        marginBottom: 25,
       }}
       onPress={() => {
         console.log('Clicked request', request.id)

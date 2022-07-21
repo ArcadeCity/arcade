@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { palette, typography } from '@arcadecity/ui'
 import { RideRequest } from './RideRequest'
 import { RideRequest as RideRequestType } from './store'
@@ -16,9 +16,14 @@ export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
         }}>
         Bullrun Ride Requests
       </Text>
-      {requests.map((request) => (
-        <RideRequest key={request.id} request={request} />
-      ))}
+
+      <FlatList
+        data={requests}
+        renderItem={({ item }) => <RideRequest request={item} />}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20 }}
+      />
     </View>
   )
 }
