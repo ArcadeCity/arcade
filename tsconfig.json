@@ -5,7 +5,7 @@
   },
   "references": [
     {
-      "path": "./app/nostr-demo"
+      "path": "./apps/nostr-demo"
     },
     {
       "path": "./packages/ui"

@@ -12,6 +12,7 @@
     "packages/*"
   ],
   "scripts": {
+    "tsc:build": "yarn tsc --build",
     "start": "yarn workspace @arcadecity/nostr-demo start",
     "postinstall": "npx patch-package"
   },

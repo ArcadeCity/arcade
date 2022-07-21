@@ -8,5 +8,6 @@
     "noEmit": false,
     "outDir": "./dist",
     "strict": true
-  }
+  },
+  "exclude": ["dist"]
 }
