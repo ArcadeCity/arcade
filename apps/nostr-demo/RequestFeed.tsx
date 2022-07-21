@@ -4,6 +4,9 @@ import { RideRequest } from './RideRequest'
 import { RideRequest as RideRequestType } from './store'
 
 export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
+  const sortedRequests = requests.sort((a: RideRequestType, b: RideRequestType) => {
+    return b.expires - a.expires
+  })
   return (
     <View style={styles.container}>
       <Text
@@ -18,7 +21,7 @@ export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
       </Text>
 
       <FlatList
-        data={requests}
+        data={sortedRequests}
         renderItem={({ item }) => <RideRequest request={item} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}

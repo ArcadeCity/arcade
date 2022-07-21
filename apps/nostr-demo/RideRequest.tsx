@@ -27,7 +27,7 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'column' }}>
           <Text text={'Ride request'} preset='bold' />
-          <Text text={`Expiration ${fromNow}`} preset='descriptionSlim' />
+          <Text text={`${fromNow}`} preset='descriptionSlim' />
         </View>
 
         <View
