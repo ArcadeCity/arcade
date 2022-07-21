@@ -19,7 +19,8 @@ export const createNewAccount = () => {
 
 export const subscribeToRides = () => {
   const onEvent = (event: any, relay: any) => {
-    console.log(`Received EVENT 60 ${event.id ?? ''}`) // event, relay
+    // console.log(`Received EVENT 60 ${event.id ?? ''}`)
+    console.log(event.content)
   }
   // @ts-ignore
   pool.sub({
@@ -28,12 +29,11 @@ export const subscribeToRides = () => {
       kinds: [60],
     },
   })
-  console.log('subscribed?')
 }
 
 export const subscribeToUser = async (pubkey: string) => {
   const onEvent = (event: any, relay: any) => {
-    console.log(`Received event ${event.id ?? ''}`, event) // event, relay
+    console.log(`Received event ${event.id ?? ''}`) // event, relay
   }
   pool.sub({
     cb: onEvent,
