@@ -1,14 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "baseUrl": "."
-  },
-  "references": [
-    {
-      "path": "./apps/nostr-demo"
-    },
-    {
-      "path": "./packages/ui"
-    }
-  ]
+    "strict": true,
+    "module": "esnext"
+  }
 }

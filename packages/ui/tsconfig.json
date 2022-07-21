@@ -1,13 +1,8 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "tsconfig/react-native-library",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "noEmit": false,
-    "outDir": "./dist",
     "strict": true
-  },
-  "exclude": ["dist"]
+  }
 }

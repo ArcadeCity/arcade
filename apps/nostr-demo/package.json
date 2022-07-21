@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "dev": "yarn web"
   },
   "dependencies": {
     "@arcadecity/ui": "*",
@@ -30,7 +31,7 @@
     "@babel/core": "^7.12.9",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
-    "typescript": "~4.3.5"
+    "typescript": "^4.7.4"
   },
   "private": true
 }
