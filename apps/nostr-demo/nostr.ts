@@ -20,12 +20,11 @@ export const createNewAccount = () => {
 }
 
 export const subscribeToRides = () => {
-  const onEvent = (event: any, relay: any) => {
-    // console.log(`Received EVENT 60 ${event.id ?? ''}`)
-    // console.log(event)
+  const onEvent = (event: any) => {
     const rideRequest = normalizeRideRequestEvent(event)
-    useStore.getState().addRequest(rideRequest)
-    // console.log(event.content)
+    if (rideRequest) {
+      useStore.getState().addRequest(rideRequest)
+    }
   }
   // @ts-ignore
   pool.sub({
