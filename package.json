@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:next": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
     "dev:next-storybook": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/storybook-react",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
