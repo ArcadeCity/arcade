@@ -21,6 +21,7 @@
     "expo-random": "~12.3.0",
     "expo-status-bar": "~1.4.0",
     "moment": "2.29.4",
+    "node-libs-react-native": "^1.2.1",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.1",
