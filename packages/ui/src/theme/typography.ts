@@ -17,7 +17,7 @@ export const typography = {
   /**
    * The primary font.  Used in most places.
    */
-  primary: 'Inter_400Regular',
+  primary: 'monospace', // 'Inter_400Regular',
 
   bold: 'Inter_700Bold',
 
