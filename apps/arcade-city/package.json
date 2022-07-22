@@ -8,7 +8,18 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "clear": "expo r -c",
+    "fixdeps": "expo doctor --fix-dependencies",
+    "postinstall": "cd ../../ && yarn patch-package",
+    "build:ios": "eas build -p ios --profile beta5",
+    "build:android": "eas build -p android --profile beta5",
+    "build:android:apk": "eas build -p android --profile beta5-apk",
+    "submit:ios": "eas submit -p ios",
+    "submit:android": "eas submit -p android",
+    "publish:default": "expo publish --release-channel default",
+    "publish:ios": "expo publish --release-channel beta5",
+    "publish:android": "expo publish --release-channel beta5"
   },
   "jest": {
     "preset": "jest-expo"
