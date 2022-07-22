@@ -18,7 +18,8 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "arcade.city.mobile"
+      "bundleIdentifier": "arcade.city.mobile",
+      "buildNumber": "35"
     },
     "android": {
       "adaptiveIcon": {
