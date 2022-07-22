@@ -1,11 +1,10 @@
-import { View } from 'react-native'
-import { palette } from '@arcadecity/ui'
+import React from 'react'
 
 export const decorators = [
   (Story) => (
-    <View style={{ padding: 30, backgroundColor: palette.haiti }}>
+    <div style={{ padding: 30, backgroundColor: '#120B29' }}>
       <Story />
-    </View>
+    </div>
   ),
 ]
 
