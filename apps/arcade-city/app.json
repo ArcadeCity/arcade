@@ -3,9 +3,6 @@
     "name": "Arcade City",
     "slug": "app6",
     "version": "6.0.0",
-    "runtimeVersion": {
-      "policy": "nativeVersion"
-    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
