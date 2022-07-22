@@ -1,3 +1,14 @@
+import { View } from 'react-native'
+import { palette } from '@arcadecity/ui'
+
+export const decorators = [
+  (Story) => (
+    <View style={{ padding: 30, backgroundColor: palette.haiti }}>
+      <Story />
+    </View>
+  ),
+]
+
 // import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 // import { NavigationContainer } from '@react-navigation/native'
 // import { createNativeStackNavigator } from '@react-navigation/native-stack'
