@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "yarn web"
+    "dev": "yarn ios"
   },
   "dependencies": {
     "@arcadecity/ui": "*",
@@ -25,6 +25,8 @@
     "react-dom": "18.0.0",
     "react-native": "0.69.1",
     "react-native-web": "~0.18.7",
+    "readable-stream": "3.6.0",
+    "stream-browserify": "^3.0.0",
     "tiny-secp256k1": "^2.2.1",
     "websocket-polyfill": "^0.0.3",
     "zustand": "^4.0.0-rc.4"
@@ -35,5 +37,21 @@
     "@types/react-native": "~0.69.1",
     "typescript": "^4.7.4"
   },
-  "private": true
+  "private": true,
+  "browser": {
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  },
+  "react-native": {
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  }
 }
