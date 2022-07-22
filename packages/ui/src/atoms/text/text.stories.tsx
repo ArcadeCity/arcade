@@ -8,6 +8,6 @@ export default {
 
 export const Basic: React.FC<{}> = () => <Text text='Hello world' />
 
-export const descriptionSlim: React.VFC<{}> = () => (
+export const descriptionSlim: React.FC<{}> = () => (
   <Text text='Hello world' preset='descriptionSlim' />
 )
