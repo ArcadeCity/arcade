@@ -1,6 +1,6 @@
 import 'text-encoding-polyfill'
 import { StatusBar } from 'expo-status-bar'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Linking, Pressable, StyleSheet, View } from 'react-native'
 import { palette, spacing, Text, typography } from '@arcadecity/ui'
 import {
@@ -18,10 +18,10 @@ export default function App() {
   }, [])
 
   const [loaded] = useFonts({
-    Inter_400Regular,
+    Inter: Inter_400Regular,
     Inter_700Bold,
     Lexend_400Regular,
-    Lexend_700Bold,
+    Lexend: Lexend_700Bold,
   })
 
   const requests = useStore((s) => s.requests)

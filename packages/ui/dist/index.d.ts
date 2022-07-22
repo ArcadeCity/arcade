@@ -35,7 +35,7 @@ declare const presets: {
         fontSize: number;
         lineHeight: number;
         marginVertical: number;
-        fontFamily: string;
+        fontFamily: string | undefined;
         color?: react_native.ColorValue | undefined;
         fontStyle?: "normal" | "italic" | undefined;
         fontWeight?: "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
@@ -539,12 +539,12 @@ declare const typography: {
     /**
      * The primary font.  Used in most places.
      */
-    primary: string;
-    bold: string;
+    primary: string | undefined;
+    bold: string | undefined;
     /**
      * An alternate font used for perhaps titles and stuff.
      */
-    secondary: string;
+    secondary: string | undefined;
     /**
      * Lets get fancy with a monospace font!
      */

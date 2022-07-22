@@ -57,9 +57,17 @@ var spacing = [0, 4, 8, 12, 16, 24, 32, 48, 64];
 // src/theme/typography.ts
 import { Platform } from "react-native";
 var typography = {
-  primary: "Inter_400Regular",
-  bold: "Inter_700Bold",
-  secondary: "Lexend_700Bold",
+  primary: Platform.select({
+    ios: "Inter_400Regular",
+    android: "Inter_400Regular",
+    web: "Inter"
+  }),
+  bold: Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter" }),
+  secondary: Platform.select({
+    ios: "Lexend_700Bold",
+    android: "Lexend_700Bold",
+    web: "Lexend"
+  }),
   code: Platform.select({ ios: "Courier", android: "monospace", web: "monospace" })
 };
 

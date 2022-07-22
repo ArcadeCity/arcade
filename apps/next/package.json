@@ -1,0 +1,20 @@
+{
+  "name": "@arcadecity/next",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-native-web": "^0.13.14"
+  },
+  "devDependencies": {
+    "@expo/next-adapter": "4.0.8",
+    "babel-plugin-react-native-web": "^0.13.14"
+  }
+}

@@ -9,3 +9,5 @@ dist/**
 .DS_Store
 
 .expo
+
+*.log

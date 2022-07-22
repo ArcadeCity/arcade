@@ -15,8 +15,17 @@
     "apps/*",
     "packages/*"
   ],
+  "resolutions": {
+    "babel-preset-expo": "9.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@types/react": "18.0.1"
+  },
   "scripts": {
     "dev": "turbo run dev",
+    "dev:bullrun": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/bullrun-demo",
+    "dev:next": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
+    "dev:next-storybook": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/storybook-react",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",

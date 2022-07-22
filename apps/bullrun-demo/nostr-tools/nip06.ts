@@ -1,8 +1,6 @@
 import { Buffer } from 'buffer'
 import { HDKey } from '@scure/bip32'
-import {
-  generateMnemonic, mnemonicToSeedSync, validateMnemonic
-} from '@scure/bip39'
+import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 
 /**
