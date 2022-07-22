@@ -2,6 +2,7 @@
   "expo": {
     "name": "Arcade City",
     "slug": "app6",
+    "runtimeVersion": { "policy": "nativeVersion" },
     "version": "6.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
