@@ -1,7 +1,11 @@
 import { Buffer } from 'buffer'
 import { normalizeRideRequestEvent } from './normalize'
 import {
-  generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
+  generateSeedWords,
+  getPublicKey,
+  privateKeyFromSeed,
+  relayPool,
+  seedFromWords,
 } from './nostr-tools'
 import { useStore } from './store'
 

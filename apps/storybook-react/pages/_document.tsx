@@ -1,7 +1,7 @@
-import React from "react";
-import { AppRegistry } from "react-native";
+import React from 'react'
+import { AppRegistry } from 'react-native'
 
-import NextDocument, { Html, Head, Main, NextScript } from "next/document";
+import NextDocument, { Html, Head, Main, NextScript } from 'next/document'
 
 export const style = `
 /**
@@ -41,39 +41,39 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -ms-overflow-style: scrollbar;
 }
-`;
+`
 
 class Document extends NextDocument {
   static async getInitialProps(ctx) {
-    AppRegistry.registerComponent("Main", () => Main);
-    const { getStyleElement } = AppRegistry.getApplication("Main");
+    AppRegistry.registerComponent('Main', () => Main)
+    const { getStyleElement } = AppRegistry.getApplication('Main')
     const styles = [
-      <style dangerouslySetInnerHTML={{ __html: style }} key="rnw" />,
+      <style dangerouslySetInnerHTML={{ __html: style }} key='rnw' />,
       getStyleElement(),
-    ];
+    ]
 
-    const initialProps = await NextDocument.getInitialProps(ctx);
-    return { ...initialProps, styles: React.Children.toArray(styles) };
+    const initialProps = await NextDocument.getInitialProps(ctx)
+    return { ...initialProps, styles: React.Children.toArray(styles) }
   }
 
   render() {
     return (
-      <Html lang="en">
+      <Html lang='en'>
         <Head>
-          <meta charSet="UTF-8" />
-          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <meta charSet='UTF-8' />
+          <meta httpEquiv='X-UA-Compatible' content='IE=edge' />
           <link
-            href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
-            rel="stylesheet"
+            href='https://fonts.googleapis.com/css2?family=Inter&display=swap'
+            rel='stylesheet'
           />
         </Head>
-        <body className="!max-w-screen bg-white dark:bg-black">
+        <body className='!max-w-screen bg-white dark:bg-black'>
           <Main />
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
 
-export default Document;
+export default Document
