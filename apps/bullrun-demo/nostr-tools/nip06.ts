@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { HDKey } from '@scure/bip32'
 import {
   generateMnemonic, mnemonicToSeedSync, validateMnemonic
