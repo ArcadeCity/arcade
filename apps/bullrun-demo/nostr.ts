@@ -1,11 +1,7 @@
 import { Buffer } from 'buffer'
 import { normalizeRideRequestEvent } from './normalize'
 import {
-  generateSeedWords,
-  getPublicKey,
-  privateKeyFromSeed,
-  relayPool,
-  seedFromWords,
+  generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
 } from './nostr-tools'
 import { useStore } from './store'
 
@@ -29,8 +25,8 @@ export const subscribeToRides = () => {
     const rideRequest = normalizeRideRequestEvent(event)
     if (
       rideRequest &&
-      // riderequest createdat is less than 3 days ago
-      rideRequest.created_at > Date.now() / 1000 - 3 * 24 * 60 * 60 &&
+      // riderequest createdat is less than 7 days ago
+      rideRequest.created_at > Date.now() / 1000 - 7 * 24 * 60 * 60 &&
       useStore.getState().requests.length < 150
     ) {
       useStore.getState().addRequest(rideRequest)
