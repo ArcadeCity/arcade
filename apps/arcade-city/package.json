@@ -17,7 +17,7 @@
     "submit:ios": "eas submit -p ios",
     "submit:android": "eas submit -p android",
     "publish:default": "expo publish --release-channel default",
-    "publish:ios": "expo publish --release-channel beta5",
+    "publish:ios": "eas update --branch beta5 -p ios",
     "publish:android": "expo publish --release-channel beta5"
   },
   "jest": {
@@ -36,6 +36,7 @@
     "expo-splash-screen": "~0.16.1",
     "expo-status-bar": "~1.4.0",
     "expo-system-ui": "~1.3.0",
+    "expo-updates": "~0.14.2",
     "expo-web-browser": "~11.0.0",
     "react": "18.0.0",
     "react-dom": "18.0.0",
