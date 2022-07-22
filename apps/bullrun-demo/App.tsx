@@ -3,9 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import React, { useEffect } from 'react'
 import { Linking, Pressable, StyleSheet, View } from 'react-native'
 import { palette, spacing, Text, typography } from '@arcadecity/ui'
-import {
-  Inter_400Regular, Inter_700Bold, useFonts
-} from '@expo-google-fonts/inter'
+import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter'
 import { Lexend_400Regular, Lexend_700Bold } from '@expo-google-fonts/lexend'
 import { createNewAccount, subscribeToRides } from './nostr'
 import { RequestFeed } from './RequestFeed'

@@ -3,11 +3,11 @@ import { StyleSheet, Text, View } from 'react-native'
 export default function Alternate() {
   return (
     <View style={styles.container}>
-      <Text accessibilityRole="header" style={styles.text}>
+      <Text accessibilityRole='header' style={styles.text}>
         Alternate Page
       </Text>
 
-      <Text style={styles.link} accessibilityRole="link" href={`/`}>
+      <Text style={styles.link} accessibilityRole='link' href={`/`}>
         Go Back
       </Text>
     </View>
