@@ -1,5 +1,5 @@
 {
-  "name": "@showtime/storybook-react",
+  "name": "@arcadecity/storybook-react",
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
@@ -8,10 +8,10 @@
     "build": "yarn build:storybook",
     "build:storybook": "build-storybook -s public",
     "storybook": "start-storybook -p 6006 -s ./public",
-    "chromatic": "npx chromatic --project-token=aa4fa9ec8af5"
+    "chromatic": "npx chromatic --project-token=7eafae72541a"
   },
   "dependencies": {
-    "design-system": "*",
+    "@arcadecity/ui": "*",
     "next": "12.2.3-canary.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
