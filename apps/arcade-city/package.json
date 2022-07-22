@@ -11,7 +11,7 @@
     "test": "jest --watchAll",
     "clear": "expo r -c",
     "fixdeps": "expo doctor --fix-dependencies",
-    "build:ios": "eas build -p ios --profile beta5",
+    "build:ios": "eas build -p ios",
     "build:android": "eas build -p android --profile beta5",
     "build:android:apk": "eas build -p android --profile beta5-apk",
     "submit:ios": "eas submit -p ios",
