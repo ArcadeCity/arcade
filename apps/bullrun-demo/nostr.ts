@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { normalizeRideRequestEvent } from './normalize'
 import {
   generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords

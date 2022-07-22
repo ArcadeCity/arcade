@@ -7,3 +7,5 @@ dist/**
 .next/**
 
 .DS_Store
+
+.expo
