@@ -1,3 +1,4 @@
+import 'text-encoding-polyfill'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { Linking, Pressable, StyleSheet, View } from 'react-native'
