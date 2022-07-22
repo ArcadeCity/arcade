@@ -17,14 +17,22 @@ export const typography = {
   /**
    * The primary font.  Used in most places.
    */
-  primary: Platform.select({ ios: 'Inter_400Regular', android: 'Inter_400Regular', web: 'Inter' }),
+  primary: Platform.select({
+    ios: 'Inter_400Regular',
+    android: 'Inter_400Regular',
+    web: 'Inter',
+  }),
 
   bold: Platform.select({ ios: 'Inter_700Bold', android: 'Inter_700Bold', web: 'Inter' }),
 
   /**
    * An alternate font used for perhaps titles and stuff.
    */
-  secondary: Platform.select({ ios: 'Lexend_700Bold', android: 'Lexend_700Bold', web: 'Lexend' }),
+  secondary: Platform.select({
+    ios: 'Lexend_700Bold',
+    android: 'Lexend_700Bold',
+    web: 'Lexend',
+  }),
 
   /**
    * Lets get fancy with a monospace font!

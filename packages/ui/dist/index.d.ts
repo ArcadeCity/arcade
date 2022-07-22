@@ -1,6 +1,5 @@
 import * as react_native from 'react-native';
 import { TextStyle, TextProps as TextProps$1, StyleProp } from 'react-native';
-import React$1 from 'react';
 
 /**
  * All the variations of text styling within the app.
@@ -36,7 +35,7 @@ declare const presets: {
         fontSize: number;
         lineHeight: number;
         marginVertical: number;
-        fontFamily: string;
+        fontFamily: string | undefined;
         color?: react_native.ColorValue | undefined;
         fontStyle?: "normal" | "italic" | undefined;
         fontWeight?: "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
@@ -347,10 +346,6 @@ interface TextProps extends TextProps$1 {
  */
 declare const Text: (props: TextProps) => JSX.Element;
 
-declare const FontProvider: ({ children }: {
-    children: React$1.ReactNode;
-}) => JSX.Element;
-
 declare const ACTIVE_OPACITY = 0.8;
 /**
  * Roles for colors.  Prefer using these over the palette.  It makes it easier
@@ -544,16 +539,16 @@ declare const typography: {
     /**
      * The primary font.  Used in most places.
      */
-    primary: string;
-    bold: string;
+    primary: string | undefined;
+    bold: string | undefined;
     /**
      * An alternate font used for perhaps titles and stuff.
      */
-    secondary: string;
+    secondary: string | undefined;
     /**
      * Lets get fancy with a monospace font!
      */
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, FontProvider, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, Text, color, palette, spacing, typography };
