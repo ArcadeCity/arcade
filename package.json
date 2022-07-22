@@ -16,13 +16,13 @@
     "packages/*"
   ],
   "resolutions": {
-    "babel-preset-expo": "9.1.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "@types/react": "18.0.1"
+    "react": "18.0.0",
+    "react-dom": "18.0.0"
   },
   "scripts": {
     "dev": "turbo run dev",
+    "dev:ac": "yarn turbo run ios --parallel --no-cache --scope=@arcadecity/arcade-city",
+    "dev:ac:web": "yarn turbo run web --parallel --no-cache --scope=@arcadecity/arcade-city",
     "dev:bullrun": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/bullrun-demo",
     "dev:next": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
     "dev:next-storybook": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/storybook-react",

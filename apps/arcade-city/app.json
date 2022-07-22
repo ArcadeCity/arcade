@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Arcade City",
+    "slug": "app6",
+    "runtimeVersion": { "policy": "nativeVersion" },
+    "version": "6.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#1C133A"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/fcdf1453-a330-40a7-98fb-0e4ae15659ca"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "arcade.city.mobile",
+      "buildNumber": "37",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1c133a"
+      },
+      "package": "arcade.city.mobile",
+      "versionCode": 6000009
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fcdf1453-a330-40a7-98fb-0e4ae15659ca"
+      }
+    }
+  }
+}
