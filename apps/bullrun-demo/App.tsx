@@ -30,17 +30,23 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text preset='title' text='Bullrun Ride Requests' style={{ marginBottom: spacing[3] }} />
-      <Text
-        preset='descriptionSlim'
-        text='Bullrun is an open protocol for peer-to-peer services powered by Bitcoin & Nostr.'
-        style={{ marginBottom: spacing[2] }}
-      />
-      <Text
-        preset='descriptionSlim'
-        text='This a list of demo ride requests created with the Bullrun demo app.'
-        style={{ marginBottom: spacing[2] }}
-      />
+      <View style={{ paddingHorizontal: spacing[3] }}>
+        <Text
+          preset='title'
+          text='Bullrun Ride Requests'
+          style={{ textAlign: 'center', marginBottom: spacing[3] }}
+        />
+        <Text
+          preset='descriptionSlim'
+          text='Bullrun is an open protocol for peer-to-peer services powered by Bitcoin & Nostr.'
+          style={{ marginBottom: spacing[2] }}
+        />
+        <Text
+          preset='descriptionSlim'
+          text='This a list of demo ride requests created with the Bullrun demo app.'
+          style={{ marginBottom: spacing[2] }}
+        />
+      </View>
       <Pressable onPress={() => Linking.openURL('https://github.com/ArcadeCity/bullrun')}>
         <Text
           preset='title2'
@@ -72,7 +78,7 @@ export default function App() {
       </Pressable>
 
       <RequestFeed requests={requests} />
-      <StatusBar style='auto' />
+      <StatusBar style='light' />
     </View>
   )
 }
@@ -83,6 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.haiti,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing[6],
+    paddingBottom: spacing[6],
+    paddingTop: 50,
   },
 })
