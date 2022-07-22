@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "yarn ios"
+    "dev": "yarn web"
   },
   "dependencies": {
     "@arcadecity/ui": "*",
