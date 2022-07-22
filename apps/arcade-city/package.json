@@ -18,7 +18,7 @@
     "submit:ios": "eas submit -p ios",
     "submit:android": "eas submit -p android",
     "publish:default": "expo publish --release-channel default",
-    "publish:ios": "eas update --branch beta5 -p ios",
+    "publish:ios": "eas update --branch preview -p ios --message 'Update'",
     "publish:android": "expo publish --release-channel beta5"
   },
   "jest": {
