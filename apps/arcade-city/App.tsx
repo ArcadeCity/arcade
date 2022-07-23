@@ -7,9 +7,9 @@ import Navigation from './navigation'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
-  // useEffect(() => {
-  //   Alert.alert(isLoadingComplete ? 'Loading Complete' : 'Loading Incomplete')
-  // }, [isLoadingComplete])
+  useEffect(() => {
+    Alert.alert('we are updating...')
+  }, [])
   if (!isLoadingComplete) {
     return null
   } else {
