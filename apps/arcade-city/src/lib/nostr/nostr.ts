@@ -23,7 +23,14 @@ export const createNewAccount = () => {
 export const subscribeToRides = () => {
   const onEvent = (event: any) => {
     const rideRequest = normalizeRideRequestEvent(event)
-    console.log(rideRequest)
+    if (
+      rideRequest &&
+      // riderequest createdat is less than 7 days ago
+      rideRequest.created_at > Date.now() / 1000 - 7 * 24 * 60 * 60 &&
+      useStore.getState().requests.length < 150
+    ) {
+      useStore.getState().addRequest(rideRequest)
+    }
   }
   // @ts-ignore
   pool.sub({
