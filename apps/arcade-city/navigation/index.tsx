@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import { ColorSchemeName, Pressable } from 'react-native'
-import { color, palette } from '@arcadecity/ui'
+import { color, palette, typography } from '@arcadecity/ui'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DarkTheme, NavigationContainer } from '@react-navigation/native'
@@ -54,6 +54,10 @@ function RootNavigator() {
             headerStyle: {
               backgroundColor: color.tabbar,
             },
+            headerTitleStyle: {
+              color: color.text,
+              fontFamily: typography.secondary,
+            },
           }}
         />
       </Stack.Group>
@@ -93,6 +97,10 @@ function BottomTabNavigator() {
             borderBottomWidth: 2,
             borderBottomColor: palette.portGore,
           },
+          headerTitleStyle: {
+            color: color.text,
+            fontFamily: typography.secondary,
+          },
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -119,6 +127,10 @@ function BottomTabNavigator() {
             backgroundColor: color.tabbar,
             borderBottomWidth: 2,
             borderBottomColor: palette.portGore,
+          },
+          headerTitleStyle: {
+            color: color.text,
+            fontFamily: typography.secondary,
           },
         }}
       />
