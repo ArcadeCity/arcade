@@ -18,7 +18,7 @@ export default function App() {
     subscribeToEvents(
       [NostrKind.riderequest],
       // [NostrKind.like, NostrKind.riderequest, NostrKind.text, NostrKind.contacts, NostrKind.delete],
-      100
+      50
     )
   }, [])
 
