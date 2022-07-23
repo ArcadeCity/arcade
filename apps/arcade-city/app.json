@@ -2,7 +2,9 @@
   "expo": {
     "name": "Arcade City",
     "slug": "app6",
-    "runtimeVersion": { "policy": "sdkVersion" },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "version": "6.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +19,9 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/fcdf1453-a330-40a7-98fb-0e4ae15659ca"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "arcade.city.mobile",
@@ -41,6 +45,9 @@
       "eas": {
         "projectId": "fcdf1453-a330-40a7-98fb-0e4ae15659ca"
       }
-    }
+    },
+    "plugins": [
+      "sentry-expo"
+    ]
   }
 }
