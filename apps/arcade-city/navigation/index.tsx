@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  */
 import * as React from 'react'
-import { ColorSchemeName, Pressable } from 'react-native'
+import { ColorSchemeName, Pressable, View, ViewStyle } from 'react-native'
 import { color, palette, typography } from '@arcadecity/ui'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -91,7 +91,9 @@ function BottomTabNavigator() {
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
           title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name='list-ul' color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name='list-ul' color={color} focused={focused} />
+          ),
           headerStyle: {
             backgroundColor: color.tabbar,
             borderBottomWidth: 2,
@@ -122,7 +124,9 @@ function BottomTabNavigator() {
         component={TabTwoScreen}
         options={{
           title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name='user-alt' color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name='user-alt' color={color} focused={focused} />
+          ),
           headerStyle: {
             backgroundColor: color.tabbar,
             borderBottomWidth: 2,
@@ -142,8 +146,30 @@ function BottomTabNavigator() {
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome5>['name']
   color: string
+  focused: boolean
+  name: React.ComponentProps<typeof FontAwesome5>['name']
 }) {
-  return <FontAwesome5 size={30} {...props} />
+  return (
+    <>
+      <FontAwesome5 size={32} {...props} />
+      {props.focused && <View style={ACTIVE_INDICATOR} />}
+    </>
+  )
+}
+
+const ACTIVE_INDICATOR: ViewStyle = {
+  position: 'absolute',
+  bottom: -8,
+  height: 4,
+  width: 4,
+  borderRadius: 2,
+  backgroundColor: color.highlight,
+  shadowOffset: {
+    width: 0,
+    height: 0,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 4,
+  shadowColor: 'rgb(244,89,244)', //color.highlight,
 }
