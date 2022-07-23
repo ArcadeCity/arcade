@@ -73,8 +73,5 @@
   "resolutions": {
     "react": "18.0.0",
     "react-dom": "18.0.0"
-  },
-  "react-native": {
-    "@noble/secp256k1": "@alephium/secp256k1"
   }
 }

@@ -41,7 +41,6 @@
     "stream": "stream-browserify"
   },
   "react-native": {
-    "@noble/secp256k1": "@alephium/secp256k1",
     "_stream_transform": "readable-stream/transform",
     "_stream_readable": "readable-stream/readable",
     "_stream_writable": "readable-stream/writable",
