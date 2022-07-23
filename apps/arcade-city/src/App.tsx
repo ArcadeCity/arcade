@@ -14,7 +14,7 @@ export default function App() {
 
   useEffect(() => {
     createNewAccount()
-    // subscribeToRides()
+    subscribeToRides()
   }, [])
 
   if (!isLoadingComplete) {
