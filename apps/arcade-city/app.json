@@ -19,13 +19,11 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/fcdf1453-a330-40a7-98fb-0e4ae15659ca"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "arcade.city.mobile",
-      "buildNumber": "37",
+      "buildNumber": "38",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -46,8 +44,6 @@
         "projectId": "fcdf1453-a330-40a7-98fb-0e4ae15659ca"
       }
     },
-    "plugins": [
-      "sentry-expo"
-    ]
+    "plugins": ["sentry-expo"]
   }
 }
