@@ -28,7 +28,7 @@ export const subscribeToEvents = (kinds: NostrKind[]) => {
   // @ts-ignore
   pool.sub({
     cb: onEvent,
-    filter: { kinds },
+    filter: { kinds, limit: 50 },
   })
 }
 
