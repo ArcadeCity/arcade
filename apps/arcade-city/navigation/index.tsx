@@ -4,14 +4,12 @@
  */
 import * as React from 'react'
 import { ColorSchemeName, Pressable } from 'react-native'
+import { color, palette } from '@arcadecity/ui'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import {
-  DarkTheme, DefaultTheme, NavigationContainer
-} from '@react-navigation/native'
+import { DarkTheme, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Colors from '../constants/Colors'
-import useColorScheme from '../hooks/useColorScheme'
 import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
 import TabOneScreen from '../screens/TabOneScreen'
@@ -21,11 +19,17 @@ import {
 } from '../types'
 import LinkingConfiguration from './LinkingConfiguration'
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+const navTheme = {
+  colors: {
+    ...DarkTheme.colors,
+    background: color.background,
+  },
+  dark: true,
+}
+
+export default function Navigation() {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer linking={LinkingConfiguration} theme={navTheme}>
       <RootNavigator />
     </NavigationContainer>
   )
@@ -56,13 +60,12 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>()
 
 function BottomTabNavigator() {
-  const colorScheme = useColorScheme()
-
   return (
     <BottomTab.Navigator
       initialRouteName='TabOne'
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        // tabBarBackground:
+        tabBarActiveTintColor: palette.blueBell,
         tabBarShowLabel: false,
       }}>
       <BottomTab.Screen
@@ -80,7 +83,7 @@ function BottomTabNavigator() {
               <FontAwesome
                 name='info-circle'
                 size={25}
-                color={Colors[colorScheme].text}
+                color={palette.moonRaker}
                 style={{ marginRight: 15 }}
               />
             </Pressable>
@@ -106,5 +109,5 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome5>['name']
   color: string
 }) {
-  return <FontAwesome5 size={30} style={{ marginBottom: -3 }} {...props} />
+  return <FontAwesome5 size={30} {...props} />
 }
