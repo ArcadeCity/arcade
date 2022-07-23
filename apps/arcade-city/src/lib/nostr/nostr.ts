@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import { handle } from './handle'
 import { normalizeRideRequestEvent } from './normalize'
 import {
   generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
@@ -22,7 +23,7 @@ export const createNewAccount = () => {
 
 export const subscribeToEvents = (kinds: NostrKind[]) => {
   const onEvent = (event: any) => {
-    console.log(event)
+    handle(event)
   }
   // @ts-ignore
   pool.sub({
