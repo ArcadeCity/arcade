@@ -15,7 +15,10 @@ export default function App() {
   // useExpoUpdates(3)
   useEffect(() => {
     createNewAccount()
-    subscribeToEvents([NostrKind.text])
+    subscribeToEvents(
+      [NostrKind.like, NostrKind.riderequest, NostrKind.text, NostrKind.contacts, NostrKind.delete],
+      100
+    )
   }, [])
 
   if (!isLoadingComplete) {

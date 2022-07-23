@@ -21,14 +21,14 @@ export const createNewAccount = () => {
   pool.addRelay('wss://relay.damus.io')
 }
 
-export const subscribeToEvents = (kinds: NostrKind[]) => {
+export const subscribeToEvents = (kinds: NostrKind[], limit = 50) => {
   const onEvent = (event: any) => {
     handle(event)
   }
   // @ts-ignore
   pool.sub({
     cb: onEvent,
-    filter: { kinds, limit: 50 },
+    filter: { kinds, limit },
   })
 }
 
