@@ -16,7 +16,8 @@ export default function App() {
   useEffect(() => {
     createNewAccount()
     subscribeToEvents(
-      [NostrKind.like, NostrKind.riderequest, NostrKind.text, NostrKind.contacts, NostrKind.delete],
+      [NostrKind.riderequest],
+      // [NostrKind.like, NostrKind.riderequest, NostrKind.text, NostrKind.contacts, NostrKind.delete],
       100
     )
   }, [])
