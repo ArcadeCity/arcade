@@ -94,13 +94,13 @@ var typography = {
   primary: import_react_native.Platform.select({
     ios: "Inter_400Regular",
     android: "Inter_400Regular",
-    web: "Inter"
+    web: "Inter_400Regular"
   }),
-  bold: import_react_native.Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter" }),
+  bold: import_react_native.Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter_700Bold" }),
   secondary: import_react_native.Platform.select({
     ios: "Lexend_700Bold",
     android: "Lexend_700Bold",
-    web: "Lexend"
+    web: "Lexend_700Bold"
   }),
   code: import_react_native.Platform.select({ ios: "Courier", android: "monospace", web: "monospace" })
 };
