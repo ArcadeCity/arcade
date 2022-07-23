@@ -38,20 +38,9 @@
       "favicon": "./assets/images/favicon.png"
     },
     "extra": {
-      "bugsnag": {
-        "apiKey": "a856b6b4c729c366e4ed5041df458b9f"
-      },
       "eas": {
         "projectId": "fcdf1453-a330-40a7-98fb-0e4ae15659ca"
       }
-    },
-    "hooks": {
-      "postPublish": [
-        {
-          "file": "@bugsnag/expo/hooks/post-publish.js",
-          "config": {}
-        }
-      ]
     }
   }
 }
