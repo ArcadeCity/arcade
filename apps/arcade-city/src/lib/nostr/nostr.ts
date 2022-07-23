@@ -1,9 +1,11 @@
 import { Buffer } from 'buffer'
+import { handle } from './handle'
 import { normalizeRideRequestEvent } from './normalize'
 import {
   generateSeedWords, getPublicKey, privateKeyFromSeed, relayPool, seedFromWords
 } from './nostr-tools'
 import { useStore } from './store'
+import { NostrKind } from './types'
 
 let pubkey: string
 
@@ -14,10 +16,20 @@ export const createNewAccount = () => {
   const seed = seedFromWords(mnemonic)
   const priv = privateKeyFromSeed(seed)
   pubkey = getPublicKey(Buffer.from(priv, 'hex'))
-  // console.log({ mnemonic, seed, priv, pubkey })
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
   pool.addRelay('wss://relay.damus.io')
+}
+
+export const subscribeToEvents = (kinds: NostrKind[], limit = 50) => {
+  const onEvent = (event: any) => {
+    handle(event)
+  }
+  // @ts-ignore
+  pool.sub({
+    cb: onEvent,
+    filter: { kinds, limit },
+  })
 }
 
 export const subscribeToRides = () => {

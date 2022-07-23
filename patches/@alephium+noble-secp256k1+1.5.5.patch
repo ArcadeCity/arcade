@@ -1,0 +1,12 @@
+diff --git a/node_modules/@alephium/noble-secp256k1/package.json b/node_modules/@alephium/noble-secp256k1/package.json
+index 4f879f5..fe60f7e 100644
+--- a/node_modules/@alephium/noble-secp256k1/package.json
++++ b/node_modules/@alephium/noble-secp256k1/package.json
+@@ -62,6 +62,7 @@
+     "noble"
+   ],
+   "exports": {
++    "./package.json": "./package.json",
+     ".": {
+       "import": "./lib/esm/index.js",
+       "default": "./lib/index.js"

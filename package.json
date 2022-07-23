@@ -20,6 +20,7 @@
     "react-dom": "18.0.0"
   },
   "scripts": {
+    "ac": "yarn workspace @arcadecity/arcade-city run ios",
     "dev": "turbo run dev",
     "dev:ac": "yarn turbo run ios --parallel --no-cache --scope=@arcadecity/arcade-city",
     "dev:ac:web": "yarn turbo run web --parallel --no-cache --scope=@arcadecity/arcade-city",

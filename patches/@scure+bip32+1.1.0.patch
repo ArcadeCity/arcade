@@ -1,0 +1,26 @@
+diff --git a/node_modules/@scure/bip32/lib/esm/index.js b/node_modules/@scure/bip32/lib/esm/index.js
+index 5c815ae..53dba2d 100644
+--- a/node_modules/@scure/bip32/lib/esm/index.js
++++ b/node_modules/@scure/bip32/lib/esm/index.js
+@@ -4,7 +4,7 @@ import { sha256 } from '@noble/hashes/sha256';
+ import { sha512 } from '@noble/hashes/sha512';
+ import { bytes as assertBytes } from '@noble/hashes/_assert';
+ import { bytesToHex, concatBytes, createView, hexToBytes, utf8ToBytes } from '@noble/hashes/utils';
+-import * as secp from '@noble/secp256k1';
++import * as secp from '@alephium/noble-secp256k1';
+ import { base58check } from '@scure/base';
+ secp.utils.hmacSha256Sync = (key, ...messages) => {
+     const h = hmac.create(sha256, key);
+diff --git a/node_modules/@scure/bip32/lib/index.js b/node_modules/@scure/bip32/lib/index.js
+index c6c6e06..9b199ed 100644
+--- a/node_modules/@scure/bip32/lib/index.js
++++ b/node_modules/@scure/bip32/lib/index.js
+@@ -7,7 +7,7 @@ const sha256_1 = require("@noble/hashes/sha256");
+ const sha512_1 = require("@noble/hashes/sha512");
+ const _assert_1 = require("@noble/hashes/_assert");
+ const utils_1 = require("@noble/hashes/utils");
+-const secp = require("@noble/secp256k1");
++const secp = require("@alephium/noble-secp256k1");
+ const base_1 = require("@scure/base");
+ secp.utils.hmacSha256Sync = (key, ...messages) => {
+     const h = hmac_1.hmac.create(sha256_1.sha256, key);

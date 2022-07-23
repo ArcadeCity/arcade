@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 import createHash from 'create-hash'
-import * as secp256k1 from '@noble/secp256k1'
+import * as secp256k1 from '@alephium/noble-secp256k1'
 
 export function getBlankEvent() {
   return {
