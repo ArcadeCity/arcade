@@ -12,13 +12,14 @@
     "clear": "expo r -c",
     "fixdeps": "expo doctor --fix-dependencies",
     "build:preview": "eas build --profile preview --platform ios",
-    "build:ios": "eas build -p ios",
+    "build:ios": "eas build -p ios --profile production",
     "build:android": "eas build -p android --profile beta5",
     "build:android:apk": "eas build -p android --profile beta5-apk",
     "submit:ios": "eas submit -p ios",
     "submit:android": "eas submit -p android",
     "publish:default": "expo publish --release-channel default",
     "publish:ios": "eas update --branch preview -p ios --message 'Update'",
+    "publish:ios:production": "eas update --branch production -p ios --message 'Update'",
     "publish:android": "expo publish --release-channel beta5"
   },
   "jest": {
