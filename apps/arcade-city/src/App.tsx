@@ -5,15 +5,17 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import useCachedResources from '../hooks/useCachedResources'
 import Navigation from '../navigation'
 // import { useExpoUpdates } from './lib/hooks/useExpoUpdates'
-import { createNewAccount, subscribeToRides } from './lib/nostr/nostr'
+import {
+  createNewAccount, subscribeToEvents, subscribeToRides
+} from './lib/nostr/nostr'
+import { NostrKind } from './lib/nostr/types'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
-
   // useExpoUpdates(3)
-
   useEffect(() => {
     createNewAccount()
+    subscribeToEvents([NostrKind.like])
   }, [])
 
   if (!isLoadingComplete) {

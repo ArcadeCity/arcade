@@ -90,7 +90,7 @@ function BottomTabNavigator() {
         name='TabOne'
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Bullrun Requests',
+          title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='list-ul' color={color} focused={focused} />
           ),
@@ -123,7 +123,7 @@ function BottomTabNavigator() {
         name='TabTwo'
         component={TabTwoScreen}
         options={{
-          title: 'Profile',
+          title: 'Account',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='user-alt' color={color} focused={focused} />
           ),
