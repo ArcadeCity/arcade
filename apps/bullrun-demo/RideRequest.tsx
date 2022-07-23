@@ -1,4 +1,5 @@
 import moment from 'moment'
+import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { palette, Text } from '@arcadecity/ui'
 import { Feather } from '@expo/vector-icons'

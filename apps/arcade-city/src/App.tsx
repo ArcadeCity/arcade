@@ -4,13 +4,14 @@ import React, { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import useCachedResources from '../hooks/useCachedResources'
 import Navigation from '../navigation'
-import { createNewAccount } from './lib/nostr/nostr'
+import { createNewAccount, subscribeToRides } from './lib/nostr/nostr'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
 
   useEffect(() => {
     createNewAccount()
+    subscribeToRides()
   }, [])
 
   if (!isLoadingComplete) {

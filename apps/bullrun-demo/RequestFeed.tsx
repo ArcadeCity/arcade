@@ -1,3 +1,4 @@
+import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { RideRequest } from './RideRequest'
 import { RideRequest as RideRequestType } from './store'
