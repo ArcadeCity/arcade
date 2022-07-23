@@ -47,7 +47,15 @@ function RootNavigator() {
       <Stack.Screen name='Root' component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name='NotFound' component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name='Modal' component={ModalScreen} />
+        <Stack.Screen
+          name='Modal'
+          component={ModalScreen}
+          options={{
+            headerStyle: {
+              backgroundColor: color.tabbar,
+            },
+          }}
+        />
       </Stack.Group>
     </Stack.Navigator>
   )
@@ -70,7 +78,7 @@ function BottomTabNavigator() {
         tabBarStyle: {
           backgroundColor: color.tabbar,
           borderTopWidth: 2,
-          borderTopColor: palette.purple,
+          borderTopColor: palette.portGore,
           paddingTop: 10,
         },
       }}>
@@ -80,6 +88,11 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name='list-ul' color={color} />,
+          headerStyle: {
+            backgroundColor: color.tabbar,
+            borderBottomWidth: 2,
+            borderBottomColor: palette.portGore,
+          },
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -102,6 +115,11 @@ function BottomTabNavigator() {
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name='user-alt' color={color} />,
+          headerStyle: {
+            backgroundColor: color.tabbar,
+            borderBottomWidth: 2,
+            borderBottomColor: palette.portGore,
+          },
         }}
       />
     </BottomTab.Navigator>
