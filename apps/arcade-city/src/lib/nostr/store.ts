@@ -1,32 +1,17 @@
 import create from 'zustand'
-
-export interface RideRequest {
-  amount: number
-  created_at: number
-  expires: number
-  from: {
-    lat: number
-    lng: number
-  }
-  id: string
-  name: string
-  pubkey: string
-  sig: string
-  tags: string[]
-  to: {
-    lat: number
-    lng: number
-  }
-  type: string
-}
+import { NostrEvent, RideRequest } from './types'
 
 interface State {
+  events: NostrEvent[]
   requests: RideRequest[]
+  addEvent: (event: NostrEvent) => void
   addRequest: (request: RideRequest) => void
 }
 
 export const useStore = create<State>((set) => ({
-  requests: [],
+  events: [] as NostrEvent[],
+  requests: [] as RideRequest[],
   addRequest: (request: RideRequest) =>
     set((state) => ({ requests: [...state.requests, request] })),
+  addEvent: (event: NostrEvent) => set((state) => ({ events: [...state.events, event] })),
 }))

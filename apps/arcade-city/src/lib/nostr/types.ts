@@ -18,3 +18,23 @@ export enum NostrKind {
   like = 7,
   riderequest = 60,
 }
+
+export interface RideRequest {
+  amount: number
+  created_at: number
+  expires: number
+  from: {
+    lat: number
+    lng: number
+  }
+  id: string
+  name: string
+  pubkey: string
+  sig: string
+  tags: string[]
+  to: {
+    lat: number
+    lng: number
+  }
+  type: string
+}

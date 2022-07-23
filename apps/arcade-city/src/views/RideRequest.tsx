@@ -3,7 +3,7 @@ import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { palette, Text } from '@arcadecity/ui'
 import { Feather } from '@expo/vector-icons'
-import { RideRequest as RideRequestType } from '../lib/nostr/store'
+import { RideRequest as RideRequestType } from '../lib/nostr/types'
 
 export const RideRequest = ({ request }: { request: RideRequestType }) => {
   // const statusText = 'Waiting for driver'
