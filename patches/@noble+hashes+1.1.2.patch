@@ -1,8 +1,8 @@
 diff --git a/node_modules/@noble/hashes/utils.js b/node_modules/@noble/hashes/utils.js
-index 02520d0..88c4beb 100644
+index 02520d0..c30a6ac 100644
 --- a/node_modules/@noble/hashes/utils.js
 +++ b/node_modules/@noble/hashes/utils.js
-@@ -155,7 +155,12 @@ function randomBytes(bytesLength = 32) {
+@@ -155,7 +155,13 @@ function randomBytes(bytesLength = 32) {
          return new Uint8Array(crypto_1.crypto.node.randomBytes(bytesLength).buffer);
      }
      else {
@@ -11,6 +11,7 @@ index 02520d0..88c4beb 100644
 +            const randomBytes = require('expo-random').getRandomBytes;
 +            return randomBytes(bytesLength);
 +        } catch (e) {
++            alert(e.message)
 +            throw new Error("The environment doesn't have randomBytes function and we couldn't use expo-random");
 +        }
      }
