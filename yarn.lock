@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@alephium/noble-secp256k1@^1.5.5":
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/@alephium/noble-secp256k1/-/noble-secp256k1-1.5.5.tgz#e90b448389cc84ce24d41782e7ff43d4b241d44d"
+  integrity sha512-p/3E6tbe0Xb1fJo+yegyLBDSugnmCoX41nIuREKco5rvcD4Rtj1FViPTx7oWvD+frFMt6m2hBks5/w+iCMY9+g==
+
 "@ampproject/remapping@^2.1.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"

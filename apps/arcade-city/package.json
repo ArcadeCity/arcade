@@ -27,6 +27,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@alephium/noble-secp256k1": "^1.5.5",
     "@arcadecity/ui": "*",
     "@expo-google-fonts/inter": "^0.2.2",
     "@expo-google-fonts/lexend": "^0.2.2",
@@ -70,5 +71,8 @@
   "resolutions": {
     "react": "18.0.0",
     "react-dom": "18.0.0"
+  },
+  "react-native": {
+    "@noble/secp256k1": "@alephium/secp256k1"
   }
 }
