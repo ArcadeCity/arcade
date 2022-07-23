@@ -4,10 +4,11 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
-    "dev": "expo start",
+    "dev": "yarn web --port 19001",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "export": "npx expo export:web",
     "test": "jest --watchAll",
     "clear": "expo r -c",
     "fixdeps": "expo doctor --fix-dependencies",

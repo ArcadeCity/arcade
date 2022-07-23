@@ -5,8 +5,8 @@ import { Text } from '@arcadecity/ui'
 export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
-      <Text preset='title' text='Tab Two' />
-      <Text preset='description' text='Hello world' />
+      {/* <Text preset='title' text='Tab Two' /> */}
+      {/* <Text preset='description' text='Hello world' /> */}
     </View>
   )
 }

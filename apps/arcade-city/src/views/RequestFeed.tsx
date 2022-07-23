@@ -1,7 +1,7 @@
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
+import { RideRequest as RideRequestType } from '../lib/nostr/store'
 import { RideRequest } from './RideRequest'
-import { RideRequest as RideRequestType } from './store'
 
 export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
   const sortedRequests = requests
@@ -9,10 +9,13 @@ export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
       return b.expires - a.expires
     })
     .slice(20)
+  const key = 'id'
+
+  const arrayUniqueByKey = [...new Map(sortedRequests.map((item) => [item[key], item])).values()]
   return (
     <View style={styles.container}>
       <FlatList
-        data={sortedRequests}
+        data={arrayUniqueByKey}
         renderItem={({ item }) => <RideRequest request={item} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -25,7 +28,7 @@ export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 20,
+    paddingTop: 20,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',

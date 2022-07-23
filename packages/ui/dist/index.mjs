@@ -60,13 +60,13 @@ var typography = {
   primary: Platform.select({
     ios: "Inter_400Regular",
     android: "Inter_400Regular",
-    web: "Inter"
+    web: "Inter_400Regular"
   }),
-  bold: Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter" }),
+  bold: Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter_700Bold" }),
   secondary: Platform.select({
     ios: "Lexend_700Bold",
     android: "Lexend_700Bold",
-    web: "Lexend"
+    web: "Lexend_700Bold"
   }),
   code: Platform.select({ ios: "Courier", android: "monospace", web: "monospace" })
 };
