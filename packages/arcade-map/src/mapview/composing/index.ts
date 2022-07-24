@@ -4,11 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export { IPassManager } from './IPassManager'
-export {
-    IMapAntialiasSettings,
-    IMapRenderingManager,
-    MapRenderingManager,
-} from './MapRenderingManager'
-export { IPass, Pass } from './Pass'
+export type { IPassManager } from './IPassManager'
+export type { IMapAntialiasSettings, IMapRenderingManager } from './MapRenderingManager'
+export { MapRenderingManager } from './MapRenderingManager'
+export { Pass } from './Pass'
+export type { IPass } from './Pass'
 export { MSAARenderPass, MSAASampling } from './MSAARenderPass'
