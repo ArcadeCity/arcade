@@ -1,6 +1,6 @@
+import { RideRequest as RideRequestType } from 'lib/nostr/types'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { RideRequest as RideRequestType } from '../lib/nostr/types'
 import { RideRequest } from './RideRequest'
 
 export const RequestFeed = ({ requests }: { requests: RideRequestType[] }) => {

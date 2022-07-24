@@ -3,7 +3,7 @@ import { RideRequest as RideRequestType } from 'lib/nostr/types'
 import { RootTabScreenProps } from 'navigation/types'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { RideRequest } from 'views/RideRequest'
+import { RideRequest } from 'views/ride/RideRequest'
 
 export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
   const events = useStore((s) => s.requests)
