@@ -22,6 +22,8 @@ module.exports = function (api) {
           alias: {
             lib: './src/lib',
             navigation: './src/navigation',
+            services: './src/services',
+            stores: './src/stores',
             views: './src/views',
           },
         },
