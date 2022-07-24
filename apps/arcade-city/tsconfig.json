@@ -8,6 +8,9 @@
       "lib/*": ["src/lib/*"],
       "navigation": ["src/navigation"],
       "navigation/*": ["src/navigation/*"],
+      "services/*": ["src/services/*"],
+      "stores/*": ["src/stores/*"],
+      "stores": ["src/stores"],
       "views/*": ["src/views/*"]
     }
   }

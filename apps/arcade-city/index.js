@@ -1,7 +1,7 @@
 import { registerRootComponent } from 'expo'
 import * as Sentry from 'sentry-expo'
 
-import App from './src/App'
+import { App } from './src/App'
 
 Sentry.init({
   dsn: 'https://b8e365e42bc742b3a34fecbacf81b5f5@o343125.ingest.sentry.io/6595759',
