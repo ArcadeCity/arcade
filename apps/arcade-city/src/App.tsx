@@ -4,7 +4,7 @@ import { useCachedResources, useExpoUpdates } from 'lib/hooks'
 import React, { useMemo } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoadSplash } from 'views/loading'
-import Navigation from '../navigation'
+import Navigation from './navigation'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
