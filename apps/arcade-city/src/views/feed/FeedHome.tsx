@@ -1,15 +1,11 @@
+import { useStore } from 'lib/nostr/store'
+import { RideRequest as RideRequestType } from 'lib/nostr/types'
+import { RootTabScreenProps } from 'navigation/types'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { spacing, Text } from '@arcadecity/ui'
-import { useStore } from '../src/lib/nostr/store'
-import {
-  NostrEvent, RideRequest as RideRequestType
-} from '../src/lib/nostr/types'
-import { RequestFeed } from '../src/views/RequestFeed'
-import { RideRequest } from '../src/views/RideRequest'
-import { RootTabScreenProps } from '../types'
+import { RideRequest } from 'views/RideRequest'
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
   const events = useStore((s) => s.requests)
   const sortedEvents = events
     .sort((a: RideRequestType, b: RideRequestType) => {

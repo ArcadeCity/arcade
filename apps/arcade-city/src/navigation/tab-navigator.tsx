@@ -1,4 +1,7 @@
+import React from 'react'
 import { Pressable, View, ViewStyle } from 'react-native'
+import { AccountHome } from 'views/account/AccountHome'
+import { FeedHome } from 'views/feed/FeedHome'
 import { color, palette, typography } from '@arcadecity/ui'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -13,7 +16,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>()
 export function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
-      initialRouteName='TabOne'
+      initialRouteName='FeedHome'
       screenOptions={{
         tabBarActiveTintColor: palette.moonRaker,
         tabBarInactiveTintColor: palette.blueBell,
@@ -26,9 +29,9 @@ export function BottomTabNavigator() {
         },
       }}>
       <BottomTab.Screen
-        name='TabOne'
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
+        name='FeedHome'
+        component={FeedHome}
+        options={({ navigation }: RootTabScreenProps<'FeedHome'>) => ({
           title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='list-ul' color={color} focused={focused} />
@@ -59,8 +62,8 @@ export function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name='TabTwo'
-        component={TabTwoScreen}
+        name='AccountHome'
+        component={AccountHome}
         options={{
           title: 'Account',
           tabBarIcon: ({ color, focused }) => (

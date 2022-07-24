@@ -1,5 +1,9 @@
+import React from 'react'
+import NotFoundScreen from 'views/error/NotFoundScreen'
+import ModalScreen from 'views/modal/ModalScreen'
 import { color, typography } from '@arcadecity/ui'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { BottomTabNavigator } from './tab-navigator'
 import { RootStackParamList } from './types'
 
 /**
