@@ -4007,6 +4007,11 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
   integrity sha512-ipixuVrh2OdNmauvtT51o3d8z12p6LtFW9in7U79der/kwejjdNchQC5UMn5u/KxNoM7VHHOs/l8KS8uHxhODQ==
 
+"@types/three@0.129.1":
+  version "0.129.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.129.1.tgz#e488e686132256dfd61cffd4d97ea6cf176a4a8d"
+  integrity sha512-31VTcjAQNggIrCH9NVotTYsr5Ws/QMGGTaMK6RP3EgyzW2WEuZdm25TNidd6PJ3e4a6/hbswNacnTsjwc7ksbw==
+
 "@types/uglify-js@*":
   version "3.16.0"
   resolved "https://registry.yarnpkg.com/@types/uglify-js/-/uglify-js-3.16.0.tgz#2cf74a0e6ebb6cd54c0d48e509d5bd91160a9602"
@@ -16707,6 +16712,11 @@ thenify-all@^1.0.0:
   integrity sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==
   dependencies:
     any-promise "^1.0.0"
+
+three@0.129.0:
+  version "0.129.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.129.0.tgz#f5e530bbc96eac5d5b4749cb5da886ef0d42f554"
+  integrity sha512-wiWio1yVRg2Oj6WEWsTHQo5eSzYpEwSBtPSi3OofNpvFbf26HFfb9kw4FZJNjII4qxzp0b1xLB11+tKkBGB1ZA==
 
 throat@^5.0.0:
   version "5.0.0"
