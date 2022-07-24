@@ -29,6 +29,25 @@ export function BottomTabNavigator() {
         },
       }}>
       <BottomTab.Screen
+        name='MapHome'
+        component={AccountHome}
+        options={{
+          title: 'Map',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name='globe-americas' color={color} focused={focused} />
+          ),
+          headerStyle: {
+            backgroundColor: color.tabbar,
+            borderBottomWidth: 2,
+            borderBottomColor: palette.portGore,
+          },
+          headerTitleStyle: {
+            color: color.text,
+            fontFamily: typography.secondary,
+          },
+        }}
+      />
+      <BottomTab.Screen
         name='FeedHome'
         component={FeedHome}
         options={({ navigation }: RootTabScreenProps<'FeedHome'>) => ({
