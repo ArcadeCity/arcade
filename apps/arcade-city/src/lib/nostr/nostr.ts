@@ -19,6 +19,7 @@ export const createNewAccount = () => {
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
   pool.addRelay('wss://relay.damus.io')
+  return { pubkey, priv }
 }
 
 export const subscribeToEvents = (kinds: NostrKind[], limit = 50) => {

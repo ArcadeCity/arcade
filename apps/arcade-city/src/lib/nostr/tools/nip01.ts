@@ -5,6 +5,7 @@
 
 import { Buffer } from 'buffer'
 import createHash from 'create-hash'
+import * as secp256k1 from '@alephium/noble-secp256k1'
 import { NostrKind } from '../types'
 
 /**
@@ -39,6 +40,15 @@ export interface NostrEventToSerialize {
   tags: string[]
 }
 
+export interface NostrEventToSign {
+  id: string
+  content: string
+  created_at: number
+  kind: NostrKind
+  pubkey: string
+  tags: string[]
+}
+
 /**
  * "To obtain the event.id, we sha256 the serialized event. The serialization is done over the
  * UTF-8 JSON-serialized string (with no indentation or extra spaces)..."
@@ -53,4 +63,8 @@ export const getEventHash = (event: NostrEventToSerialize) => {
 
 export const serializeEvent = (event: NostrEventToSerialize) => {
   return JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content])
+}
+
+export const signEvent = async (event: NostrEventToSign, key: string) => {
+  return Buffer.from(await secp256k1.schnorr.sign(getEventHash(event), key)).toString('hex')
 }

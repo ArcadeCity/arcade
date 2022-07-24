@@ -1,3 +1,41 @@
+diff --git a/node_modules/@alephium/noble-secp256k1/lib/index.js b/node_modules/@alephium/noble-secp256k1/lib/index.js
+index 9e0f086..14f17b6 100644
+--- a/node_modules/@alephium/noble-secp256k1/lib/index.js
++++ b/node_modules/@alephium/noble-secp256k1/lib/index.js
+@@ -1093,12 +1093,18 @@ exports.utils = {
+         if (crypto.web) {
+             return crypto.web.getRandomValues(new Uint8Array(bytesLength));
+         }
+-        else if (crypto.node) {
+-            const { randomBytes } = crypto.node;
+-            return Uint8Array.from(randomBytes(bytesLength));
+-        }
++        // else if (crypto.node) {
++        //     const { randomBytes } = crypto.node;
++        //     return Uint8Array.from(randomBytes(bytesLength));
++        // }
+         else {
+-            throw new Error("The environment doesn't have randomBytes function");
++            try {
++                const randomBytes = require('expo-random').getRandomBytes;
++                return randomBytes(bytesLength);
++            } catch (e) {
++                alert(e.message)
++                throw new Error("The environment doesn't have randomBytes function and we couldn't use expo-random");
++            }
+         }
+     },
+     randomPrivateKey: () => {
+@@ -1112,7 +1118,8 @@ exports.utils = {
+             return new Uint8Array(buffer);
+         }
+         else if (crypto.node) {
+-            const { createHash } = crypto.node;
++            // const { createHash } = crypto.node;
++            const createHash = require('create-hash');
+             const hash = createHash('sha256');
+             messages.forEach((m) => hash.update(m));
+             return Uint8Array.from(hash.digest());
 diff --git a/node_modules/@alephium/noble-secp256k1/package.json b/node_modules/@alephium/noble-secp256k1/package.json
 index 4f879f5..fe60f7e 100644
 --- a/node_modules/@alephium/noble-secp256k1/package.json
