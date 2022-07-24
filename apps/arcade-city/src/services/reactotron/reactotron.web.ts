@@ -1,9 +1,9 @@
+// @ts-nocheck
 import { display } from 'lib'
 import { onSnapshot } from 'mobx-state-tree'
-// @ts-nocheck
-import { NativeModules, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import { mst } from 'reactotron-mst'
-import Tron from 'reactotron-react-native'
+import Tron from 'reactotron-react-js'
 import { RootStore } from 'stores/root-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -24,7 +24,8 @@ declare global {
 const noop = () => undefined
 
 // in dev, we attach Reactotron, in prod we attach a interface-compatible mock.
-if (__DEV__ && Platform.OS !== 'web') {
+if (__DEV__) {
+  //  Platform.OS !== 'web'
   console.tron = Tron // attach reactotron to `console.tron`
 } else {
   // attach a mock so if things sneaky by our __DEV__ guards, we won't crash.
@@ -130,11 +131,11 @@ export class Reactotron {
 
       // hookup middleware
       if (this.config.useAsyncStorage) {
-        Tron.setAsyncStorageHandler(AsyncStorage)
+        // Tron.setAsyncStorageHandler(AsyncStorage)
       }
-      Tron.useReactNative({
-        asyncStorage: this.config.useAsyncStorage ? undefined : false,
-      })
+      // Tron.useReactNative({
+      //   asyncStorage: this.config.useAsyncStorage ? undefined : false,
+      // })
 
       // ignore some chatty `mobx-state-tree` actions
       const RX = /postProcessSnapshot|@APPLY_SNAPSHOT/
@@ -147,11 +148,11 @@ export class Reactotron {
       )
 
       // https://github.com/infinitered/reactotron/issues/272
-      const scriptURL = NativeModules.SourceCode.scriptURL
-      const scriptHostname = scriptURL.split('://')[1].split(':')[0]
+      // const scriptURL = NativeModules.SourceCode.scriptURL
+      // const scriptHostname = scriptURL.split('://')[1].split(':')[0]
 
       // configure reactotron
-      Tron.configure({ host: scriptHostname })
+      // Tron.configure({ host: scriptHostname })
 
       // connect to the app
       Tron.connect()

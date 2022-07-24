@@ -69,6 +69,7 @@
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.22.4",
     "reactotron-mst": "3.1.4",
+    "reactotron-react-js": "3.3.8",
     "reactotron-react-native": "5.0.2",
     "sentry-expo": "~5.0.0"
   },
