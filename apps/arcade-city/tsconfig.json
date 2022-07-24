@@ -1,6 +1,14 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "lib": ["src/lib"],
+      "lib/*": ["src/lib/*"],
+      "navigation": ["src/navigation"],
+      "navigation/*": ["src/navigation/*"],
+      "views/*": ["src/views/*"]
+    }
   }
 }
