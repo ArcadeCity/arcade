@@ -20,7 +20,8 @@ export class Nostr {
     this.addRelay('wss://relay.damus.io')
     this.createNewAccount()
     await delay(1000)
-    this.sendDemoEvent()
+    this.subscribeToRides()
+    // this.sendDemoEvent()
   }
 
   createNewAccount() {
@@ -32,6 +33,22 @@ export class Nostr {
     this.priv = priv
     console.log('Pubkey:', pubkey)
     return { pubkey, priv }
+  }
+
+  subscribeToRides() {
+    const cb = (event: NostrEvent, url: string) => {
+      // console.log('callback w event', event.id)
+      console.log(event)
+    }
+    const filter = {
+      kinds: [60],
+    }
+    const beforeSend = () => {}
+    const id = Math.random().toString().slice(2)
+    this.relays[0].relay.sub(
+      { cb: (event: NostrEvent) => cb(event, 'wss://relay.damus.io'), filter },
+      id
+    )
   }
 
   addRelay(relayUrl: string) {
