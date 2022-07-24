@@ -25,7 +25,7 @@ export const NewRequestScreen = ({ navigation }: RootStackScreenProps<'NewReques
           lat: 1,
           lng: 1,
         },
-        name: 'Bobo',
+        name: 'ArcadeLambo',
         amount: 1337,
         expires: dateTimeInSeconds - 1,
       }),
@@ -49,7 +49,7 @@ export const NewRequestScreen = ({ navigation }: RootStackScreenProps<'NewReques
   }
   return (
     <View style={styles.container}>
-      <Button onPress={clickedNew} title='Create' />
+      <Button onPress={clickedNew} title='Create Demo Request' />
     </View>
   )
 }

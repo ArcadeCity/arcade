@@ -17,11 +17,10 @@ export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
   }, [])
 
   const events = useStore((s) => s.requests)
-  const sortedEvents = events
-    .sort((a: RideRequestType, b: RideRequestType) => {
-      return b.created_at - a.created_at
-    })
-    .slice(20)
+  const sortedEvents = events.sort((a: RideRequestType, b: RideRequestType) => {
+    return b.created_at - a.created_at
+  })
+  // .slice(20)
   const key = 'id'
   const arrayUniqueByKey = [...new Map(sortedEvents.map((item) => [item[key], item])).values()]
   const clickNewRequest = () => {
