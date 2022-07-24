@@ -1,4 +1,3 @@
-import { Rotating } from 'realgame/components/Rotating'
 import * as THREE from 'three'
 import {
   Env, FontCatalogConfig, MapEnv, PostEffects, TextStyleDefinition, Theme,
@@ -15,6 +14,7 @@ import {
 import {
   CameraAnimationBuilder, CameraKeyTrackAnimation, ControlPoint
 } from '@arcadecity/arcade-map/map-controls'
+import { Rotating } from '@arcadecity/arcade-map/Rotating'
 import {
   assert, getOptionValue, LoggerManager, PerformanceTimer, TaskQueue,
   UriResolver
@@ -535,7 +535,7 @@ export class MapView extends EventDispatcher {
   private readonly m_rteCamera = new THREE.PerspectiveCamera()
   /** Default scene for map objects and map anchors */
   private readonly m_scene: THREE.Scene = new THREE.Scene()
-  private m_sceneEntity: ECSYThreeEntity
+  private m_sceneEntity: ECSYThreeEntity | undefined
   private readonly m_sceneEnvironment: MapViewEnvironment
   /** Root node of [[m_scene]] that gets cleared every frame. */
   private readonly m_sceneRoot = new THREE.Object3D()
@@ -567,7 +567,7 @@ export class MapView extends EventDispatcher {
   private m_visibleTiles: VisibleTileSet
   private m_visibleTileSetLock: boolean = false
   private readonly m_visibleTileSetOptions: VisibleTileSetOptions
-  private m_world: ECSYThreeWorld
+  private m_world: ECSYThreeWorld | undefined
   private m_worldMaxBounds?: THREE.Box3 | OrientedBox3
   private m_yaw = 0
   private m_zoomLevel: number = DEFAULT_MIN_ZOOM_LEVEL
@@ -729,7 +729,7 @@ export class MapView extends EventDispatcher {
       this.m_canvas = this.m_options.renderer.domElement
       console.log('Renderer set to passed-in renderer:', this.m_renderer)
     } else {
-      this.m_canvas = this.m_options.canvas
+      this.m_canvas = this.m_options.canvas as HTMLCanvasElement // ?
       this.m_renderer = new ((THREE as any).WebGL1Renderer ?? THREE.WebGLRenderer)({
         canvas: this.m_canvas,
         // context: this.m_options.context,
@@ -1123,7 +1123,7 @@ export class MapView extends EventDispatcher {
     const cube: MapAnchor = new THREE.Mesh(geometry, material)
     cube.renderOrder = 100000
     const geoPosition = this.getGeoCoordinatesAt(x, y)
-    cube.anchor = geoPosition
+    cube.anchor = geoPosition ?? undefined
     this.world
       .createEntity()
       .addComponent(Rotating, { speed: 5 })
@@ -2486,7 +2486,7 @@ export class MapView extends EventDispatcher {
   }
 
   get sceneEntity(): ECSYThreeEntity {
-    return this.m_sceneEntity
+    return this.m_sceneEntity as ECSYThreeEntity //
   }
 
   set sceneEntity(sceneEntity: ECSYThreeEntity) {
@@ -2884,7 +2884,7 @@ export class MapView extends EventDispatcher {
   }
 
   get world(): ECSYThreeWorld {
-    return this.m_world
+    return this.m_world as ECSYThreeWorld //
   }
 
   set world(world: ECSYThreeWorld) {
