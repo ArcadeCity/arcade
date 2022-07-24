@@ -31,18 +31,26 @@ export interface NostrEvent {
   sig: string
 }
 
+export interface NostrEventToSerialize {
+  content: string
+  created_at: number
+  kind: NostrKind
+  pubkey: string
+  tags: string[]
+}
+
 /**
  * "To obtain the event.id, we sha256 the serialized event. The serialization is done over the
  * UTF-8 JSON-serialized string (with no indentation or extra spaces)..."
  */
 
-export const getEventHash = (event: NostrEvent) => {
+export const getEventHash = (event: NostrEventToSerialize) => {
   let eventHash = createHash('sha256')
     .update(Buffer.from(serializeEvent(event)))
     .digest()
   return Buffer.from(eventHash).toString('hex')
 }
 
-export const serializeEvent = (event: NostrEvent) => {
+export const serializeEvent = (event: NostrEventToSerialize) => {
   return JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content])
 }
