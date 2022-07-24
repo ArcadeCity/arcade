@@ -1,8 +1,8 @@
 import * as Updates from 'expo-updates'
-import { Alert } from 'react-native'
+import { Alert, Platform } from 'react-native'
 
 export const checkForUpdatesSimple = async () => {
-  if (__DEV__) return
+  if (__DEV__ || Platform.OS === 'web') return
   const check = await Updates.checkForUpdateAsync()
   if (check.isAvailable) {
     try {
