@@ -5,20 +5,22 @@
  */
 
 import * as THREE from 'three'
-
-import { Env, getPropertyValue, PoiTechnique } from '@arca/datasource-protocol'
-import { OrientedBox3, Projection, ProjectionType } from '@arca/geoutils'
 import {
-    hAlignFromPlacement, HorizontalPlacement, hPlacementFromAlignment,
-    MeasurementParameters, TextCanvas, TextPlacement, vAlignFromPlacement,
-    VerticalPlacement, vPlacementFromAlignment
-} from '@arca/text-canvas'
-import { assert, Math2D, MathUtils } from '@arca/utils'
-
+  Env, getPropertyValue, PoiTechnique
+} from '@arcadecity/arcade-map/datasource-protocol'
+import {
+  OrientedBox3, Projection, ProjectionType
+} from '@arcadecity/arcade-map/geoutils'
+import {
+  hAlignFromPlacement, HorizontalPlacement, hPlacementFromAlignment,
+  MeasurementParameters, TextCanvas, TextPlacement, vAlignFromPlacement,
+  VerticalPlacement, vPlacementFromAlignment
+} from '@arcadecity/arcade-map/text-canvas'
+import { assert, Math2D, MathUtils } from '@arcadecity/arcade-map/utils'
 import { PoiManager } from '../poi/PoiManager'
 import { PoiRenderer } from '../poi/PoiRenderer'
 import {
-    CollisionBox, DetailedCollisionBox, IBox, ScreenCollisions
+  CollisionBox, DetailedCollisionBox, IBox, ScreenCollisions
 } from '../ScreenCollisions'
 import { ScreenProjector } from '../ScreenProjector'
 import { RenderState } from './RenderState'
@@ -56,35 +58,29 @@ const COS_TEXT_ELEMENT_FALLOFF_ANGLE = 0.5877852522924731 // Math.cos(0.3 * Math
  * `undefined`.
  */
 function checkViewDistance(
-    textElement: TextElement,
-    poiIndex: number | undefined,
-    eyePos: THREE.Vector3,
-    eyeLookAt: THREE.Vector3,
-    projectionType: ProjectionType,
-    maxViewDistance: number
+  textElement: TextElement,
+  poiIndex: number | undefined,
+  eyePos: THREE.Vector3,
+  eyeLookAt: THREE.Vector3,
+  projectionType: ProjectionType,
+  maxViewDistance: number
 ): number | undefined {
-    const textDistance = computeViewDistance(
-        textElement,
-        poiIndex,
-        eyePos,
-        eyeLookAt
-    )
+  const textDistance = computeViewDistance(textElement, poiIndex, eyePos, eyeLookAt)
 
-    if (projectionType !== ProjectionType.Spherical) {
-        return textDistance <= maxViewDistance ? textDistance : undefined
-    }
+  if (projectionType !== ProjectionType.Spherical) {
+    return textDistance <= maxViewDistance ? textDistance : undefined
+  }
 
-    // For sphere projection: Filter labels that are close to the horizon
-    tmpPosition.copy(textElement.position).normalize()
-    tmpCameraDir.copy(eyePos).normalize()
-    const cosAlpha = tmpPosition.dot(tmpCameraDir)
-    const viewDistance =
-        cosAlpha > COS_TEXT_ELEMENT_FALLOFF_ANGLE &&
-        textDistance <= maxViewDistance
-            ? textDistance
-            : undefined
+  // For sphere projection: Filter labels that are close to the horizon
+  tmpPosition.copy(textElement.position).normalize()
+  tmpCameraDir.copy(eyePos).normalize()
+  const cosAlpha = tmpPosition.dot(tmpCameraDir)
+  const viewDistance =
+    cosAlpha > COS_TEXT_ELEMENT_FALLOFF_ANGLE && textDistance <= maxViewDistance
+      ? textDistance
+      : undefined
 
-    return viewDistance
+  return viewDistance
 }
 
 /**
@@ -108,45 +104,29 @@ function checkViewDistance(
  * @returns The text element view distance.
  */
 export function computeViewDistance(
-    textElement: TextElement,
-    poiIndex: number | undefined,
-    eyePosition: THREE.Vector3,
-    eyeLookAt: THREE.Vector3
+  textElement: TextElement,
+  poiIndex: number | undefined,
+  eyePosition: THREE.Vector3,
+  eyeLookAt: THREE.Vector3
 ): number {
-    let viewDistance: number
+  let viewDistance: number
 
-    // Compute the distances as the distance along plane normal.
-    const path = textElement.path
-    if (path && path.length > 1) {
-        if (poiIndex !== undefined && path && path.length > poiIndex) {
-            viewDistance = pointToPlaneDistance(
-                path[poiIndex],
-                eyePosition,
-                eyeLookAt
-            )
-        } else {
-            const viewDistance0 = pointToPlaneDistance(
-                path[0],
-                eyePosition,
-                eyeLookAt
-            )
-            const viewDistance1 = pointToPlaneDistance(
-                path[path.length - 1],
-                eyePosition,
-                eyeLookAt
-            )
-
-            viewDistance = Math.min(viewDistance0, viewDistance1)
-        }
+  // Compute the distances as the distance along plane normal.
+  const path = textElement.path
+  if (path && path.length > 1) {
+    if (poiIndex !== undefined && path && path.length > poiIndex) {
+      viewDistance = pointToPlaneDistance(path[poiIndex], eyePosition, eyeLookAt)
     } else {
-        viewDistance = pointToPlaneDistance(
-            textElement.position,
-            eyePosition,
-            eyeLookAt
-        )
-    }
+      const viewDistance0 = pointToPlaneDistance(path[0], eyePosition, eyeLookAt)
+      const viewDistance1 = pointToPlaneDistance(path[path.length - 1], eyePosition, eyeLookAt)
 
-    return viewDistance
+      viewDistance = Math.min(viewDistance0, viewDistance1)
+    }
+  } else {
+    viewDistance = pointToPlaneDistance(textElement.position, eyePosition, eyeLookAt)
+  }
+
+  return viewDistance
 }
 
 /**
@@ -159,12 +139,12 @@ export function computeViewDistance(
  * @param planeNorm - The plane normal vector (have to be normalized already).
  */
 export function pointToPlaneDistance(
-    pointPos: THREE.Vector3,
-    planePos: THREE.Vector3,
-    planeNorm: THREE.Vector3
+  pointPos: THREE.Vector3,
+  planePos: THREE.Vector3,
+  planeNorm: THREE.Vector3
 ) {
-    const labelCamVec = tmpPointDir.copy(pointPos).sub(planePos)
-    return labelCamVec.dot(planeNorm)
+  const labelCamVec = tmpPointDir.copy(pointPos).sub(planePos)
+  return labelCamVec.dot(planeNorm)
 }
 
 /**
@@ -174,23 +154,20 @@ export function pointToPlaneDistance(
  * @param farDistanceLimitRatio - The ratio to apply to the maximum far plane distance.
  * @returns Maximum view distance.
  */
-export function getMaxViewDistance(
-    viewState: ViewState,
-    farDistanceLimitRatio: number
-): number {
-    return viewState.maxVisibilityDist * farDistanceLimitRatio
+export function getMaxViewDistance(viewState: ViewState, farDistanceLimitRatio: number): number {
+  return viewState.maxVisibilityDist * farDistanceLimitRatio
 }
 
 /**
  * State of fading.
  */
 export enum PrePlacementResult {
-    Ok = 0,
-    NotReady,
-    Invisible,
-    TooFar,
-    Duplicate,
-    Count,
+  Ok = 0,
+  NotReady,
+  Invisible,
+  TooFar,
+  Duplicate,
+  Count,
 }
 
 const tmpPlacementPosition = new THREE.Vector3()
@@ -208,63 +185,54 @@ const tmpPlacementPosition = new THREE.Vector3()
  * ( or `undefined` of the checks failed) as second.
  */
 export function checkReadyForPlacement(
-    textElement: TextElement,
-    poiIndex: number | undefined,
-    viewState: ViewState,
-    poiManager: PoiManager,
-    maxViewDistance?: number
+  textElement: TextElement,
+  poiIndex: number | undefined,
+  viewState: ViewState,
+  poiManager: PoiManager,
+  maxViewDistance?: number
 ): { result: PrePlacementResult; viewDistance: number | undefined } {
-    // eslint-disable-next-line prefer-const
-    let viewDistance: number | undefined
+  // eslint-disable-next-line prefer-const
+  let viewDistance: number | undefined
 
-    if (!textElement.visible) {
-        return { result: PrePlacementResult.Invisible, viewDistance }
-    }
+  if (!textElement.visible) {
+    return { result: PrePlacementResult.Invisible, viewDistance }
+  }
 
-    // If a PoiTable is specified in the technique, the table is required to be
-    // loaded before the POI can be rendered.
-    if (!poiManager.updatePoiFromPoiTable(textElement)) {
-        // PoiTable has not been loaded, but is required to determine
-        // visibility.
-        return { result: PrePlacementResult.NotReady, viewDistance }
-    }
+  // If a PoiTable is specified in the technique, the table is required to be
+  // loaded before the POI can be rendered.
+  if (!poiManager.updatePoiFromPoiTable(textElement)) {
+    // PoiTable has not been loaded, but is required to determine
+    // visibility.
+    return { result: PrePlacementResult.NotReady, viewDistance }
+  }
 
-    // Text element visibility and zoom level ranges must be checked after calling
-    // updatePoiFromPoiTable, since that function may change those values.
-    if (
-        !textElement.visible ||
-        viewState.zoomLevel === textElement.maxZoomLevel ||
-        !MathUtils.isClamped(
-            viewState.zoomLevel,
-            textElement.minZoomLevel,
-            textElement.maxZoomLevel
+  // Text element visibility and zoom level ranges must be checked after calling
+  // updatePoiFromPoiTable, since that function may change those values.
+  if (
+    !textElement.visible ||
+    viewState.zoomLevel === textElement.maxZoomLevel ||
+    !MathUtils.isClamped(viewState.zoomLevel, textElement.minZoomLevel, textElement.maxZoomLevel)
+  ) {
+    return { result: PrePlacementResult.Invisible, viewDistance }
+  }
+
+  viewDistance =
+    maxViewDistance === undefined
+      ? computeViewDistance(textElement, poiIndex, viewState.worldCenter, viewState.lookAtVector)
+      : checkViewDistance(
+          textElement,
+          poiIndex,
+          viewState.worldCenter,
+          viewState.lookAtVector,
+          viewState.projection.type,
+          maxViewDistance
         )
-    ) {
-        return { result: PrePlacementResult.Invisible, viewDistance }
-    }
 
-    viewDistance =
-        maxViewDistance === undefined
-            ? computeViewDistance(
-                  textElement,
-                  poiIndex,
-                  viewState.worldCenter,
-                  viewState.lookAtVector
-              )
-            : checkViewDistance(
-                  textElement,
-                  poiIndex,
-                  viewState.worldCenter,
-                  viewState.lookAtVector,
-                  viewState.projection.type,
-                  maxViewDistance
-              )
+  if (viewDistance === undefined) {
+    return { result: PrePlacementResult.TooFar, viewDistance }
+  }
 
-    if (viewDistance === undefined) {
-        return { result: PrePlacementResult.TooFar, viewDistance }
-    }
-
-    return { result: PrePlacementResult.Ok, viewDistance }
+  return { result: PrePlacementResult.Ok, viewDistance }
 }
 
 /**
@@ -274,115 +242,100 @@ export function checkReadyForPlacement(
  * @param textBounds - The text screen bounds.
  * @param placement - The relative anchor placement (may be different then original alignment).
  * @param scale - The scaling factor (due to distance, etc.).
- * @param env - The {@link @arca/datasource-protocol#Env} used
+ * @param env - The {@link @arcadecity/arcade-map/datasource-protocol#Env} used
  *                  to evaluate technique attributes.
  * @param offset - The offset result.
  */
 function computePointTextOffset(
-    textElement: TextElement,
-    textBounds: THREE.Box2,
-    placement: TextPlacement,
-    scale: number,
-    env: Env,
-    offset: THREE.Vector2 = new THREE.Vector2()
+  textElement: TextElement,
+  textBounds: THREE.Box2,
+  placement: TextPlacement,
+  scale: number,
+  env: Env,
+  offset: THREE.Vector2 = new THREE.Vector2()
 ): THREE.Vector2 {
-    assert(
-        textElement.type === TextElementType.PoiLabel ||
-            textElement.type === TextElementType.LineMarker
-    )
-    assert(textElement.layoutStyle !== undefined)
+  assert(
+    textElement.type === TextElementType.PoiLabel || textElement.type === TextElementType.LineMarker
+  )
+  assert(textElement.layoutStyle !== undefined)
 
-    offset.x = textElement.xOffset
-    offset.y = textElement.yOffset
+  offset.x = textElement.xOffset
+  offset.y = textElement.yOffset
 
-    switch (placement.h) {
-        case HorizontalPlacement.Left:
-            // Already accounts for any margin that is already applied to the text element bounds.
-            offset.x -= textBounds.max.x
-            break
-        case HorizontalPlacement.Right:
-            // Account for any margin applied as above.
-            offset.x -= textBounds.min.x
-            break
+  switch (placement.h) {
+    case HorizontalPlacement.Left:
+      // Already accounts for any margin that is already applied to the text element bounds.
+      offset.x -= textBounds.max.x
+      break
+    case HorizontalPlacement.Right:
+      // Account for any margin applied as above.
+      offset.x -= textBounds.min.x
+      break
+  }
+  switch (placement.v) {
+    case VerticalPlacement.Top:
+      offset.y -= textBounds.min.y
+      break
+    case VerticalPlacement.Center:
+      offset.y -= 0.5 * (textBounds.max.y + textBounds.min.y)
+      break
+    case VerticalPlacement.Bottom:
+      // Accounts for vertical margin that may be applied to the text bounds.
+      offset.y -= textBounds.max.y
+      break
+  }
+
+  if (textElement.poiInfo !== undefined && poiIsRenderable(textElement.poiInfo)) {
+    assert(textElement.poiInfo.computedWidth !== undefined)
+    assert(textElement.poiInfo.computedHeight !== undefined)
+
+    // Apply offset moving text out of the icon
+    offset.x += textElement.poiInfo.computedWidth! * (0.5 + placement.h)
+    offset.y += textElement.poiInfo.computedHeight! * (0.5 + placement.v)
+
+    // Reverse, mirror or project offsets on different axis depending on the placement
+    // required only for alternative placements.
+    const hAlign = hPlacementFromAlignment(textElement.layoutStyle!.horizontalAlignment)
+    const vAlign = vPlacementFromAlignment(textElement.layoutStyle!.verticalAlignment)
+    if (hAlign !== placement.h || vAlign !== placement.v) {
+      // Read icon offset used.
+      const technique = textElement.poiInfo.technique
+      let iconXOffset = getPropertyValue(technique.iconXOffset, env)
+      let iconYOffset = getPropertyValue(technique.iconYOffset, env)
+      iconXOffset = typeof iconXOffset === 'number' ? iconXOffset : 0
+      iconYOffset = typeof iconYOffset === 'number' ? iconYOffset : 0
+
+      // Now mirror the text offset relative to icon so manhattan distance is preserved, when
+      // alternative position is taken, this ensures that text-icon relative position is
+      // the same as in base alignment.
+      const hAlignDiff = hAlign - placement.h
+      const vAlignDiff = vAlign - placement.v
+      const relOffsetX = iconXOffset - textElement.xOffset
+      const relOffsetY = iconYOffset - textElement.yOffset
+      const centerBased =
+        hAlign === HorizontalPlacement.Center || vAlign === VerticalPlacement.Center
+      if (centerBased) {
+        // Center based alternative placements.
+        offset.x += 2 * Math.abs(hAlignDiff) * relOffsetX
+        offset.y -= 2 * vAlignDiff * Math.abs(relOffsetX)
+
+        offset.y += 2 * Math.abs(vAlignDiff) * relOffsetY
+        offset.x -= 2 * hAlignDiff * Math.abs(relOffsetY)
+      } else {
+        // Corner alternative placements
+        offset.x += 2 * Math.min(Math.abs(hAlignDiff), 0.5) * relOffsetX
+        offset.y -=
+          2 * Math.sign(vAlignDiff) * Math.min(Math.abs(vAlignDiff), 0.5) * Math.abs(relOffsetX)
+
+        offset.y += 2 * Math.min(Math.abs(vAlignDiff), 0.5) * relOffsetY
+        offset.x -=
+          2 * Math.sign(hAlignDiff) * Math.min(Math.abs(hAlignDiff), 0.5) * Math.abs(relOffsetY)
+      }
     }
-    switch (placement.v) {
-        case VerticalPlacement.Top:
-            offset.y -= textBounds.min.y
-            break
-        case VerticalPlacement.Center:
-            offset.y -= 0.5 * (textBounds.max.y + textBounds.min.y)
-            break
-        case VerticalPlacement.Bottom:
-            // Accounts for vertical margin that may be applied to the text bounds.
-            offset.y -= textBounds.max.y
-            break
-    }
+  }
 
-    if (
-        textElement.poiInfo !== undefined &&
-        poiIsRenderable(textElement.poiInfo)
-    ) {
-        assert(textElement.poiInfo.computedWidth !== undefined)
-        assert(textElement.poiInfo.computedHeight !== undefined)
-
-        // Apply offset moving text out of the icon
-        offset.x += textElement.poiInfo.computedWidth! * (0.5 + placement.h)
-        offset.y += textElement.poiInfo.computedHeight! * (0.5 + placement.v)
-
-        // Reverse, mirror or project offsets on different axis depending on the placement
-        // required only for alternative placements.
-        const hAlign = hPlacementFromAlignment(
-            textElement.layoutStyle!.horizontalAlignment
-        )
-        const vAlign = vPlacementFromAlignment(
-            textElement.layoutStyle!.verticalAlignment
-        )
-        if (hAlign !== placement.h || vAlign !== placement.v) {
-            // Read icon offset used.
-            const technique = textElement.poiInfo.technique
-            let iconXOffset = getPropertyValue(technique.iconXOffset, env)
-            let iconYOffset = getPropertyValue(technique.iconYOffset, env)
-            iconXOffset = typeof iconXOffset === 'number' ? iconXOffset : 0
-            iconYOffset = typeof iconYOffset === 'number' ? iconYOffset : 0
-
-            // Now mirror the text offset relative to icon so manhattan distance is preserved, when
-            // alternative position is taken, this ensures that text-icon relative position is
-            // the same as in base alignment.
-            const hAlignDiff = hAlign - placement.h
-            const vAlignDiff = vAlign - placement.v
-            const relOffsetX = iconXOffset - textElement.xOffset
-            const relOffsetY = iconYOffset - textElement.yOffset
-            const centerBased =
-                hAlign === HorizontalPlacement.Center ||
-                vAlign === VerticalPlacement.Center
-            if (centerBased) {
-                // Center based alternative placements.
-                offset.x += 2 * Math.abs(hAlignDiff) * relOffsetX
-                offset.y -= 2 * vAlignDiff * Math.abs(relOffsetX)
-
-                offset.y += 2 * Math.abs(vAlignDiff) * relOffsetY
-                offset.x -= 2 * hAlignDiff * Math.abs(relOffsetY)
-            } else {
-                // Corner alternative placements
-                offset.x += 2 * Math.min(Math.abs(hAlignDiff), 0.5) * relOffsetX
-                offset.y -=
-                    2 *
-                    Math.sign(vAlignDiff) *
-                    Math.min(Math.abs(vAlignDiff), 0.5) *
-                    Math.abs(relOffsetX)
-
-                offset.y += 2 * Math.min(Math.abs(vAlignDiff), 0.5) * relOffsetY
-                offset.x -=
-                    2 *
-                    Math.sign(hAlignDiff) *
-                    Math.min(Math.abs(hAlignDiff), 0.5) *
-                    Math.abs(relOffsetY)
-            }
-        }
-    }
-
-    offset.multiplyScalar(scale)
-    return offset
+  offset.multiplyScalar(scale)
+  return offset
 }
 
 const tmpBox = new THREE.Box2()
@@ -412,9 +365,9 @@ export const persistentPointLabelTextMargin = new THREE.Vector2(2, 2)
 export const newPointLabelTextMarginPercent = 0.1
 
 export enum PlacementResult {
-    Ok,
-    Rejected,
-    Invisible,
+  Ok,
+  Rejected,
+  Invisible,
 }
 
 /**
@@ -429,28 +382,21 @@ export enum PlacementResult {
  * a collision, `PlacementResult.Invisible` if it's not visible.
  */
 export function placeIcon(
-    iconRenderState: RenderState,
-    poiInfo: PoiInfo,
-    screenPosition: THREE.Vector2,
-    scaleFactor: number,
-    env: Env,
-    screenCollisions: ScreenCollisions
+  iconRenderState: RenderState,
+  poiInfo: PoiInfo,
+  screenPosition: THREE.Vector2,
+  scaleFactor: number,
+  env: Env,
+  screenCollisions: ScreenCollisions
 ): PlacementResult {
-    PoiRenderer.computeIconScreenBox(
-        poiInfo,
-        screenPosition,
-        scaleFactor,
-        env,
-        tmp2DBox
-    )
-    if (!screenCollisions.isVisible(tmp2DBox)) {
-        return PlacementResult.Invisible
-    }
+  PoiRenderer.computeIconScreenBox(poiInfo, screenPosition, scaleFactor, env, tmp2DBox)
+  if (!screenCollisions.isVisible(tmp2DBox)) {
+    return PlacementResult.Invisible
+  }
 
-    const iconSpaceAvailable =
-        poiInfo.mayOverlap === true || !screenCollisions.isAllocated(tmp2DBox)
+  const iconSpaceAvailable = poiInfo.mayOverlap === true || !screenCollisions.isAllocated(tmp2DBox)
 
-    return !iconSpaceAvailable ? PlacementResult.Rejected : PlacementResult.Ok
+  return !iconSpaceAvailable ? PlacementResult.Rejected : PlacementResult.Ok
 }
 
 /**
@@ -460,7 +406,7 @@ export function placeIcon(
  * @param screenPosition - Position of the label in screen coordinates.
  * @param scale - Scale factor to be applied to label dimensions.
  * @param textCanvas - The text canvas where the label will be placed.
- * @param env - The {@link @arca/datasource-protocol#Env} used
+ * @param env - The {@link @arcadecity/arcade-map/datasource-protocol#Env} used
  *              to evaluate technique attributes.
  * @param screenCollisions - Used to check collisions with other labels.
  * @param outScreenPosition - The final label screen position after applying any offsets.
@@ -471,48 +417,46 @@ export function placeIcon(
  * `PlacementResult.Invisible` if it's text is not visible at any placement position.
  */
 export function placePointLabel(
-    labelState: TextElementState,
-    screenPosition: THREE.Vector2,
-    scale: number,
-    textCanvas: TextCanvas,
-    env: Env,
-    screenCollisions: ScreenCollisions,
-    outScreenPosition: THREE.Vector3,
-    multiAnchor: boolean = false
+  labelState: TextElementState,
+  screenPosition: THREE.Vector2,
+  scale: number,
+  textCanvas: TextCanvas,
+  env: Env,
+  screenCollisions: ScreenCollisions,
+  outScreenPosition: THREE.Vector3,
+  multiAnchor: boolean = false
 ): PlacementResult {
-    assert(labelState.element.layoutStyle !== undefined)
+  assert(labelState.element.layoutStyle !== undefined)
 
-    const layoutStyle = labelState.element.layoutStyle!
+  const layoutStyle = labelState.element.layoutStyle!
 
-    // Check if alternative placements have been provided.
-    multiAnchor =
-        multiAnchor &&
-        layoutStyle.placements !== undefined &&
-        layoutStyle.placements.length > 1
-    // For single placement labels or labels with icon rejected, do only current anchor testing.
-    if (!multiAnchor) {
-        return placePointLabelAtCurrentAnchor(
-            labelState,
-            screenPosition,
-            scale,
-            textCanvas,
-            env,
-            screenCollisions,
-            outScreenPosition
-        )
-    }
-    // Otherwise test also alternative text placements.
-    else {
-        return placePointLabelChoosingAnchor(
-            labelState,
-            screenPosition,
-            scale,
-            textCanvas,
-            env,
-            screenCollisions,
-            outScreenPosition
-        )
-    }
+  // Check if alternative placements have been provided.
+  multiAnchor =
+    multiAnchor && layoutStyle.placements !== undefined && layoutStyle.placements.length > 1
+  // For single placement labels or labels with icon rejected, do only current anchor testing.
+  if (!multiAnchor) {
+    return placePointLabelAtCurrentAnchor(
+      labelState,
+      screenPosition,
+      scale,
+      textCanvas,
+      env,
+      screenCollisions,
+      outScreenPosition
+    )
+  }
+  // Otherwise test also alternative text placements.
+  else {
+    return placePointLabelChoosingAnchor(
+      labelState,
+      screenPosition,
+      scale,
+      textCanvas,
+      env,
+      screenCollisions,
+      outScreenPosition
+    )
+  }
 }
 
 /**
@@ -525,7 +469,7 @@ export function placePointLabel(
  * @param screenPosition - Position of the label in screen coordinates.
  * @param scale - Scale factor to be applied to label dimensions.
  * @param textCanvas - The text canvas where the label will be placed.
- * @param env - The {@link @arca/datasource-protocol#Env}
+ * @param env - The {@link @arcadecity/arcade-map/datasource-protocol#Env}
  *              used to evaluate technique attributes.
  * @param screenCollisions - Used to check collisions with other labels.
  * @param outScreenPosition - The final label screen position after applying any offsets.
@@ -537,73 +481,70 @@ export function placePointLabel(
  * @hidden
  */
 function placePointLabelChoosingAnchor(
-    labelState: TextElementState,
-    screenPosition: THREE.Vector2,
-    scale: number,
-    textCanvas: TextCanvas,
-    env: Env,
-    screenCollisions: ScreenCollisions,
-    outScreenPosition: THREE.Vector3
+  labelState: TextElementState,
+  screenPosition: THREE.Vector2,
+  scale: number,
+  textCanvas: TextCanvas,
+  env: Env,
+  screenCollisions: ScreenCollisions,
+  outScreenPosition: THREE.Vector3
 ): PlacementResult {
-    assert(labelState.element.layoutStyle !== undefined)
-    const label = labelState.element
+  assert(labelState.element.layoutStyle !== undefined)
+  const label = labelState.element
 
-    // Store label state - persistent or new label.
-    const persistent = labelState.visible
+  // Store label state - persistent or new label.
+  const persistent = labelState.visible
 
-    // Start with last alignment settings if layout state was stored or
-    // simply begin from layout defined in theme.
-    const lastPlacement = labelState.textPlacement
-    const placements = label.layoutStyle!.placements
-    const placementsNum = placements.length
-    // Find current anchor placement on the optional placements list.
-    // Index of exact match.
-    const matchIdx = placements.findIndex(
-        (p) => p.h === lastPlacement.h && p.v === lastPlacement.v
+  // Start with last alignment settings if layout state was stored or
+  // simply begin from layout defined in theme.
+  const lastPlacement = labelState.textPlacement
+  const placements = label.layoutStyle!.placements
+  const placementsNum = placements.length
+  // Find current anchor placement on the optional placements list.
+  // Index of exact match.
+  const matchIdx = placements.findIndex((p) => p.h === lastPlacement.h && p.v === lastPlacement.v)
+  assert(matchIdx >= 0)
+  // Will be true if all text placements are invisible.
+  let allInvisible: boolean = true
+
+  // Iterate all placements starting from current one.
+  for (let i = matchIdx; i < placementsNum + matchIdx; ++i) {
+    const anchorPlacement = placements[i % placementsNum]
+
+    // Bounds may be already calculated for persistent label, force re-calculation only
+    // for alternative (new) placements.
+    const isLastPlacement = i === matchIdx && persistent
+    // Compute label bounds, visibility or collision according to new layout settings.
+    const placementResult = placePointLabelAtAnchor(
+      labelState,
+      screenPosition,
+      anchorPlacement,
+      scale,
+      textCanvas,
+      env,
+      screenCollisions,
+      !isLastPlacement,
+      tmpPlacementPosition
     )
-    assert(matchIdx >= 0)
-    // Will be true if all text placements are invisible.
-    let allInvisible: boolean = true
 
-    // Iterate all placements starting from current one.
-    for (let i = matchIdx; i < placementsNum + matchIdx; ++i) {
-        const anchorPlacement = placements[i % placementsNum]
-
-        // Bounds may be already calculated for persistent label, force re-calculation only
-        // for alternative (new) placements.
-        const isLastPlacement = i === matchIdx && persistent
-        // Compute label bounds, visibility or collision according to new layout settings.
-        const placementResult = placePointLabelAtAnchor(
-            labelState,
-            screenPosition,
-            anchorPlacement,
-            scale,
-            textCanvas,
-            env,
-            screenCollisions,
-            !isLastPlacement,
-            tmpPlacementPosition
-        )
-
-        if (placementResult === PlacementResult.Ok) {
-            outScreenPosition.copy(tmpPlacementPosition)
-            return PlacementResult.Ok
-        }
-        // Store last successful (previous frame) position even if it's now rejected (to fade out).
-        if (isLastPlacement) {
-            outScreenPosition.copy(tmpPlacementPosition)
-        }
-
-        // Invisible = Persistent label out of screen or the new label that is colliding.
-        allInvisible =
-            allInvisible && placementResult === PlacementResult.Invisible
+    if (placementResult === PlacementResult.Ok) {
+      outScreenPosition.copy(tmpPlacementPosition)
+      return PlacementResult.Ok
+    }
+    // Store last successful (previous frame) position even if it's now rejected (to fade out).
+    if (isLastPlacement) {
+      outScreenPosition.copy(tmpPlacementPosition)
     }
 
-    return allInvisible
-        ? // All text's placements out of the screen.
-          PlacementResult.Invisible
-        : // All placements are either colliding or out of screen .
-          PlacementResult.Rejected
+    // Invisible = Persistent label out of screen or the new label that is colliding.
+    allInvisible = allInvisible && placementResult === PlacementResult.Invisible
+  }
+
+  return allInvisible
+    ? // All text's placements out of the screen.
+      PlacementResult.Invisible
+    : // All placements are either colliding or out of screen .
+      PlacementResult.Rejected
 }
 
 /**
@@ -613,7 +554,7 @@ function placePointLabelChoosingAnchor(
  * @param screenPosition - Position of the label in screen coordinates.
  * @param scale - Scale factor to be applied to label dimensions.
  * @param textCanvas - The text canvas where the label will be placed.
- * @param env - The {@link @arca/datasource-protocol#Env}
+ * @param env - The {@link @arcadecity/arcade-map/datasource-protocol#Env}
  *              used to evaluate technique attributes.
  * @param screenCollisions - Used to check collisions with other labels.
  * @param outScreenPosition - The final label screen position after applying any offsets.
@@ -624,31 +565,31 @@ function placePointLabelChoosingAnchor(
  * @hidden
  */
 function placePointLabelAtCurrentAnchor(
-    labelState: TextElementState,
-    screenPosition: THREE.Vector2,
-    scale: number,
-    textCanvas: TextCanvas,
-    env: Env,
-    screenCollisions: ScreenCollisions,
-    outScreenPosition: THREE.Vector3
+  labelState: TextElementState,
+  screenPosition: THREE.Vector2,
+  scale: number,
+  textCanvas: TextCanvas,
+  env: Env,
+  screenCollisions: ScreenCollisions,
+  outScreenPosition: THREE.Vector3
 ): PlacementResult {
-    assert(labelState.element.layoutStyle !== undefined)
+  assert(labelState.element.layoutStyle !== undefined)
 
-    // Use recently rendered (state stored) layout if available, otherwise theme based style.
-    const lastPlacement = labelState.textPlacement
-    const result = placePointLabelAtAnchor(
-        labelState,
-        screenPosition,
-        lastPlacement,
-        scale,
-        textCanvas,
-        env,
-        screenCollisions,
-        !labelState.visible,
-        outScreenPosition
-    )
+  // Use recently rendered (state stored) layout if available, otherwise theme based style.
+  const lastPlacement = labelState.textPlacement
+  const result = placePointLabelAtAnchor(
+    labelState,
+    screenPosition,
+    lastPlacement,
+    scale,
+    textCanvas,
+    env,
+    screenCollisions,
+    !labelState.visible,
+    outScreenPosition
+  )
 
-    return result
+  return result
 }
 
 /**
@@ -659,7 +600,7 @@ function placePointLabelAtCurrentAnchor(
  * @param placement - Text placement relative to the label position.
  * @param scale - Scale factor to be applied to label dimensions.
  * @param textCanvas - The text canvas where the label will be placed.
- * @param env - The {@link @arca/datasource-protocol#Env}
+ * @param env - The {@link @arcadecity/arcade-map/datasource-protocol#Env}
  *              used to evaluate technique attributes.
  * @param screenCollisions - Used to check collisions with other labels.
  * @param forceInvalidation - Set to true if text layout or other params has changed such as text
@@ -672,120 +613,105 @@ function placePointLabelAtCurrentAnchor(
  * @hidden
  */
 function placePointLabelAtAnchor(
-    labelState: TextElementState,
-    screenPosition: THREE.Vector2,
-    placement: TextPlacement,
-    scale: number,
-    textCanvas: TextCanvas,
-    env: Env,
-    screenCollisions: ScreenCollisions,
-    forceInvalidation: boolean,
-    outScreenPosition: THREE.Vector3
+  labelState: TextElementState,
+  screenPosition: THREE.Vector2,
+  placement: TextPlacement,
+  scale: number,
+  textCanvas: TextCanvas,
+  env: Env,
+  screenCollisions: ScreenCollisions,
+  forceInvalidation: boolean,
+  outScreenPosition: THREE.Vector3
 ): PlacementResult {
-    const label = labelState.element
-    assert(label.glyphs !== undefined)
-    assert(label.layoutStyle !== undefined)
+  const label = labelState.element
+  assert(label.glyphs !== undefined)
+  assert(label.layoutStyle !== undefined)
 
-    const measureText = !label.bounds || forceInvalidation
+  const measureText = !label.bounds || forceInvalidation
 
-    const labelBounds = measureText ? tmpBounds : label.bounds!
-    if (measureText) {
-        // Override text canvas layout style for measurement.
-        applyTextPlacement(textCanvas, placement)
+  const labelBounds = measureText ? tmpBounds : label.bounds!
+  if (measureText) {
+    // Override text canvas layout style for measurement.
+    applyTextPlacement(textCanvas, placement)
 
-        tmpMeasurementParams.outputCharacterBounds = undefined
-        tmpMeasurementParams.path = undefined
-        tmpMeasurementParams.pathOverflow = false
-        tmpMeasurementParams.letterCaseArray = label.glyphCaseArray!
-        // Compute label bounds according to layout settings.
-        textCanvas.measureText(label.glyphs!, labelBounds, tmpMeasurementParams)
-    }
+    tmpMeasurementParams.outputCharacterBounds = undefined
+    tmpMeasurementParams.path = undefined
+    tmpMeasurementParams.pathOverflow = false
+    tmpMeasurementParams.letterCaseArray = label.glyphCaseArray!
+    // Compute label bounds according to layout settings.
+    textCanvas.measureText(label.glyphs!, labelBounds, tmpMeasurementParams)
+  }
 
-    // Compute text offset from the anchor point
-    const textOffset = computePointTextOffset(
-        label,
-        labelBounds,
-        placement,
-        scale,
-        env,
-        tmpTextOffset
-    ).add(screenPosition)
+  // Compute text offset from the anchor point
+  const textOffset = computePointTextOffset(
+    label,
+    labelBounds,
+    placement,
+    scale,
+    env,
+    tmpTextOffset
+  ).add(screenPosition)
 
-    // Update output screen position.
-    outScreenPosition.set(textOffset.x, textOffset.y, labelState.renderDistance)
+  // Update output screen position.
+  outScreenPosition.set(textOffset.x, textOffset.y, labelState.renderDistance)
 
-    // Apply additional persistent margin, keep in mind that text bounds just calculated
-    // are not (0, 0, w, h) based, so their coords usually are also non-zero.
-    // TODO: Make the margin configurable
-    tmpBox
-        .copy(labelBounds)
-        .expandByVector(persistentPointLabelTextMargin)
-        .translate(textOffset)
-    tmpBox.getCenter(tmpCenter)
+  // Apply additional persistent margin, keep in mind that text bounds just calculated
+  // are not (0, 0, w, h) based, so their coords usually are also non-zero.
+  // TODO: Make the margin configurable
+  tmpBox.copy(labelBounds).expandByVector(persistentPointLabelTextMargin).translate(textOffset)
+  tmpBox.getCenter(tmpCenter)
+  tmpBox.getSize(tmpSize)
+
+  tmpSize.multiplyScalar(scale)
+  tmp2DBox.set(tmpCenter.x - tmpSize.x / 2, tmpCenter.y - tmpSize.y / 2, tmpSize.x, tmpSize.y)
+
+  // Check the text visibility if invisible finish immediately
+  // regardless of the persistence state - no fading required.
+  if (!screenCollisions.isVisible(tmp2DBox)) {
+    return PlacementResult.Invisible
+  }
+
+  if (measureText) {
+    // Up-scaled label bounds are used only for new labels and only for collision check, this
+    // is intentional to avoid processing labels out of the screen due to increased bounds,
+    // such labels would be again invisible in the next frame.
     tmpBox.getSize(tmpSize)
+    tmpSize.multiplyScalar(scale * (1 + newPointLabelTextMarginPercent))
+    tmp2DBox.set(tmpCenter.x - tmpSize.x / 2, tmpCenter.y - tmpSize.y / 2, tmpSize.x, tmpSize.y)
+  }
 
-    tmpSize.multiplyScalar(scale)
-    tmp2DBox.set(
-        tmpCenter.x - tmpSize.x / 2,
-        tmpCenter.y - tmpSize.y / 2,
-        tmpSize.x,
-        tmpSize.y
-    )
+  // Check label's text collision. Collision is more important than visibility (now), because for
+  // icon/text combinations the icon should be rendered if the text is out of bounds, but it may
+  // _not_ be rendered if the text is colliding with another label.
+  if (!label.textMayOverlap && screenCollisions.isAllocated(tmp2DBox)) {
+    return PlacementResult.Rejected
+  }
 
-    // Check the text visibility if invisible finish immediately
-    // regardless of the persistence state - no fading required.
-    if (!screenCollisions.isVisible(tmp2DBox)) {
-        return PlacementResult.Invisible
-    }
+  // Don't allocate space for rejected text. When zooming, this allows placement of a
+  // lower priority text element that was displaced by a higher priority one (not
+  // present in the new zoom level) before an even lower priority one takes the space.
+  // Otherwise the lowest priority text will fade in and back out.
+  // TODO: Add a unit test for this scenario.
+  if (label.textReservesSpace) {
+    screenCollisions.allocate(tmp2DBox)
+  }
 
-    if (measureText) {
-        // Up-scaled label bounds are used only for new labels and only for collision check, this
-        // is intentional to avoid processing labels out of the screen due to increased bounds,
-        // such labels would be again invisible in the next frame.
-        tmpBox.getSize(tmpSize)
-        tmpSize.multiplyScalar(scale * (1 + newPointLabelTextMarginPercent))
-        tmp2DBox.set(
-            tmpCenter.x - tmpSize.x / 2,
-            tmpCenter.y - tmpSize.y / 2,
-            tmpSize.x,
-            tmpSize.y
-        )
-    }
+  // Glyphs arrangement have been changed remove text buffer object which needs to be
+  // re-created.
+  if (measureText) {
+    label.textBufferObject = undefined
+    label.bounds = label.bounds ? label.bounds.copy(labelBounds) : labelBounds.clone()
+  } else {
+    // Override text canvas layout style for placement.
+    applyTextPlacement(textCanvas, placement)
+  }
 
-    // Check label's text collision. Collision is more important than visibility (now), because for
-    // icon/text combinations the icon should be rendered if the text is out of bounds, but it may
-    // _not_ be rendered if the text is colliding with another label.
-    if (!label.textMayOverlap && screenCollisions.isAllocated(tmp2DBox)) {
-        return PlacementResult.Rejected
-    }
+  // Save current placement in label state.
+  // TextElementState creates layout snapshot solely for alternative placements which saves
+  // memory that could be wasted on unnecessary objects construction.
+  labelState.textPlacement = placement
 
-    // Don't allocate space for rejected text. When zooming, this allows placement of a
-    // lower priority text element that was displaced by a higher priority one (not
-    // present in the new zoom level) before an even lower priority one takes the space.
-    // Otherwise the lowest priority text will fade in and back out.
-    // TODO: Add a unit test for this scenario.
-    if (label.textReservesSpace) {
-        screenCollisions.allocate(tmp2DBox)
-    }
-
-    // Glyphs arrangement have been changed remove text buffer object which needs to be
-    // re-created.
-    if (measureText) {
-        label.textBufferObject = undefined
-        label.bounds = label.bounds
-            ? label.bounds.copy(labelBounds)
-            : labelBounds.clone()
-    } else {
-        // Override text canvas layout style for placement.
-        applyTextPlacement(textCanvas, placement)
-    }
-
-    // Save current placement in label state.
-    // TextElementState creates layout snapshot solely for alternative placements which saves
-    // memory that could be wasted on unnecessary objects construction.
-    labelState.textPlacement = placement
-
-    return PlacementResult.Ok
+  return PlacementResult.Ok
 }
 
 /**
@@ -794,14 +720,10 @@ function placePointLabelAtAnchor(
  * @param placement - The text placement to be used.
  */
 function applyTextPlacement(textCanvas: TextCanvas, placement: TextPlacement) {
-    // Setup TextCanvas layout settings of the new placement as it is required for further
-    // TextBufferObject creation and measurements in addText().
-    textCanvas.textLayoutStyle.horizontalAlignment = hAlignFromPlacement(
-        placement.h
-    )
-    textCanvas.textLayoutStyle.verticalAlignment = vAlignFromPlacement(
-        placement.v
-    )
+  // Setup TextCanvas layout settings of the new placement as it is required for further
+  // TextBufferObject creation and measurements in addText().
+  textCanvas.textLayoutStyle.horizontalAlignment = hAlignFromPlacement(placement.h)
+  textCanvas.textLayoutStyle.verticalAlignment = vAlignFromPlacement(placement.v)
 }
 
 /**
@@ -815,75 +737,63 @@ function applyTextPlacement(textCanvas: TextCanvas, placement: TextPlacement) {
  * a collision or text doesn't fit into path, `PlacementResult.Invisible` if it's not visible.
  */
 export function placePathLabel(
-    labelState: TextElementState,
-    textPath: THREE.Path,
-    screenPosition: THREE.Vector2,
-    textCanvas: TextCanvas,
-    screenCollisions: ScreenCollisions
+  labelState: TextElementState,
+  textPath: THREE.Path,
+  screenPosition: THREE.Vector2,
+  textCanvas: TextCanvas,
+  screenCollisions: ScreenCollisions
 ): PlacementResult {
-    // Recalculate the text bounds for this path label. If measurement fails, the whole
-    // label doesn't fit the path and should be discarded.
-    tmpMeasurementParams.path = textPath
-    tmpMeasurementParams.outputCharacterBounds = tmpBoxes
-    tmpMeasurementParams.letterCaseArray = labelState.element.glyphCaseArray!
+  // Recalculate the text bounds for this path label. If measurement fails, the whole
+  // label doesn't fit the path and should be discarded.
+  tmpMeasurementParams.path = textPath
+  tmpMeasurementParams.outputCharacterBounds = tmpBoxes
+  tmpMeasurementParams.letterCaseArray = labelState.element.glyphCaseArray!
 
-    // TODO: HARP-7648. TextCanvas.measureText does the placement as in TextCanvas.addText but
-    // without storing the result. If the measurement succeeds, the placement work is done
-    // twice.
-    // This could be done in one step (e.g measureAndAddText). Collision test could be injected
-    // in the middle as a function.
-    if (
-        !textCanvas.measureText(
-            labelState.element.glyphs!,
-            tmpBox,
-            tmpMeasurementParams
-        )
-    ) {
-        return PlacementResult.Rejected
+  // TODO: HARP-7648. TextCanvas.measureText does the placement as in TextCanvas.addText but
+  // without storing the result. If the measurement succeeds, the placement work is done
+  // twice.
+  // This could be done in one step (e.g measureAndAddText). Collision test could be injected
+  // in the middle as a function.
+  if (!textCanvas.measureText(labelState.element.glyphs!, tmpBox, tmpMeasurementParams)) {
+    return PlacementResult.Rejected
+  }
+
+  // Coarse collision check.
+  tmpCollisionBox.copy(tmpBox.translate(screenPosition))
+  if (!screenCollisions.isVisible(tmpCollisionBox)) {
+    return PlacementResult.Invisible
+  }
+
+  let checkGlyphCollision = false
+  let candidateBoxes: IBox[] | undefined
+  if (!labelState.element.textMayOverlap) {
+    candidateBoxes = screenCollisions.search(tmpCollisionBox)
+    checkGlyphCollision = candidateBoxes.length > 0
+  }
+
+  // Perform per-character collision checks.
+  tmpCollisionBoxes.length = tmpBoxes.length
+  for (let i = 0; i < tmpBoxes.length; ++i) {
+    const glyphBox = tmpBoxes[i].translate(screenPosition)
+    let collisionBox = tmpCollisionBoxes[i]
+    if (collisionBox === undefined) {
+      collisionBox = new CollisionBox(glyphBox)
+      tmpCollisionBoxes[i] = collisionBox
+    } else {
+      collisionBox.copy(glyphBox)
     }
 
-    // Coarse collision check.
-    tmpCollisionBox.copy(tmpBox.translate(screenPosition))
-    if (!screenCollisions.isVisible(tmpCollisionBox)) {
-        return PlacementResult.Invisible
+    if (checkGlyphCollision && screenCollisions.intersectsDetails(collisionBox, candidateBoxes!)) {
+      return PlacementResult.Rejected
     }
-
-    let checkGlyphCollision = false
-    let candidateBoxes: IBox[] | undefined
-    if (!labelState.element.textMayOverlap) {
-        candidateBoxes = screenCollisions.search(tmpCollisionBox)
-        checkGlyphCollision = candidateBoxes.length > 0
-    }
-
-    // Perform per-character collision checks.
-    tmpCollisionBoxes.length = tmpBoxes.length
-    for (let i = 0; i < tmpBoxes.length; ++i) {
-        const glyphBox = tmpBoxes[i].translate(screenPosition)
-        let collisionBox = tmpCollisionBoxes[i]
-        if (collisionBox === undefined) {
-            collisionBox = new CollisionBox(glyphBox)
-            tmpCollisionBoxes[i] = collisionBox
-        } else {
-            collisionBox.copy(glyphBox)
-        }
-
-        if (
-            checkGlyphCollision &&
-            screenCollisions.intersectsDetails(collisionBox, candidateBoxes!)
-        ) {
-            return PlacementResult.Rejected
-        }
-    }
-    // Allocate collision info if needed.
-    if (labelState.element.textReservesSpace) {
-        const collisionBox = new DetailedCollisionBox(
-            tmpCollisionBox,
-            tmpCollisionBoxes.slice()
-        )
-        tmpCollisionBoxes.length = 0
-        screenCollisions.allocate(collisionBox)
-    }
-    return PlacementResult.Ok
+  }
+  // Allocate collision info if needed.
+  if (labelState.element.textReservesSpace) {
+    const collisionBox = new DetailedCollisionBox(tmpCollisionBox, tmpCollisionBoxes.slice())
+    tmpCollisionBoxes.length = 0
+    screenCollisions.allocate(collisionBox)
+  }
+  return PlacementResult.Ok
 }
 
 /**
@@ -894,54 +804,54 @@ export function placePathLabel(
  * @returns `true` if label is too small, `false` otherwise.
  */
 export function isPathLabelTooSmall(
-    textElement: TextElement,
-    screenProjector: ScreenProjector,
-    outScreenPoints: THREE.Vector2[]
+  textElement: TextElement,
+  screenProjector: ScreenProjector,
+  outScreenPoints: THREE.Vector2[]
 ): boolean {
-    assert(textElement.type === TextElementType.PathLabel)
+  assert(textElement.type === TextElementType.PathLabel)
 
-    // Get the screen points that define the label's segments and create a path with
-    // them.
-    outScreenPoints.length = 0
-    let anyPointVisible = false
+  // Get the screen points that define the label's segments and create a path with
+  // them.
+  outScreenPoints.length = 0
+  let anyPointVisible = false
 
-    for (const pt of textElement.points as THREE.Vector3[]) {
-        // Skip invisible points at the beginning of the path.
-        const screenPoint = anyPointVisible
-            ? screenProjector.project(pt, tmpScreenPosition)
-            : screenProjector.projectToScreen(pt, tmpScreenPosition)
-        if (screenPoint === undefined) {
-            continue
-        }
-        anyPointVisible = true
-
-        outScreenPoints.push(tmpScreenPosition.clone())
+  for (const pt of textElement.points as THREE.Vector3[]) {
+    // Skip invisible points at the beginning of the path.
+    const screenPoint = anyPointVisible
+      ? screenProjector.project(pt, tmpScreenPosition)
+      : screenProjector.projectToScreen(pt, tmpScreenPosition)
+    if (screenPoint === undefined) {
+      continue
     }
+    anyPointVisible = true
 
-    // TODO: (HARP-3515)
-    //      The rendering of a path label that contains just a single point that is not
-    //      visible is impossible, which is problematic with long paths.
-    //      Fix: Skip/clip the invisible points at beginning and end of the path to get
-    //      the visible part of the path.
+    outScreenPoints.push(tmpScreenPosition.clone())
+  }
 
-    // If not a single point is visible, skip the path
-    if (!anyPointVisible) {
-        return true
-    }
+  // TODO: (HARP-3515)
+  //      The rendering of a path label that contains just a single point that is not
+  //      visible is impossible, which is problematic with long paths.
+  //      Fix: Skip/clip the invisible points at beginning and end of the path to get
+  //      the visible part of the path.
 
-    // Check/guess if the screen box can hold a string of that length. It is important
-    // to guess that value without measuring the font first to save time.
-    const minScreenSpace = textElement.text.length * MIN_AVERAGE_CHAR_WIDTH
+  // If not a single point is visible, skip the path
+  if (!anyPointVisible) {
+    return true
+  }
 
-    tmpBox.setFromPoints(outScreenPoints)
-    const boxDiagonalSq = tmpBox.max.sub(tmpBox.min).lengthSq()
+  // Check/guess if the screen box can hold a string of that length. It is important
+  // to guess that value without measuring the font first to save time.
+  const minScreenSpace = textElement.text.length * MIN_AVERAGE_CHAR_WIDTH
 
-    if (boxDiagonalSq < minScreenSpace * minScreenSpace) {
-        textElement.dbgPathTooSmall = true
-        return true
-    }
+  tmpBox.setFromPoints(outScreenPoints)
+  const boxDiagonalSq = tmpBox.max.sub(tmpBox.min).lengthSq()
 
-    return false
+  if (boxDiagonalSq < minScreenSpace * minScreenSpace) {
+    textElement.dbgPathTooSmall = true
+    return true
+  }
+
+  return false
 }
 
 const tmpOrientedBox = new OrientedBox3()
@@ -958,36 +868,28 @@ const tmpOrientedBox = new OrientedBox3()
  * @returns the [[outWorldPosition]] vector.
  */
 export function getWorldPosition(
-    poiLabel: TextElement,
-    projection: Projection,
-    env: Env,
-    outWorldPosition: THREE.Vector3
+  poiLabel: TextElement,
+  projection: Projection,
+  env: Env,
+  outWorldPosition: THREE.Vector3
 ): THREE.Vector3 {
-    const worldOffsetShiftValue = getPropertyValue(
-        (poiLabel.poiInfo?.technique as PoiTechnique)?.worldOffset,
-        env
-    )
-    outWorldPosition?.copy(poiLabel.position)
-    if (
-        worldOffsetShiftValue !== null &&
-        worldOffsetShiftValue !== undefined &&
-        poiLabel.offsetDirection !== undefined
-    ) {
-        projection.localTangentSpace(poiLabel.position, tmpOrientedBox)
-        const offsetDirectionVector = tmpOrientedBox.yAxis
-        const offsetDirectionRad = THREE.MathUtils.degToRad(
-            poiLabel.offsetDirection
-        )
-        // Negate to get the normal, i.e. the vector pointing to the sky.
-        offsetDirectionVector.applyAxisAngle(
-            tmpOrientedBox.zAxis.negate(),
-            offsetDirectionRad
-        )
+  const worldOffsetShiftValue = getPropertyValue(
+    (poiLabel.poiInfo?.technique as PoiTechnique)?.worldOffset,
+    env
+  )
+  outWorldPosition?.copy(poiLabel.position)
+  if (
+    worldOffsetShiftValue !== null &&
+    worldOffsetShiftValue !== undefined &&
+    poiLabel.offsetDirection !== undefined
+  ) {
+    projection.localTangentSpace(poiLabel.position, tmpOrientedBox)
+    const offsetDirectionVector = tmpOrientedBox.yAxis
+    const offsetDirectionRad = THREE.MathUtils.degToRad(poiLabel.offsetDirection)
+    // Negate to get the normal, i.e. the vector pointing to the sky.
+    offsetDirectionVector.applyAxisAngle(tmpOrientedBox.zAxis.negate(), offsetDirectionRad)
 
-        outWorldPosition.addScaledVector(
-            tmpOrientedBox.yAxis,
-            worldOffsetShiftValue
-        )
-    }
-    return outWorldPosition
+    outWorldPosition.addScaledVector(tmpOrientedBox.yAxis, worldOffsetShiftValue)
+  }
+  return outWorldPosition
 }

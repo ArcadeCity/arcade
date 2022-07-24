@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LoggerManager } from '@arca/utils'
-
+import { LoggerManager } from '@arcadecity/arcade-map/utils'
 import { Env } from './Env'
 import { Expr, ExprScope, Value } from './Expr'
 import { Pixels } from './Pixels'
@@ -22,44 +21,44 @@ const logger = LoggerManager.instance.create('PropertyValue')
  * @param cache - An optional expression cache.
  */
 export function getPropertyValue(
-    property: Value | undefined,
-    env: Env,
-    cache?: Map<Expr, Value>
+  property: Value | undefined,
+  env: Env,
+  cache?: Map<Expr, Value>
 ): any {
-    if (Expr.isExpr(property)) {
-        try {
-            let r = property.evaluate(env, ExprScope.Dynamic, cache)
+  if (Expr.isExpr(property)) {
+    try {
+      let r = property.evaluate(env, ExprScope.Dynamic, cache)
 
-            if (typeof r === 'string') {
-                r = RGBA.parse(r) ?? Pixels.parse(r) ?? r
-            }
+      if (typeof r === 'string') {
+        r = RGBA.parse(r) ?? Pixels.parse(r) ?? r
+      }
 
-            if (r instanceof RGBA) {
-                return r.getHex()
-            } else if (r instanceof Pixels) {
-                return r.value * (Number(env.lookup('$pixelToMeters')) ?? 1)
-            }
-            return r
-        } catch (error) {
-            logger.error(
-                'failed to evaluate expression',
-                JSON.stringify(property),
-                'error',
-                String(error)
-            )
-            return null
-        }
+      if (r instanceof RGBA) {
+        return r.getHex()
+      } else if (r instanceof Pixels) {
+        return r.value * (Number(env.lookup('$pixelToMeters')) ?? 1)
+      }
+      return r
+    } catch (error) {
+      logger.error(
+        'failed to evaluate expression',
+        JSON.stringify(property),
+        'error',
+        String(error)
+      )
+      return null
     }
+  }
 
-    if (property === null || typeof property === 'undefined') {
-        return null
-    } else if (typeof property !== 'string') {
-        // Property in numeric or array, etc. format
-        return property
-    } else {
-        // Non-interpolated string encoded numeral parsing
-        const pixelToMeters = (env.lookup('$pixelToMeters') as number) || 1
-        const value = parseStringEncodedNumeral(property, pixelToMeters)
-        return value !== undefined ? value : property
-    }
+  if (property === null || typeof property === 'undefined') {
+    return null
+  } else if (typeof property !== 'string') {
+    // Property in numeric or array, etc. format
+    return property
+  } else {
+    // Non-interpolated string encoded numeral parsing
+    const pixelToMeters = (env.lookup('$pixelToMeters') as number) || 1
+    const value = parseStringEncodedNumeral(property, pixelToMeters)
+    return value !== undefined ? value : property
+  }
 }

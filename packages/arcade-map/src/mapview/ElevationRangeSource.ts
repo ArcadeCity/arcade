@@ -3,25 +3,25 @@
  * Licensed under Apache 2.0, see full license in LICENSE
  * SPDX-License-Identifier: Apache-2.0
  */
-import { TileKey, TilingScheme } from '@arca/geoutils'
+import { TileKey, TilingScheme } from '@arcadecity/arcade-map/geoutils'
 
 /**
  * Status of the elevation range calculation.
  */
 export enum CalculationStatus {
-    // Calculated approximately. A more precise result may be available later.
-    PendingApproximate,
-    // Calculation completed. The result is final, won't improve upon retrying.
-    FinalPrecise,
+  // Calculated approximately. A more precise result may be available later.
+  PendingApproximate,
+  // Calculation completed. The result is final, won't improve upon retrying.
+  FinalPrecise,
 }
 
 /**
  * Elevation range with an optional calculation status.
  */
 export interface ElevationRange {
-    minElevation: number
-    maxElevation: number
-    calculationStatus?: CalculationStatus
+  minElevation: number
+  maxElevation: number
+  calculationStatus?: CalculationStatus
 }
 
 /**
@@ -29,30 +29,30 @@ export interface ElevationRange {
  * tile computation to calculate proper bounding boxes.
  */
 export interface ElevationRangeSource {
-    /**
-     * Compute the elevation range for a given {@link @arca/geoutils#TileKey}.
-     * @param tileKey - The tile for which the elevation range should be computed.
-     */
-    getElevationRange(tileKey: TileKey): ElevationRange
+  /**
+   * Compute the elevation range for a given {@link @arcadecity/arcade-map/geoutils#TileKey}.
+   * @param tileKey - The tile for which the elevation range should be computed.
+   */
+  getElevationRange(tileKey: TileKey): ElevationRange
 
-    /**
-     * The tiling scheme of this {@link ElevationRangeSource}.
-     *
-     * @remarks
-     * {@link MapView} will only apply the elevation
-     * ranges returned by [[getElevationRange]] that have
-     * the same {@link @arca/geoutils#TilingScheme}.
-     */
-    getTilingScheme(): TilingScheme
+  /**
+   * The tiling scheme of this {@link ElevationRangeSource}.
+   *
+   * @remarks
+   * {@link MapView} will only apply the elevation
+   * ranges returned by [[getElevationRange]] that have
+   * the same {@link @arcadecity/arcade-map/geoutils#TilingScheme}.
+   */
+  getTilingScheme(): TilingScheme
 
-    /**
-     * Connects to the underlying data.
-     */
-    connect(): Promise<void>
+  /**
+   * Connects to the underlying data.
+   */
+  connect(): Promise<void>
 
-    /**
-     * Returns `true` if this `ElevationRangeSource` is ready and the {@link MapView} can invoke
-     * `getElevationRange()` to start requesting data.
-     */
-    ready(): boolean
+  /**
+   * Returns `true` if this `ElevationRangeSource` is ready and the {@link MapView} can invoke
+   * `getElevationRange()` to start requesting data.
+   */
+  ready(): boolean
 }

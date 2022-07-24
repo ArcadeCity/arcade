@@ -5,9 +5,9 @@
  */
 
 import * as THREE from 'three'
-
-import { GeometryKind, GeometryKindSet } from '@arca/datasource-protocol'
-
+import {
+  GeometryKind, GeometryKindSet
+} from '@arcadecity/arcade-map/datasource-protocol'
 import { MapObjectAdapter, MapObjectAdapterParams } from '../MapObjectAdapter'
 import { Tile } from '../Tile'
 
@@ -23,36 +23,36 @@ import { Tile } from '../Tile'
  * @param mapAdapterParams - additional parameters for [[MapObjectAdapter]]
  */
 export function registerTileObject(
-    tile: Tile,
-    object: THREE.Object3D,
-    geometryKind: GeometryKind | GeometryKindSet | undefined,
-    mapAdapterParams?: MapObjectAdapterParams
+  tile: Tile,
+  object: THREE.Object3D,
+  geometryKind: GeometryKind | GeometryKindSet | undefined,
+  mapAdapterParams?: MapObjectAdapterParams
 ) {
-    const kind =
-        geometryKind instanceof Set
-            ? Array.from((geometryKind as GeometryKindSet).values())
-            : Array.isArray(geometryKind)
-            ? geometryKind
-            : [geometryKind]
+  const kind =
+    geometryKind instanceof Set
+      ? Array.from((geometryKind as GeometryKindSet).values())
+      : Array.isArray(geometryKind)
+      ? geometryKind
+      : [geometryKind]
 
-    MapObjectAdapter.create(object, {
-        dataSource: tile.dataSource,
-        kind,
-        level: tile.tileKey.level,
-        ...mapAdapterParams,
-    })
+  MapObjectAdapter.create(object, {
+    dataSource: tile.dataSource,
+    kind,
+    level: tile.tileKey.level,
+    ...mapAdapterParams,
+  })
 
-    // TODO legacy fields, encoded directly in `userData to be removed
-    if (object.userData === undefined) {
-        object.userData = {}
-    }
+  // TODO legacy fields, encoded directly in `userData to be removed
+  if (object.userData === undefined) {
+    object.userData = {}
+  }
 
-    const userData = object.userData
-    userData.tileKey = tile.tileKey
-    userData.dataSource = tile.dataSource.name
+  const userData = object.userData
+  userData.tileKey = tile.tileKey
+  userData.dataSource = tile.dataSource.name
 
-    userData.kind = kind
+  userData.kind = kind
 
-    // Force a visibility check of all objects.
-    tile.resetVisibilityCounter()
+  // Force a visibility check of all objects.
+  tile.resetVisibilityCounter()
 }

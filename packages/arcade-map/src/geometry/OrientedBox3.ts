@@ -5,8 +5,8 @@
  */
 
 /**
- * Alias to [[OrientedBox3]] of [[@arca/geoutils]].
+ * Alias to [[OrientedBox3]] of [[@arcadecity/arcade-map/geoutils]].
  *
- * @deprecated Use {@link @arca/geoutils#OrientedBox3} instead.
+ * @deprecated Use {@link @arcadecity/arcade-map/geoutils#OrientedBox3} instead.
  */
-export { OrientedBox3 } from '@arca/geoutils'
+export { OrientedBox3 } from '@arcadecity/arcade-map/geoutils'

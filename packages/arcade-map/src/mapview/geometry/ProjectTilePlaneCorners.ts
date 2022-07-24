@@ -5,9 +5,7 @@
  */
 
 import * as THREE from 'three'
-
-import { GeoCoordinates, Projection } from '@arca/geoutils'
-
+import { GeoCoordinates, Projection } from '@arcadecity/arcade-map/geoutils'
 import { Tile } from '../Tile'
 
 /**
@@ -16,10 +14,10 @@ import { Tile } from '../Tile'
  * @hidden
  */
 export interface TileCorners {
-    se: THREE.Vector3
-    sw: THREE.Vector3
-    ne: THREE.Vector3
-    nw: THREE.Vector3
+  se: THREE.Vector3
+  sw: THREE.Vector3
+  ne: THREE.Vector3
+  nw: THREE.Vector3
 }
 
 /**
@@ -30,26 +28,11 @@ export interface TileCorners {
  * @internal
  * @hidden
  */
-export function projectTilePlaneCorners(
-    tile: Tile,
-    projection: Projection
-): TileCorners {
-    const { east, west, north, south } = tile.geoBox
-    const sw = projection.projectPoint(
-        new GeoCoordinates(south, west),
-        new THREE.Vector3()
-    )
-    const se = projection.projectPoint(
-        new GeoCoordinates(south, east),
-        new THREE.Vector3()
-    )
-    const nw = projection.projectPoint(
-        new GeoCoordinates(north, west),
-        new THREE.Vector3()
-    )
-    const ne = projection.projectPoint(
-        new GeoCoordinates(north, east),
-        new THREE.Vector3()
-    )
-    return { sw, se, nw, ne }
+export function projectTilePlaneCorners(tile: Tile, projection: Projection): TileCorners {
+  const { east, west, north, south } = tile.geoBox
+  const sw = projection.projectPoint(new GeoCoordinates(south, west), new THREE.Vector3())
+  const se = projection.projectPoint(new GeoCoordinates(south, east), new THREE.Vector3())
+  const nw = projection.projectPoint(new GeoCoordinates(north, west), new THREE.Vector3())
+  const ne = projection.projectPoint(new GeoCoordinates(north, east), new THREE.Vector3())
+  return { sw, se, nw, ne }
 }

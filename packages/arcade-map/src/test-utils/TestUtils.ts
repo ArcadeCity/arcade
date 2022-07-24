@@ -8,8 +8,7 @@
 
 import { assert } from 'chai'
 import * as sinon from 'sinon'
-
-import { LoggerManager, LogLevel } from '@arca/utils'
+import { LoggerManager, LogLevel } from '@arcadecity/arcade-map/utils'
 
 /**
  * Check if we're executing in Web Browser environment (but not in Web Worker)
@@ -17,28 +16,25 @@ import { LoggerManager, LogLevel } from '@arca/utils'
  * https://stackoverflow.com/questions/17575790/environment-detection-node-js-or-browser
  */
 export function inBrowserContext() {
-    return function (this: any) {
-        return typeof window !== 'undefined' && this === window
-    }.call(undefined)
+  return function (this: any) {
+    return typeof window !== 'undefined' && this === window
+  }.call(undefined)
 }
 
 /**
  * Check if we're executing in Web Worker environment.
  */
 export function inWebWorkerContext() {
-    return (
-        typeof self !== 'undefined' &&
-        typeof (self as any).importScripts === 'function'
-    )
+  return typeof self !== 'undefined' && typeof (self as any).importScripts === 'function'
 }
 
 /**
  * Define a suite that is executed only in Node.JS environment.
  */
 export function inNodeContext() {
-    return function (this: any) {
-        return typeof global !== 'undefined' && this === global
-    }.call(undefined)
+  return function (this: any) {
+    return typeof global !== 'undefined' && this === global
+  }.call(undefined)
 }
 
 declare const global: any
@@ -54,20 +50,17 @@ declare const global: any
  * @param sandbox - `sinon.Sandbox` instance, required for proper cleanup after test
  * @param name - name of global symbol to be constructor
  */
-export function stubGlobalConstructor(
-    sandbox: sinon.SinonSandbox,
-    name: string
-) {
-    const theGlobal: any = typeof window !== 'undefined' ? window : global
-    let prototype = theGlobal[name].prototype
-    const stub = sandbox.stub(theGlobal, name)
-    while (prototype && prototype !== Object.prototype) {
-        Object.getOwnPropertyNames(prototype).forEach((key) => {
-            stub.prototype[key] = sandbox.stub()
-        })
-        prototype = prototype.__proto__
-    }
-    return stub
+export function stubGlobalConstructor(sandbox: sinon.SinonSandbox, name: string) {
+  const theGlobal: any = typeof window !== 'undefined' ? window : global
+  let prototype = theGlobal[name].prototype
+  const stub = sandbox.stub(theGlobal, name)
+  while (prototype && prototype !== Object.prototype) {
+    Object.getOwnPropertyNames(prototype).forEach((key) => {
+      stub.prototype[key] = sandbox.stub()
+    })
+    prototype = prototype.__proto__
+  }
+  return stub
 }
 
 /**
@@ -116,40 +109,40 @@ let mochaCurrentTest: any // any is used to skip import of whole 'Mocha' for one
  * @returns promise that resolves when `test` passes without any error
  */
 export function willEventually<T = void>(test: () => T): Promise<T> {
-    lastWaitedError = undefined
-    const currentTest = mochaCurrentTest
+  lastWaitedError = undefined
+  const currentTest = mochaCurrentTest
 
-    if (!afterHandlerInstalled) {
-        afterEach(reportAsyncFailuresAfterTestEnd)
-        afterHandlerInstalled = true
-    }
+  if (!afterHandlerInstalled) {
+    afterEach(reportAsyncFailuresAfterTestEnd)
+    afterHandlerInstalled = true
+  }
 
-    return new Promise<T>((resolve, reject) => {
-        function iteration() {
-            // Ensure that we're still running out test, because Mocha could abort our test due to
-            // timeout or any other reason.
-            if (
-                currentTest !== mochaCurrentTest ||
-                (currentTest !== undefined && currentTest.state !== undefined)
-            ) {
-                return
-            }
-            try {
-                const r = test()
-                lastWaitedError = undefined
-                resolve(r)
-            } catch (error) {
-                if (error.constructor.name === 'AssertionError') {
-                    lastWaitedError = error
-                    setTimeout(iteration, 1)
-                } else {
-                    lastWaitedError = undefined
-                    reject(error)
-                }
-            }
+  return new Promise<T>((resolve, reject) => {
+    function iteration() {
+      // Ensure that we're still running out test, because Mocha could abort our test due to
+      // timeout or any other reason.
+      if (
+        currentTest !== mochaCurrentTest ||
+        (currentTest !== undefined && currentTest.state !== undefined)
+      ) {
+        return
+      }
+      try {
+        const r = test()
+        lastWaitedError = undefined
+        resolve(r)
+      } catch (error) {
+        if (error.constructor.name === 'AssertionError') {
+          lastWaitedError = error
+          setTimeout(iteration, 1)
+        } else {
+          lastWaitedError = undefined
+          reject(error)
         }
-        setTimeout(iteration, 1)
-    })
+      }
+    }
+    setTimeout(iteration, 1)
+  })
 }
 
 /**
@@ -159,22 +152,20 @@ export function willEventually<T = void>(test: () => T): Promise<T> {
  * that matches `errorMessagePattern`.
  */
 export async function assertRejected(
-    v: Promise<any> | (() => Promise<any>),
-    errorMessagePattern: string | RegExp
+  v: Promise<any> | (() => Promise<any>),
+  errorMessagePattern: string | RegExp
 ) {
-    let r: any
-    try {
-        r = await Promise.resolve(typeof v === 'function' ? v() : v)
-    } catch (error) {
-        if (typeof errorMessagePattern === 'string') {
-            errorMessagePattern = new RegExp(errorMessagePattern)
-        }
-        assert.match(error.message, errorMessagePattern)
-        return
+  let r: any
+  try {
+    r = await Promise.resolve(typeof v === 'function' ? v() : v)
+  } catch (error) {
+    if (typeof errorMessagePattern === 'string') {
+      errorMessagePattern = new RegExp(errorMessagePattern)
     }
-    assert.fail(
-        `expected exception that matches ${errorMessagePattern}, but received '${r}'`
-    )
+    assert.match(error.message, errorMessagePattern)
+    return
+  }
+  assert.fail(`expected exception that matches ${errorMessagePattern}, but received '${r}'`)
 }
 
 type IConsoleLike = Pick<Console, 'error' | 'info' | 'log' | 'warn'>
@@ -204,48 +195,41 @@ type IConsoleLike = Pick<Console, 'error' | 'info' | 'log' | 'warn'>
  * @param errorMessagePattern - string or regular expression that we look for in logs
  */
 export function assertLogsSync(
-    fn: () => void,
-    channel: IConsoleLike,
-    type: keyof IConsoleLike,
-    errorMessagePattern: string | RegExp
+  fn: () => void,
+  channel: IConsoleLike,
+  type: keyof IConsoleLike,
+  errorMessagePattern: string | RegExp
 ) {
-    const errorMessageRe =
-        typeof errorMessagePattern === 'string'
-            ? new RegExp(errorMessagePattern)
-            : errorMessagePattern
-    const capturedMessages: string[] = []
-    const original = channel[type]
-    const stub = sinon.stub(channel, type).callsFake((...args: any[]) => {
-        const message = args.join(' ')
-        if (errorMessageRe.test(message)) {
-            capturedMessages.push(message)
-        } else {
-            original.apply(channel, args as [any?, ...any[]])
-        }
-    })
-    const cleanup = () => {
-        stub.restore()
+  const errorMessageRe =
+    typeof errorMessagePattern === 'string' ? new RegExp(errorMessagePattern) : errorMessagePattern
+  const capturedMessages: string[] = []
+  const original = channel[type]
+  const stub = sinon.stub(channel, type).callsFake((...args: any[]) => {
+    const message = args.join(' ')
+    if (errorMessageRe.test(message)) {
+      capturedMessages.push(message)
+    } else {
+      original.apply(channel, args as [any?, ...any[]])
     }
+  })
+  const cleanup = () => {
+    stub.restore()
+  }
 
-    try {
-        fn()
-        cleanup()
-        const hasMatching = capturedMessages.find((message) =>
-            errorMessageRe.test(message)
-        )
-        assert(
-            hasMatching,
-            `expected log message matching '${errorMessagePattern}' to be logged`
-        )
-    } catch (error) {
-        cleanup()
-        throw error
-    }
+  try {
+    fn()
+    cleanup()
+    const hasMatching = capturedMessages.find((message) => errorMessageRe.test(message))
+    assert(hasMatching, `expected log message matching '${errorMessagePattern}' to be logged`)
+  } catch (error) {
+    cleanup()
+    throw error
+  }
 }
 
 export interface EventSource<T> {
-    addEventListener(type: string, listener: (event: T) => void): void
-    removeEventListener(type: string, listener: (event: T) => void): void
+  addEventListener(type: string, listener: (event: T) => void): void
+  removeEventListener(type: string, listener: (event: T) => void): void
 }
 
 /**
@@ -258,39 +242,36 @@ export interface EventSource<T> {
  * @param eventType - type of event
  * @returns promise that resolves to first event that is received
  */
-export function waitForEvent<T>(
-    source: EventSource<T>,
-    eventType: string
-): Promise<T> {
-    const currentTest = mochaCurrentTest
+export function waitForEvent<T>(source: EventSource<T>, eventType: string): Promise<T> {
+  const currentTest = mochaCurrentTest
 
-    waitEventWaitedEvent = eventType
-    if (!afterHandlerInstalled) {
-        afterEach(reportAsyncFailuresAfterTestEnd)
-        afterHandlerInstalled = true
+  waitEventWaitedEvent = eventType
+  if (!afterHandlerInstalled) {
+    afterEach(reportAsyncFailuresAfterTestEnd)
+    afterHandlerInstalled = true
+  }
+
+  return new Promise<T>((resolve) => {
+    const listener = (event: any) => {
+      if (
+        currentTest !== mochaCurrentTest ||
+        (currentTest !== undefined && currentTest.state !== undefined)
+      ) {
+        return
+      }
+
+      if (waitEventCleanup !== undefined) {
+        waitEventCleanup()
+        waitEventCleanup = undefined
+      }
+
+      resolve(event as T)
     }
-
-    return new Promise<T>((resolve) => {
-        const listener = (event: any) => {
-            if (
-                currentTest !== mochaCurrentTest ||
-                (currentTest !== undefined && currentTest.state !== undefined)
-            ) {
-                return
-            }
-
-            if (waitEventCleanup !== undefined) {
-                waitEventCleanup()
-                waitEventCleanup = undefined
-            }
-
-            resolve(event as T)
-        }
-        waitEventCleanup = () => {
-            source.removeEventListener(eventType, listener)
-        }
-        source.addEventListener(eventType, listener)
-    })
+    waitEventCleanup = () => {
+      source.removeEventListener(eventType, listener)
+    }
+    source.addEventListener(eventType, listener)
+  })
 }
 
 let waitEventCleanup: (() => void) | undefined
@@ -304,39 +285,37 @@ let waitEventWaitedEvent: string | undefined
  * `IHookCallbackContext`.
  */
 function reportAsyncFailuresAfterTestEnd(this: any) {
+  mochaCurrentTest = undefined
+
+  if (waitEventCleanup && waitEventWaitedEvent !== undefined) {
+    waitEventCleanup()
+    waitEventCleanup = undefined
+
+    // Note, this is actually mocha.IHookCallbackContext but it's not imported to not include
+    // whole mocha dependency only for this very declaration.
+    this.test.error(
+      new Error(`waitEvent didn't receive '${waitEventWaitedEvent}' before test timeouted`)
+    )
+  }
+
+  if (lastWaitedError) {
     mochaCurrentTest = undefined
-
-    if (waitEventCleanup && waitEventWaitedEvent !== undefined) {
-        waitEventCleanup()
-        waitEventCleanup = undefined
-
-        // Note, this is actually mocha.IHookCallbackContext but it's not imported to not include
-        // whole mocha dependency only for this very declaration.
-        this.test.error(
-            new Error(
-                `waitEvent didn't receive '${waitEventWaitedEvent}' before test timeouted`
-            )
-        )
-    }
-
-    if (lastWaitedError) {
-        mochaCurrentTest = undefined
-        const tmp = lastWaitedError
-        tmp.message = `willEventually couldn't pass through: ${tmp.toString()}`
-        lastWaitedError = undefined
-        // Note, this is actually IHookCallbackContext but it's not imported to not include whole
-        // mocha dependency only for this very declaration.
-        this.test.error(tmp)
-    }
-    return {}
+    const tmp = lastWaitedError
+    tmp.message = `willEventually couldn't pass through: ${tmp.toString()}`
+    lastWaitedError = undefined
+    // Note, this is actually IHookCallbackContext but it's not imported to not include whole
+    // mocha dependency only for this very declaration.
+    this.test.error(tmp)
+  }
+  return {}
 }
 
 if (typeof beforeEach !== 'undefined') {
-    beforeEach(function (this: Mocha.Context) {
-        // Save current test so willEventually && waitForEvent can check that current test is still
-        // executing.
-        mochaCurrentTest = this.currentTest
-    })
+  beforeEach(function (this: Mocha.Context) {
+    // Save current test so willEventually && waitForEvent can check that current test is still
+    // executing.
+    mochaCurrentTest = this.currentTest
+  })
 }
 
 /**
@@ -348,25 +327,25 @@ if (typeof beforeEach !== 'undefined') {
  * @param minLogLevel The minimum log level that is shown, defaults to LogLevel.Error
  */
 export async function silenceLoggingAroundFunction(
-    loggerName: string | string[],
-    func: () => void,
-    minLogLevel: LogLevel = LogLevel.Error
+  loggerName: string | string[],
+  func: () => void,
+  minLogLevel: LogLevel = LogLevel.Error
 ) {
-    const previousLogLevels: Array<{ level: LogLevel; loggerName: string }> = []
-    const loggers = !Array.isArray(loggerName) ? [loggerName] : loggerName
-    for (const loggerName of loggers) {
-        const logger = LoggerManager.instance.getLogger(loggerName)
-        if (logger) {
-            previousLogLevels.push({ loggerName, level: logger.level })
-            LoggerManager.instance.setLogLevel(loggerName, minLogLevel)
-        }
+  const previousLogLevels: Array<{ level: LogLevel; loggerName: string }> = []
+  const loggers = !Array.isArray(loggerName) ? [loggerName] : loggerName
+  for (const loggerName of loggers) {
+    const logger = LoggerManager.instance.getLogger(loggerName)
+    if (logger) {
+      previousLogLevels.push({ loggerName, level: logger.level })
+      LoggerManager.instance.setLogLevel(loggerName, minLogLevel)
     }
+  }
 
-    try {
-        await func()
-    } finally {
-        for (const logger of previousLogLevels) {
-            LoggerManager.instance.setLogLevel(logger.loggerName, logger.level)
-        }
+  try {
+    await func()
+  } finally {
+    for (const logger of previousLogLevels) {
+      LoggerManager.instance.setLogLevel(logger.loggerName, logger.level)
     }
+  }
 }

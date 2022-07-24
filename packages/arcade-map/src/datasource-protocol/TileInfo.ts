@@ -3,14 +3,14 @@
  * Licensed under Apache 2.0, see full license in LICENSE
  * SPDX-License-Identifier: Apache-2.0
  */
-import { TileKey } from '@arca/geoutils'
+import { TileKey } from '@arcadecity/arcade-map/geoutils'
 
 /**
  * Defines a map tile metadata.
  */
 export interface TileInfo {
-    readonly tileKey: TileKey
-    readonly setupTime: number
-    readonly transferList?: ArrayBuffer[]
-    readonly numBytes: number
+  readonly tileKey: TileKey
+  readonly setupTime: number
+  readonly transferList?: ArrayBuffer[]
+  readonly numBytes: number
 }

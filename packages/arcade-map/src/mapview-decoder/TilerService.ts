@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ITiler, WorkerTilerProtocol } from '@arca/datasource-protocol'
-import { TileKey } from '@arca/geoutils'
-
+import {
+  ITiler, WorkerTilerProtocol
+} from '@arcadecity/arcade-map/datasource-protocol'
+import { TileKey } from '@arcadecity/arcade-map/geoutils'
 import { GeoJsonTiler } from './GeoJsonTiler'
 import { WorkerService, WorkerServiceResponse } from './WorkerService'
 
@@ -25,76 +26,70 @@ import { WorkerService, WorkerServiceResponse } from './WorkerService'
  * The data is sent back in form of a {@link WorkerServiceResponse}.
  */
 export class TilerService extends WorkerService {
-    /**
-     * Start a `TilerService`.
-     *
-     * @param serviceId - Service id. Must be unique.
-     */
-    static start(serviceId: string) {
-        return new TilerService(serviceId)
+  /**
+   * Start a `TilerService`.
+   *
+   * @param serviceId - Service id. Must be unique.
+   */
+  static start(serviceId: string) {
+    return new TilerService(serviceId)
+  }
+
+  tiler: ITiler = new GeoJsonTiler()
+
+  /**
+   * Set up the `TilerService`. The name of the service must be unique
+   *
+   * @param serviceId - Service id. Must be unique.
+   */
+  constructor(readonly serviceId: string) {
+    super(serviceId)
+  }
+
+  /**
+   * Handle incoming request messages. Identifies message type and processes the request.
+   *
+   * @param request - {@link WorkerTilerProtocol} request.
+   * @returns A promise which resolves to a {@link WorkerServiceResponse}.
+   * @override
+   */
+  protected handleRequest(request: any): Promise<WorkerServiceResponse> {
+    if (WorkerTilerProtocol.isRegisterIndexRequest(request)) {
+      return this.handleRegisterIndexRequest(request)
+    } else if (WorkerTilerProtocol.isUpdateIndexRequest(request)) {
+      return this.handleUpdateIndexRequest(request)
+    } else if (WorkerTilerProtocol.isTileRequest(request)) {
+      return this.handleTileRequest(request)
+    } else {
+      return super.handleRequest(request)
     }
+  }
 
-    tiler: ITiler = new GeoJsonTiler()
+  private async handleTileRequest(
+    request: WorkerTilerProtocol.TileRequest
+  ): Promise<WorkerServiceResponse> {
+    const tileKey = TileKey.fromMortonCode(request.tileKey)
+    const tile = await this.tiler.getTile(request.index, tileKey)
 
-    /**
-     * Set up the `TilerService`. The name of the service must be unique
-     *
-     * @param serviceId - Service id. Must be unique.
-     */
-    constructor(readonly serviceId: string) {
-        super(serviceId)
-    }
+    return { response: tile || {} }
+  }
 
-    /**
-     * Handle incoming request messages. Identifies message type and processes the request.
-     *
-     * @param request - {@link WorkerTilerProtocol} request.
-     * @returns A promise which resolves to a {@link WorkerServiceResponse}.
-     * @override
-     */
-    protected handleRequest(request: any): Promise<WorkerServiceResponse> {
-        if (WorkerTilerProtocol.isRegisterIndexRequest(request)) {
-            return this.handleRegisterIndexRequest(request)
-        } else if (WorkerTilerProtocol.isUpdateIndexRequest(request)) {
-            return this.handleUpdateIndexRequest(request)
-        } else if (WorkerTilerProtocol.isTileRequest(request)) {
-            return this.handleTileRequest(request)
-        } else {
-            return super.handleRequest(request)
-        }
-    }
+  private async handleRegisterIndexRequest(
+    message: WorkerTilerProtocol.RegisterIndexRequest
+  ): Promise<WorkerServiceResponse> {
+    const input = typeof message.input === 'string' ? new URL(message.input) : message.input
+    await this.tiler.registerIndex(message.id, input)
 
-    private async handleTileRequest(
-        request: WorkerTilerProtocol.TileRequest
-    ): Promise<WorkerServiceResponse> {
-        const tileKey = TileKey.fromMortonCode(request.tileKey)
-        const tile = await this.tiler.getTile(request.index, tileKey)
+    return { response: {} }
+  }
 
-        return { response: tile || {} }
-    }
+  private async handleUpdateIndexRequest(
+    message: WorkerTilerProtocol.UpdateIndexRequest
+  ): Promise<WorkerServiceResponse> {
+    const input = typeof message.input === 'string' ? new URL(message.input) : message.input
 
-    private async handleRegisterIndexRequest(
-        message: WorkerTilerProtocol.RegisterIndexRequest
-    ): Promise<WorkerServiceResponse> {
-        const input =
-            typeof message.input === 'string'
-                ? new URL(message.input)
-                : message.input
-        await this.tiler.registerIndex(message.id, input)
+    this.tiler.updateIndex(message.id, input)
 
-        return { response: {} }
-    }
-
-    private async handleUpdateIndexRequest(
-        message: WorkerTilerProtocol.UpdateIndexRequest
-    ): Promise<WorkerServiceResponse> {
-        const input =
-            typeof message.input === 'string'
-                ? new URL(message.input)
-                : message.input
-
-        this.tiler.updateIndex(message.id, input)
-
-        return { response: {} }
-    }
+    return { response: {} }
+  }
 }

@@ -5,310 +5,274 @@
  */
 
 import {
-    mercatorProjection, ProjectionType, sphereProjection
-} from '@arca/geoutils'
-import { MapViewEventNames } from '@arca/mapview'
-
+  mercatorProjection, ProjectionType, sphereProjection
+} from '@arcadecity/arcade-map/geoutils'
+import { MapViewEventNames } from '@arcadecity/arcade-map/mapview'
 import { MapControls } from './MapControls'
 
 /**
  * Option for MapControlsUI.
  */
 interface MapControlsUIOptions {
-    /**
-     * If specified, turns on the zoom level display or zoom level input.
-     */
-    zoomLevel?: 'show' | 'input'
+  /**
+   * If specified, turns on the zoom level display or zoom level input.
+   */
+  zoomLevel?: 'show' | 'input'
 
-    /**
-     * If specified, allows to switch between mercator and sphere projections at runtime.
-     */
-    projectionSwitch?: boolean
+  /**
+   * If specified, allows to switch between mercator and sphere projections at runtime.
+   */
+  projectionSwitch?: boolean
 
-    /**
-     * Turns off default CSS styling for controls.
-     */
-    disableDefaultStyle?: boolean
+  /**
+   * Turns off default CSS styling for controls.
+   */
+  disableDefaultStyle?: boolean
 }
 
 /**
  * Base class to handle UI overlay elements.
  */
 export class MapControlsUI {
-    /**
-     * The DOM node containing the UI.
-     */
-    readonly domElement = document.createElement('div')
+  /**
+   * The DOM node containing the UI.
+   */
+  readonly domElement = document.createElement('div')
 
-    private readonly m_buttonsElement: HTMLDivElement =
-        document.createElement('div')
+  private readonly m_buttonsElement: HTMLDivElement = document.createElement('div')
 
-    /**
-     * Displays zoom level if [[MapControlsUIOptions.zoomLevel]] is defined.
-     */
-    private readonly m_zoomLevelElement:
-        | HTMLDivElement
-        | HTMLInputElement
-        | null = null
+  /**
+   * Displays zoom level if [[MapControlsUIOptions.zoomLevel]] is defined.
+   */
+  private readonly m_zoomLevelElement: HTMLDivElement | HTMLInputElement | null = null
 
-    /**
-     * Displays zoom level if [[MapControlsUIOptions.projectionSwitch]] is defined.
-     */
-    private readonly m_projectionSwitchElement: HTMLButtonElement | null = null
+  /**
+   * Displays zoom level if [[MapControlsUIOptions.projectionSwitch]] is defined.
+   */
+  private readonly m_projectionSwitchElement: HTMLButtonElement | null = null
 
-    /**
-     * Removes focus from input element.
-     */
-    private readonly m_onWindowClick: (event: MouseEvent) => void
+  /**
+   * Removes focus from input element.
+   */
+  private readonly m_onWindowClick: (event: MouseEvent) => void
 
-    /**
-     * Updates the display of the zoom level.
-     */
-    private readonly m_onMapViewRenderEvent: () => void
+  /**
+   * Updates the display of the zoom level.
+   */
+  private readonly m_onMapViewRenderEvent: () => void
 
-    /**
-     * Constructor of the UI.
-     *
-     * @param controls - Controls referencing a [[MapView]].
-     */
-    constructor(
-        readonly controls: MapControls,
-        options: MapControlsUIOptions = {}
-    ) {
-        this.m_onMapViewRenderEvent = () => {
-            if (this.m_zoomLevelElement === null) {
-                return
-            }
+  /**
+   * Constructor of the UI.
+   *
+   * @param controls - Controls referencing a [[MapView]].
+   */
+  constructor(readonly controls: MapControls, options: MapControlsUIOptions = {}) {
+    this.m_onMapViewRenderEvent = () => {
+      if (this.m_zoomLevelElement === null) {
+        return
+      }
 
-            const zoom = this.controls.zoomLevelTargeted.toFixed(1)
+      const zoom = this.controls.zoomLevelTargeted.toFixed(1)
 
-            if (this.m_zoomLevelElement.tagName === 'INPUT') {
-                ;(this.m_zoomLevelElement as HTMLInputElement).value = zoom
-            } else {
-                ;(this.m_zoomLevelElement as HTMLDivElement).innerHTML = zoom
-            }
+      if (this.m_zoomLevelElement.tagName === 'INPUT') {
+        ;(this.m_zoomLevelElement as HTMLInputElement).value = zoom
+      } else {
+        ;(this.m_zoomLevelElement as HTMLDivElement).innerHTML = zoom
+      }
+    }
+
+    this.m_onWindowClick = (event: MouseEvent) => {
+      const input = this.m_zoomLevelElement as HTMLInputElement
+      if (
+        !event ||
+        !event.target ||
+        !(event.target as any).contains ||
+        event.target === input ||
+        (event.target as HTMLElement).contains(input)
+      ) {
+        return
+      }
+      input.blur()
+    }
+
+    // Empty element to dynamically align the controls vertically, depending on which buttons
+    // are enabled. Avoids unreliable style computations in the script.
+    const verticalAligner = document.createElement('span')
+    verticalAligner.className = 'harp-gl_v-align'
+    this.domElement.appendChild(verticalAligner)
+
+    // This element will receive the controls and ensure the vertical alignment in the CSS.
+    this.m_buttonsElement = document.createElement('div')
+    this.m_buttonsElement.className = 'harp-gl_v-aligned'
+    this.domElement.appendChild(this.m_buttonsElement)
+
+    const zoomInButton = document.createElement('button')
+    zoomInButton.innerText = '+'
+    zoomInButton.className = 'harp-gl_controls_button-top'
+    zoomInButton.classList.add('harp-gl_controls-button')
+
+    const zoomOutButton = document.createElement('button')
+    zoomOutButton.innerText = '-'
+    zoomOutButton.className = 'harp-gl_controls_button-bottom'
+    zoomOutButton.classList.add('harp-gl_controls-button')
+
+    const tiltButton = document.createElement('button')
+    tiltButton.innerText = '3D'
+    tiltButton.id = 'harp-gl_controls_tilt-button-ui'
+    tiltButton.title = 'Toggle tilt'
+    tiltButton.classList.add('harp-gl_controls-button')
+    tiltButton.classList.add('harp-gl_controls_button-bottom')
+
+    const compassButton = document.createElement('button')
+    compassButton.id = 'harp-gl_controls-button_compass'
+    compassButton.title = 'Reset North'
+    compassButton.classList.add('harp-gl_controls-button')
+    compassButton.classList.add('harp-gl_controls_button-top')
+    const compass = document.createElement('span')
+    compass.id = 'harp-gl_controls_compass'
+    compassButton.appendChild(compass)
+
+    // Optional zoom level displaying
+    if (options.zoomLevel === 'show') {
+      this.m_zoomLevelElement = document.createElement('div')
+      controls.mapView.addEventListener(MapViewEventNames.Render, this.m_onMapViewRenderEvent)
+    } else if (options.zoomLevel === 'input') {
+      const input = document.createElement('input')
+      input.type = 'number'
+      input.step = '0.1' // Avoids messages in the UI on hovering, when a tenth value exists.
+      controls.mapView.addEventListener(MapViewEventNames.Render, this.m_onMapViewRenderEvent)
+
+      const updateZoom = (event: KeyboardEvent | FocusEvent) => {
+        controls.setZoomLevel(parseFloat(input.value))
+        event.preventDefault()
+      }
+
+      input.addEventListener('blur', updateZoom)
+      input.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          updateZoom(event)
         }
+      })
+      window.addEventListener('click', this.m_onWindowClick)
+      this.m_zoomLevelElement = input
+    }
 
-        this.m_onWindowClick = (event: MouseEvent) => {
-            const input = this.m_zoomLevelElement as HTMLInputElement
-            if (
-                !event ||
-                !event.target ||
-                !(event.target as any).contains ||
-                event.target === input ||
-                (event.target as HTMLElement).contains(input)
-            ) {
-                return
-            }
-            input.blur()
-        }
+    if (options.projectionSwitch) {
+      const switcher = document.createElement('button')
+      switcher.id = 'harp-gl_controls_switch_projection'
+      switcher.classList.add('harp-gl_controls-button')
+      const getTitle: () => string = () => {
+        return `Switch to ${
+          this.controls.mapView.projection.type === ProjectionType.Spherical ? 'flat' : 'globe'
+        } projection`
+      }
+      switcher.title = getTitle()
+      const globeSVG = getGlobeSVG()
+      const flatMapSVG = getFlatMapSVG()
+      switcher.innerHTML =
+        this.controls.mapView.projection.type === ProjectionType.Spherical ? flatMapSVG : globeSVG
+      switcher.addEventListener('click', () => {
+        this.controls.mapView.projection =
+          this.controls.mapView.projection.type === ProjectionType.Spherical
+            ? mercatorProjection
+            : sphereProjection
+        switcher.title = getTitle()
+        switcher.innerHTML =
+          this.controls.mapView.projection.type === ProjectionType.Spherical ? flatMapSVG : globeSVG
+      })
+      this.m_projectionSwitchElement = switcher
+    }
 
-        // Empty element to dynamically align the controls vertically, depending on which buttons
-        // are enabled. Avoids unreliable style computations in the script.
-        const verticalAligner = document.createElement('span')
-        verticalAligner.className = 'harp-gl_v-align'
-        this.domElement.appendChild(verticalAligner)
+    this.m_buttonsElement.appendChild(zoomInButton)
+    if (this.m_zoomLevelElement !== null) {
+      this.m_buttonsElement.appendChild(this.m_zoomLevelElement)
+    }
+    this.m_buttonsElement.appendChild(zoomOutButton)
+    this.m_buttonsElement.appendChild(compassButton)
+    this.m_buttonsElement.appendChild(tiltButton)
+    if (this.m_projectionSwitchElement !== null) {
+      this.m_buttonsElement.appendChild(this.m_projectionSwitchElement)
+    }
 
-        // This element will receive the controls and ensure the vertical alignment in the CSS.
-        this.m_buttonsElement = document.createElement('div')
-        this.m_buttonsElement.className = 'harp-gl_v-aligned'
-        this.domElement.appendChild(this.m_buttonsElement)
+    zoomInButton.addEventListener('click', (event) => {
+      const zoomLevel = controls.zoomLevelTargeted + controls.zoomLevelDeltaOnControl
+      controls.setZoomLevel(zoomLevel)
+    })
+    zoomInButton.addEventListener('dblclick', (event) => {
+      // HARP-10298: Avoid double click event propagation to canvas in WebKit-based browsers
+      // when a zoom button is quickly clicked multiple times.
+      event.stopPropagation()
+    })
+    zoomOutButton.addEventListener('click', (event) => {
+      const zoomLevel = controls.zoomLevelTargeted - controls.zoomLevelDeltaOnControl
+      controls.setZoomLevel(zoomLevel)
+    })
+    zoomOutButton.addEventListener('dblclick', (event) => {
+      // HARP-10298: Avoid double click event propagation to canvas in WebKit-based browsers
+      // when a zoom button is quickly clicked multiple times.
+      event.stopPropagation()
+    })
+    tiltButton.addEventListener('click', (event) => {
+      controls.toggleTilt()
+    })
+    compassButton.addEventListener('click', (event) => {
+      controls.pointToNorth()
+    })
+    controls.mapView.addEventListener(MapViewEventNames.AfterRender, () => {
+      compass.style.transform = `rotate(${controls.mapView.heading}deg)`
+    })
 
-        const zoomInButton = document.createElement('button')
-        zoomInButton.innerText = '+'
-        zoomInButton.className = 'harp-gl_controls_button-top'
-        zoomInButton.classList.add('harp-gl_controls-button')
+    this.domElement.className = 'harp-gl_controls'
 
-        const zoomOutButton = document.createElement('button')
-        zoomOutButton.innerText = '-'
-        zoomOutButton.className = 'harp-gl_controls_button-bottom'
-        zoomOutButton.classList.add('harp-gl_controls-button')
+    if (this.m_zoomLevelElement !== null) {
+      this.m_zoomLevelElement.classList.add('harp-gl_controls_zoom-level')
+    }
 
-        const tiltButton = document.createElement('button')
-        tiltButton.innerText = '3D'
-        tiltButton.id = 'harp-gl_controls_tilt-button-ui'
-        tiltButton.title = 'Toggle tilt'
-        tiltButton.classList.add('harp-gl_controls-button')
-        tiltButton.classList.add('harp-gl_controls_button-bottom')
-
-        const compassButton = document.createElement('button')
-        compassButton.id = 'harp-gl_controls-button_compass'
-        compassButton.title = 'Reset North'
-        compassButton.classList.add('harp-gl_controls-button')
-        compassButton.classList.add('harp-gl_controls_button-top')
-        const compass = document.createElement('span')
-        compass.id = 'harp-gl_controls_compass'
-        compassButton.appendChild(compass)
-
-        // Optional zoom level displaying
-        if (options.zoomLevel === 'show') {
-            this.m_zoomLevelElement = document.createElement('div')
-            controls.mapView.addEventListener(
-                MapViewEventNames.Render,
-                this.m_onMapViewRenderEvent
-            )
-        } else if (options.zoomLevel === 'input') {
-            const input = document.createElement('input')
-            input.type = 'number'
-            input.step = '0.1' // Avoids messages in the UI on hovering, when a tenth value exists.
-            controls.mapView.addEventListener(
-                MapViewEventNames.Render,
-                this.m_onMapViewRenderEvent
-            )
-
-            const updateZoom = (event: KeyboardEvent | FocusEvent) => {
-                controls.setZoomLevel(parseFloat(input.value))
-                event.preventDefault()
-            }
-
-            input.addEventListener('blur', updateZoom)
-            input.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    updateZoom(event)
-                }
-            })
-            window.addEventListener('click', this.m_onWindowClick)
-            this.m_zoomLevelElement = input
-        }
-
-        if (options.projectionSwitch) {
-            const switcher = document.createElement('button')
-            switcher.id = 'harp-gl_controls_switch_projection'
-            switcher.classList.add('harp-gl_controls-button')
-            const getTitle: () => string = () => {
-                return `Switch to ${
-                    this.controls.mapView.projection.type ===
-                    ProjectionType.Spherical
-                        ? 'flat'
-                        : 'globe'
-                } projection`
-            }
-            switcher.title = getTitle()
-            const globeSVG = getGlobeSVG()
-            const flatMapSVG = getFlatMapSVG()
-            switcher.innerHTML =
-                this.controls.mapView.projection.type ===
-                ProjectionType.Spherical
-                    ? flatMapSVG
-                    : globeSVG
-            switcher.addEventListener('click', () => {
-                this.controls.mapView.projection =
-                    this.controls.mapView.projection.type ===
-                    ProjectionType.Spherical
-                        ? mercatorProjection
-                        : sphereProjection
-                switcher.title = getTitle()
-                switcher.innerHTML =
-                    this.controls.mapView.projection.type ===
-                    ProjectionType.Spherical
-                        ? flatMapSVG
-                        : globeSVG
-            })
-            this.m_projectionSwitchElement = switcher
-        }
-
-        this.m_buttonsElement.appendChild(zoomInButton)
-        if (this.m_zoomLevelElement !== null) {
-            this.m_buttonsElement.appendChild(this.m_zoomLevelElement)
-        }
-        this.m_buttonsElement.appendChild(zoomOutButton)
-        this.m_buttonsElement.appendChild(compassButton)
-        this.m_buttonsElement.appendChild(tiltButton)
-        if (this.m_projectionSwitchElement !== null) {
-            this.m_buttonsElement.appendChild(this.m_projectionSwitchElement)
-        }
-
-        zoomInButton.addEventListener('click', (event) => {
-            const zoomLevel =
-                controls.zoomLevelTargeted + controls.zoomLevelDeltaOnControl
-            controls.setZoomLevel(zoomLevel)
-        })
-        zoomInButton.addEventListener('dblclick', (event) => {
-            // HARP-10298: Avoid double click event propagation to canvas in WebKit-based browsers
-            // when a zoom button is quickly clicked multiple times.
-            event.stopPropagation()
-        })
-        zoomOutButton.addEventListener('click', (event) => {
-            const zoomLevel =
-                controls.zoomLevelTargeted - controls.zoomLevelDeltaOnControl
-            controls.setZoomLevel(zoomLevel)
-        })
-        zoomOutButton.addEventListener('dblclick', (event) => {
-            // HARP-10298: Avoid double click event propagation to canvas in WebKit-based browsers
-            // when a zoom button is quickly clicked multiple times.
-            event.stopPropagation()
-        })
-        tiltButton.addEventListener('click', (event) => {
-            controls.toggleTilt()
-        })
-        compassButton.addEventListener('click', (event) => {
-            controls.pointToNorth()
-        })
-        controls.mapView.addEventListener(MapViewEventNames.AfterRender, () => {
-            compass.style.transform = `rotate(${controls.mapView.heading}deg)`
-        })
-
-        this.domElement.className = 'harp-gl_controls'
-
-        if (this.m_zoomLevelElement !== null) {
-            this.m_zoomLevelElement.classList.add('harp-gl_controls_zoom-level')
-        }
-
-        if (options.disableDefaultStyle !== true) {
-            this.initStyle()
-            this.domElement.style.cssText = `
+    if (options.disableDefaultStyle !== true) {
+      this.initStyle()
+      this.domElement.style.cssText = `
                 position: absolute;
                 right: 5px;
                 top: 0;
                 height: 100%; /* Vertical alignment is done dynamically, in the rest of the CSS. */
                 pointer-events: none; /* Allows to click the map even though height is 100%. */
             `
-        }
-
-        return this
     }
 
-    get projectionSwitchElement(): HTMLButtonElement | null {
-        return this.m_projectionSwitchElement
+    return this
+  }
+
+  get projectionSwitchElement(): HTMLButtonElement | null {
+    return this.m_projectionSwitchElement
+  }
+
+  /**
+   * Destroy this [[MapControlsUI]] instance. Unregisters all event handlers used. This method
+   * should be called when you stop using [[MapControlsUI]].
+   */
+  dispose() {
+    if (this.m_zoomLevelElement !== null && this.m_zoomLevelElement.tagName === 'INPUT') {
+      window.removeEventListener('click', this.m_onWindowClick)
     }
 
-    /**
-     * Destroy this [[MapControlsUI]] instance. Unregisters all event handlers used. This method
-     * should be called when you stop using [[MapControlsUI]].
-     */
-    dispose() {
-        if (
-            this.m_zoomLevelElement !== null &&
-            this.m_zoomLevelElement.tagName === 'INPUT'
-        ) {
-            window.removeEventListener('click', this.m_onWindowClick)
-        }
+    this.controls.mapView.removeEventListener(MapViewEventNames.Render, this.m_onMapViewRenderEvent)
 
-        this.controls.mapView.removeEventListener(
-            MapViewEventNames.Render,
-            this.m_onMapViewRenderEvent
-        )
+    this.domElement.remove()
+  }
 
-        this.domElement.remove()
+  private initStyle() {
+    if (document.getElementById('here-harp-controls.map-controls-ui-styles') !== null) {
+      return
     }
-
-    private initStyle() {
-        if (
-            document.getElementById(
-                'here-harp-controls.map-controls-ui-styles'
-            ) !== null
-        ) {
-            return
-        }
-        const style = document.createElement('style')
-        style.id = 'here-harp-controls.map-controls-ui-styles'
-        style.appendChild(document.createTextNode(getTextStyle()))
-        document.head.appendChild(style)
-    }
+    const style = document.createElement('style')
+    style.id = 'here-harp-controls.map-controls-ui-styles'
+    style.appendChild(document.createTextNode(getTextStyle()))
+    document.head.appendChild(style)
+  }
 }
 
 function getTextStyle() {
-    return `
+  return `
         /* CSS trick to align another div dynamically. */
         .harp-gl_v-align{
             height: 100%;
@@ -431,7 +395,7 @@ function getTextStyle() {
 }
 
 function getFlatMapSVG() {
-    return `
+  return `
     <svg style="margin-top:5px;" class="harp-gl_controls_switch_svg" width="25" height="25" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
         <rect id="svg_1" stroke-width="2" height="13.51524" width="18.35821" y="5.80349" x="3.21307" fill="none"/>
         <path id="svg_14" d="m9.52018,7.71815l1.2357,-0.0032l-0.61945,1.18258l-0.61625,-1.17938z"/>
@@ -441,7 +405,7 @@ function getFlatMapSVG() {
 }
 
 function getGlobeSVG() {
-    return `
+  return `
     <svg style="margin-top:5px;" stroke-width="2" class="harp-gl_controls_switch_svg" width="50" height="50" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
         <ellipse ry="9.79855" rx="4.56139" id="svg_6" cy="11.99798" cx="11.99798" fill="none"/>
         <line id="svg_8" y2="8.16866" x2="21.12086" y1="8.16866" x1="3.10044"/>

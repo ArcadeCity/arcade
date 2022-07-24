@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { StyleSetEvaluator } from '@arca/datasource-protocol/index-decoder'
-
+import {
+  StyleSetEvaluator
+} from '@arcadecity/arcade-map/datasource-protocol/index-decoder'
 import { OmvFeatureFilter } from './OmvDataFilter'
 
 /**
@@ -19,27 +20,27 @@ import { OmvFeatureFilter } from './OmvDataFilter'
  * @see [[StyleSetEvaluator.wantsLayer]]
  */
 export class StyleSetDataFilter implements OmvFeatureFilter {
-    hasKindFilter: boolean = false
+  hasKindFilter: boolean = false
 
-    constructor(readonly styleSetEvaluator: StyleSetEvaluator) {}
+  constructor(readonly styleSetEvaluator: StyleSetEvaluator) {}
 
-    wantsLayer(layer: string, level: number): boolean {
-        return this.styleSetEvaluator.wantsLayer(layer)
-    }
+  wantsLayer(layer: string, level: number): boolean {
+    return this.styleSetEvaluator.wantsLayer(layer)
+  }
 
-    wantsPointFeature(layer: string): boolean {
-        return this.styleSetEvaluator.wantsFeature(layer, 'point')
-    }
+  wantsPointFeature(layer: string): boolean {
+    return this.styleSetEvaluator.wantsFeature(layer, 'point')
+  }
 
-    wantsLineFeature(layer: string): boolean {
-        return this.styleSetEvaluator.wantsFeature(layer, 'line')
-    }
+  wantsLineFeature(layer: string): boolean {
+    return this.styleSetEvaluator.wantsFeature(layer, 'line')
+  }
 
-    wantsPolygonFeature(layer: string): boolean {
-        return this.styleSetEvaluator.wantsFeature(layer, 'polygon')
-    }
+  wantsPolygonFeature(layer: string): boolean {
+    return this.styleSetEvaluator.wantsFeature(layer, 'polygon')
+  }
 
-    wantsKind(): boolean {
-        return true
-    }
+  wantsKind(): boolean {
+    return true
+  }
 }

@@ -6,21 +6,21 @@
 import * as THREE from 'three'
 
 /**
- * The base shader to use for {@link @arca/mapview#MapView}'s
+ * The base shader to use for {@link @arcadecity/arcade-map/mapview#MapView}'s
  * composing passes, like {@link MSAAMaterial}.
  */
 export const CopyShader: THREE.Shader = {
-    uniforms: {
-        tDiffuse: { value: null },
-        opacity: { value: 1.0 },
-    },
-    vertexShader: `
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+  },
+  vertexShader: `
     varying vec2 vUv;
     void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     }`,
-    fragmentShader: `
+  fragmentShader: `
     uniform float opacity;
     uniform sampler2D tDiffuse;
     varying vec2 vUv;
@@ -34,22 +34,22 @@ export const CopyShader: THREE.Shader = {
  * The material is used for composing.
  */
 export class CopyMaterial extends THREE.ShaderMaterial {
-    /**
-     * The constructor of `CopyMaterial`.
-     *
-     * @param uniforms - The [[CopyShader]]'s uniforms.
-     */
-    constructor(uniforms: { [uniformName: string]: THREE.IUniform }) {
-        super({
-            name: 'CopyMaterial',
-            uniforms,
-            vertexShader: CopyShader.vertexShader,
-            fragmentShader: CopyShader.fragmentShader,
-            premultipliedAlpha: true,
-            transparent: false,
-            blending: THREE.NoBlending,
-            depthTest: false,
-            depthWrite: false,
-        })
-    }
+  /**
+   * The constructor of `CopyMaterial`.
+   *
+   * @param uniforms - The [[CopyShader]]'s uniforms.
+   */
+  constructor(uniforms: { [uniformName: string]: THREE.IUniform }) {
+    super({
+      name: 'CopyMaterial',
+      uniforms,
+      vertexShader: CopyShader.vertexShader,
+      fragmentShader: CopyShader.fragmentShader,
+      premultipliedAlpha: true,
+      transparent: false,
+      blending: THREE.NoBlending,
+      depthTest: false,
+      depthWrite: false,
+    })
+  }
 }

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { GroupedPriorityList } from '@arca/utils'
-
+import { GroupedPriorityList } from '@arcadecity/arcade-map/utils'
 import { TextElement } from './TextElement'
 
 /**

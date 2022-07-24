@@ -5,9 +5,7 @@
  */
 
 import { parseCSSColor } from 'csscolorparser'
-
-import { assert } from '@arca/utils'
-
+import { assert } from '@arcadecity/arcade-map/utils'
 import { ColorUtils } from './ColorUtils'
 
 /**
@@ -15,9 +13,9 @@ import { ColorUtils } from './ColorUtils'
  * @internal
  */
 export enum StringEncodedNumeralType {
-    Meters,
-    Pixels,
-    Hex,
+  Meters,
+  Pixels,
+  Hex,
 }
 
 /**
@@ -26,71 +24,65 @@ export enum StringEncodedNumeralType {
  * @internal
  */
 export interface StringEncodedNumeralFormat {
-    readonly type: StringEncodedNumeralType
-    readonly size: number
-    readonly regExp: RegExp
-    mask?: number
-    decoder: (encodedValue: string, target: number[]) => boolean
+  readonly type: StringEncodedNumeralType
+  readonly size: number
+  readonly regExp: RegExp
+  mask?: number
+  decoder: (encodedValue: string, target: number[]) => boolean
 }
 const StringEncodedMeters: StringEncodedNumeralFormat = {
-    type: StringEncodedNumeralType.Meters,
-    size: 1,
-    regExp: /^((?=\.\d|\d)(?:\d+)?(?:\.?\d*))m$/,
-    decoder: (encodedValue: string, target: number[]) => {
-        const match = StringEncodedMeters.regExp.exec(encodedValue)
-        return match ? (target[0] = Number(match[1])) !== undefined : false
-    },
+  type: StringEncodedNumeralType.Meters,
+  size: 1,
+  regExp: /^((?=\.\d|\d)(?:\d+)?(?:\.?\d*))m$/,
+  decoder: (encodedValue: string, target: number[]) => {
+    const match = StringEncodedMeters.regExp.exec(encodedValue)
+    return match ? (target[0] = Number(match[1])) !== undefined : false
+  },
 }
 const StringEncodedPixels: StringEncodedNumeralFormat = {
-    type: StringEncodedNumeralType.Pixels,
-    size: 1,
-    mask: 1.0,
-    regExp: /^((?=\.\d|\d)(?:\d+)?(?:\.?\d*))px$/,
-    decoder: (encodedValue: string, target: number[]) => {
-        const match = StringEncodedPixels.regExp.exec(encodedValue)
-        if (match === null) {
-            return false
-        }
-        target[0] = Number(match[1])
-        return true
-    },
+  type: StringEncodedNumeralType.Pixels,
+  size: 1,
+  mask: 1.0,
+  regExp: /^((?=\.\d|\d)(?:\d+)?(?:\.?\d*))px$/,
+  decoder: (encodedValue: string, target: number[]) => {
+    const match = StringEncodedPixels.regExp.exec(encodedValue)
+    if (match === null) {
+      return false
+    }
+    target[0] = Number(match[1])
+    return true
+  },
 }
 const StringEncodedHex: StringEncodedNumeralFormat = {
-    type: StringEncodedNumeralType.Hex,
-    size: 4,
-    regExp: /^\#((?:[0-9A-Fa-f][0-9A-Fa-f]){4}|[0-9A-Fa-f]{4})$/,
-    decoder: (encodedValue: string, target: number[]) => {
-        const match = StringEncodedHex.regExp.exec(encodedValue)
-        if (match === null) {
-            return false
-        }
-        const hex = match[1]
-        const size = hex.length
-        // Only few sizes are possible for given reg-exp.
-        assert(size === 4 || size === 8, `Matched incorrect hex color format`)
-        // Note that we simply ignore alpha channel value.
-        // TODO: To be resolved with HARP-7517
-        if (size === 4) {
-            // #RGB or #RGBA
-            target[0] = parseInt(hex.charAt(0) + hex.charAt(0), 16) / 255
-            target[1] = parseInt(hex.charAt(1) + hex.charAt(1), 16) / 255
-            target[2] = parseInt(hex.charAt(2) + hex.charAt(2), 16) / 255
-            target[3] =
-                size === 4
-                    ? parseInt(hex.charAt(3) + hex.charAt(3), 16) / 255
-                    : 1
-        } else if (size === 8) {
-            // #RRGGBB or #RRGGBBAA
-            target[0] = parseInt(hex.charAt(0) + hex.charAt(1), 16) / 255
-            target[1] = parseInt(hex.charAt(2) + hex.charAt(3), 16) / 255
-            target[2] = parseInt(hex.charAt(4) + hex.charAt(5), 16) / 255
-            target[3] =
-                size === 8
-                    ? parseInt(hex.charAt(6) + hex.charAt(7), 16) / 255
-                    : 1
-        }
-        return true
-    },
+  type: StringEncodedNumeralType.Hex,
+  size: 4,
+  regExp: /^\#((?:[0-9A-Fa-f][0-9A-Fa-f]){4}|[0-9A-Fa-f]{4})$/,
+  decoder: (encodedValue: string, target: number[]) => {
+    const match = StringEncodedHex.regExp.exec(encodedValue)
+    if (match === null) {
+      return false
+    }
+    const hex = match[1]
+    const size = hex.length
+    // Only few sizes are possible for given reg-exp.
+    assert(size === 4 || size === 8, `Matched incorrect hex color format`)
+    // Note that we simply ignore alpha channel value.
+    // TODO: To be resolved with HARP-7517
+    if (size === 4) {
+      // #RGB or #RGBA
+      target[0] = parseInt(hex.charAt(0) + hex.charAt(0), 16) / 255
+      target[1] = parseInt(hex.charAt(1) + hex.charAt(1), 16) / 255
+      target[2] = parseInt(hex.charAt(2) + hex.charAt(2), 16) / 255
+      target[3] = size === 4 ? parseInt(hex.charAt(3) + hex.charAt(3), 16) / 255 : 1
+    } else if (size === 8) {
+      // #RRGGBB or #RRGGBBAA
+      target[0] = parseInt(hex.charAt(0) + hex.charAt(1), 16) / 255
+      target[1] = parseInt(hex.charAt(2) + hex.charAt(3), 16) / 255
+      target[2] = parseInt(hex.charAt(4) + hex.charAt(5), 16) / 255
+      target[3] = size === 8 ? parseInt(hex.charAt(6) + hex.charAt(7), 16) / 255 : 1
+    }
+    return true
+  },
 }
 
 /**
@@ -98,26 +90,24 @@ const StringEncodedHex: StringEncodedNumeralFormat = {
  * @internal
  */
 export const StringEncodedMetricFormats: StringEncodedNumeralFormat[] = [
-    StringEncodedMeters,
-    StringEncodedPixels,
+  StringEncodedMeters,
+  StringEncodedPixels,
 ]
 
 const StringEncodedMetricFormatMaxSize = StringEncodedMetricFormats.reduce(
-    (a, b) => Math.max(a, b.size),
-    0
+  (a, b) => Math.max(a, b.size),
+  0
 )
 
 /**
  * Array of all supported [[StringEncodedNumeralFormat]]s describing color data.
  * @internal
  */
-export const StringEncodedColorFormats: StringEncodedNumeralFormat[] = [
-    StringEncodedHex,
-]
+export const StringEncodedColorFormats: StringEncodedNumeralFormat[] = [StringEncodedHex]
 
 const StringEncodedColorFormatMaxSize = StringEncodedColorFormats.reduce(
-    (a, b) => Math.max(a, b.size),
-    0
+  (a, b) => Math.max(a, b.size),
+  0
 )
 
 /**
@@ -126,16 +116,16 @@ const StringEncodedColorFormatMaxSize = StringEncodedColorFormats.reduce(
  * @internal
  */
 export const StringEncodedNumeralFormats: StringEncodedNumeralFormat[] = [
-    ...StringEncodedMetricFormats,
-    ...StringEncodedColorFormats,
+  ...StringEncodedMetricFormats,
+  ...StringEncodedColorFormats,
 ]
 
 /**
  * @internal
  */
 export const StringEncodedNumeralFormatMaxSize = Math.max(
-    StringEncodedColorFormatMaxSize,
-    StringEncodedMetricFormatMaxSize
+  StringEncodedColorFormatMaxSize,
+  StringEncodedMetricFormatMaxSize
 )
 
 const tmpBuffer: number[] = new Array(StringEncodedNumeralFormatMaxSize)
@@ -149,14 +139,10 @@ const tmpBuffer: number[] = new Array(StringEncodedNumeralFormatMaxSize)
  * provided in [[numeral]].
  */
 export function parseStringEncodedNumeral(
-    numeral: string,
-    pixelToMeters: number = 1.0
+  numeral: string,
+  pixelToMeters: number = 1.0
 ): number | undefined {
-    return parseStringLiteral(
-        numeral,
-        StringEncodedNumeralFormats,
-        pixelToMeters
-    )
+  return parseStringLiteral(numeral, StringEncodedNumeralFormats, pixelToMeters)
 }
 
 /**
@@ -167,42 +153,37 @@ export function parseStringEncodedNumeral(
  * the expression provided in [[color]].
  */
 export function parseStringEncodedColor(color: string): number | undefined {
-    return parseStringLiteral(color, StringEncodedColorFormats)
+  return parseStringLiteral(color, StringEncodedColorFormats)
 }
 
 function parseStringLiteral(
-    text: string,
-    formats: StringEncodedNumeralFormat[],
-    pixelToMeters: number = 1.0
+  text: string,
+  formats: StringEncodedNumeralFormat[],
+  pixelToMeters: number = 1.0
 ): number | undefined {
-    const matchedFormat = formats.find((format) => {
-        return format.decoder(text, tmpBuffer) ? true : false
-    })
+  const matchedFormat = formats.find((format) => {
+    return format.decoder(text, tmpBuffer) ? true : false
+  })
 
-    if (matchedFormat === undefined) {
-        const components: number[] | null = parseCSSColor(text)
+  if (matchedFormat === undefined) {
+    const components: number[] | null = parseCSSColor(text)
 
-        return Array.isArray(components) && !components.some((c) => isNaN(c))
-            ? ColorUtils.getHexFromRgba(
-                  components[0] / 255,
-                  components[1] / 255,
-                  components[2] / 255,
-                  components[3]
-              )
-            : undefined
-    }
+    return Array.isArray(components) && !components.some((c) => isNaN(c))
+      ? ColorUtils.getHexFromRgba(
+          components[0] / 255,
+          components[1] / 255,
+          components[2] / 255,
+          components[3]
+        )
+      : undefined
+  }
 
-    switch (matchedFormat?.type) {
-        case StringEncodedNumeralType.Pixels:
-            return tmpBuffer[0] * pixelToMeters
-        case StringEncodedNumeralType.Hex:
-            return ColorUtils.getHexFromRgba(
-                tmpBuffer[0],
-                tmpBuffer[1],
-                tmpBuffer[2],
-                tmpBuffer[3]
-            )
-        default:
-            return tmpBuffer[0]
-    }
+  switch (matchedFormat?.type) {
+    case StringEncodedNumeralType.Pixels:
+      return tmpBuffer[0] * pixelToMeters
+    case StringEncodedNumeralType.Hex:
+      return ColorUtils.getHexFromRgba(tmpBuffer[0], tmpBuffer[1], tmpBuffer[2], tmpBuffer[3])
+    default:
+      return tmpBuffer[0]
+  }
 }

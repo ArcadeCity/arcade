@@ -12,19 +12,18 @@ declare const TEST_RESOURCES_DIR: string | undefined
  * Base path from which test resources are loaded.
  * @hidden
  */
-export const testResourcesRoot =
-    typeof TEST_RESOURCES_DIR === 'undefined' ? '' : TEST_RESOURCES_DIR
+export const testResourcesRoot = typeof TEST_RESOURCES_DIR === 'undefined' ? '' : TEST_RESOURCES_DIR
 
 /**
  * Get URL of test resource.
  *
  * Calculates URL of test resource in same way as [[loadTestResource]].
  *
- * @param moduleName -: module name, `@here/<module_name>` (e.g. @arca/vectortile-datasource)
+ * @param moduleName -: module name, `@here/<module_name>` (e.g. @arcadecity/arcade-map/vectortile-datasource)
  * @param fileName -: file relative to module path (e.g. `test/resources/berlin.bin)`
  */
 export function getTestResourceUrl(module: string, fileName: string) {
-    return testResourcesRoot + module + '/' + fileName
+  return testResourcesRoot + module + '/' + fileName
 }
 
 /**
@@ -55,56 +54,46 @@ export function getTestResourceUrl(module: string, fileName: string) {
  *   * `fs` module when run in a node.js environment
  *   * `fetch` module when run in a browser environment
  *
- * @param module -: module name, @here/<module_name> (e.g. @arca/vectortile-datasource)
+ * @param module -: module name, @here/<module_name> (e.g. @arcadecity/arcade-map/vectortile-datasource)
  * @param fileName -: the requested resource
- *                  (e.g. @arca/vectortile-datasource/test/resources/berlin.bin)
+ *                  (e.g. @arcadecity/arcade-map/vectortile-datasource/test/resources/berlin.bin)
  */
 export const loadTestResource = loadTestResourceWeb
 
 /** @hidden */
 export function loadTestResourceWeb(
-    module: string,
-    fileName: string,
-    type: 'arraybuffer'
+  module: string,
+  fileName: string,
+  type: 'arraybuffer'
 ): Promise<ArrayBuffer>
 
 /** @hidden */
-export function loadTestResourceWeb(
-    module: string,
-    fileName: string,
-    type: 'text'
-): Promise<string>
+export function loadTestResourceWeb(module: string, fileName: string, type: 'text'): Promise<string>
+
+/** @hidden */
+export function loadTestResourceWeb(module: string, fileName: string, type: 'json'): Promise<any>
 
 /** @hidden */
 export function loadTestResourceWeb(
-    module: string,
-    fileName: string,
-    type: 'json'
-): Promise<any>
-
-/** @hidden */
-export function loadTestResourceWeb(
-    module: string,
-    fileName: string,
-    type: 'arraybuffer' | 'text' | 'json'
+  module: string,
+  fileName: string,
+  type: 'arraybuffer' | 'text' | 'json'
 ): Promise<any> {
-    const url = getTestResourceUrl(module, fileName)
+  const url = getTestResourceUrl(module, fileName)
 
-    return fetch(url).then((response) => {
-        if (!response.ok) {
-            throw new Error(
-                `failed to load ${url}: ${response.status} ${response.statusText}`
-            )
-        }
-        switch (type) {
-            case 'arraybuffer':
-                return response.arrayBuffer()
-            case 'json':
-                return response.json()
-            case 'text':
-                return response.text()
-            default:
-                throw new Error(`Unrecognized response type: ${type}`)
-        }
-    })
+  return fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`failed to load ${url}: ${response.status} ${response.statusText}`)
+    }
+    switch (type) {
+      case 'arraybuffer':
+        return response.arrayBuffer()
+      case 'json':
+        return response.json()
+      case 'text':
+        return response.text()
+      default:
+        throw new Error(`Unrecognized response type: ${type}`)
+    }
+  })
 }

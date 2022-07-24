@@ -5,12 +5,12 @@
  */
 
 import * as THREE from 'three'
-
 import {
-    ColorUtils, Env, ExtrudedPolygonTechnique
-} from '@arca/datasource-protocol'
-import { enforceBlending, MapMeshStandardMaterial } from '@arca/materials'
-
+  ColorUtils, Env, ExtrudedPolygonTechnique
+} from '@arcadecity/arcade-map/datasource-protocol'
+import {
+  enforceBlending, MapMeshStandardMaterial
+} from '@arcadecity/arcade-map/materials'
 import { evaluateBaseColorProperty } from './DecodedTileHelpers'
 
 /**
@@ -33,47 +33,42 @@ const DEPTH_PRE_PASS_RENDER_ORDER_OFFSET = 1e-6
  * disabled by `enableDepthPrePass` option.
  *
  * @param technique - `BaseStandardTechnique` instance to be checked
- * @param env - {@link @arca/datasource-protocol#Env} instance used
- *              to evaluate {@link @arca/datasource-protocol#Expr}
+ * @param env - {@link @arcadecity/arcade-map/datasource-protocol#Env} instance used
+ *              to evaluate {@link @arcadecity/arcade-map/datasource-protocol#Expr}
  *              based properties of `Technique`
  *
  * @internal
  */
-export function isRenderDepthPrePassEnabled(
-    technique: ExtrudedPolygonTechnique,
-    env: Env
-) {
-    // Depth pass explicitly disabled
-    if (technique.enableDepthPrePass === false) {
-        return false
+export function isRenderDepthPrePassEnabled(technique: ExtrudedPolygonTechnique, env: Env) {
+  // Depth pass explicitly disabled
+  if (technique.enableDepthPrePass === false) {
+    return false
+  }
+  let transparent =
+    technique.opacity !== undefined && technique.opacity > 0.0 && technique.opacity < 1.0
+  // If not opaque then check if transparency may be modified via alpha in base color.
+  // Otherwise we don't need to even test base color because opacity mixed with any base alpha,
+  // will always produce some transparency effect.
+  if (!transparent) {
+    // We do not support switching depth pass during alpha interpolation, ignore zoom level
+    // when calculating base color value.
+    const color = evaluateBaseColorProperty(technique, env)
+    if (color !== undefined) {
+      const alpha = ColorUtils.getAlphaFromHex(color)
+      transparent = alpha > 0.0 && alpha < 1.0
     }
-    let transparent =
-        technique.opacity !== undefined &&
-        technique.opacity > 0.0 &&
-        technique.opacity < 1.0
-    // If not opaque then check if transparency may be modified via alpha in base color.
-    // Otherwise we don't need to even test base color because opacity mixed with any base alpha,
-    // will always produce some transparency effect.
-    if (!transparent) {
-        // We do not support switching depth pass during alpha interpolation, ignore zoom level
-        // when calculating base color value.
-        const color = evaluateBaseColorProperty(technique, env)
-        if (color !== undefined) {
-            const alpha = ColorUtils.getAlphaFromHex(color)
-            transparent = alpha > 0.0 && alpha < 1.0
-        }
-    }
-    return transparent
+  }
+  return transparent
 }
 
 /**
  * Property identifying a material that is being used as a DepthPrePass material.
  */
 export interface DepthPrePassProperties {
-    /**
-     * This material is a special depth prepass material.
-     */
-    isDepthPrepassMaterial?: true
+  /**
+   * This material is a special depth prepass material.
+   */
+  isDepthPrepassMaterial?: true
 }
 
 /**
@@ -89,24 +84,21 @@ export interface DepthPrePassProperties {
  *
  * @internal
  */
-export function createDepthPrePassMaterial(
-    baseMaterial: THREE.Material
-): THREE.Material {
-    baseMaterial.depthWrite = false
-    baseMaterial.depthFunc = THREE.EqualDepth
-    baseMaterial.colorWrite = true
-    enforceBlending(baseMaterial)
+export function createDepthPrePassMaterial(baseMaterial: THREE.Material): THREE.Material {
+  baseMaterial.depthWrite = false
+  baseMaterial.depthFunc = THREE.EqualDepth
+  baseMaterial.colorWrite = true
+  enforceBlending(baseMaterial)
 
-    const depthPassMaterial: THREE.Material & DepthPrePassProperties =
-        baseMaterial.clone()
-    depthPassMaterial.isDepthPrepassMaterial = true
-    depthPassMaterial.depthWrite = true
-    depthPassMaterial.depthTest = true
-    depthPassMaterial.depthFunc = THREE.LessDepth
-    depthPassMaterial.colorWrite = false
-    depthPassMaterial.opacity = 1.0
-    depthPassMaterial.blending = THREE.NoBlending
-    return depthPassMaterial
+  const depthPassMaterial: THREE.Material & DepthPrePassProperties = baseMaterial.clone()
+  depthPassMaterial.isDepthPrepassMaterial = true
+  depthPassMaterial.depthWrite = true
+  depthPassMaterial.depthTest = true
+  depthPassMaterial.depthFunc = THREE.LessDepth
+  depthPassMaterial.colorWrite = false
+  depthPassMaterial.opacity = 1.0
+  depthPassMaterial.blending = THREE.NoBlending
+  return depthPassMaterial
 }
 
 /**
@@ -118,15 +110,13 @@ export function createDepthPrePassMaterial(
  * @internal
  */
 export function isDepthPrePassMesh(object: THREE.Object3D): boolean {
-    if ((object as any).isMesh !== true) {
-        return false
-    }
-    const mesh = object as THREE.Mesh
-    return mesh.material instanceof Array
-        ? mesh.material.every(
-              (material) => (material as any).isDepthPrepassMaterial === true
-          )
-        : (mesh.material as any).isDepthPrepassMaterial === true
+  if ((object as any).isMesh !== true) {
+    return false
+  }
+  const mesh = object as THREE.Mesh
+  return mesh.material instanceof Array
+    ? mesh.material.every((material) => (material as any).isDepthPrepassMaterial === true)
+    : (mesh.material as any).isDepthPrepassMaterial === true
 }
 
 /**
@@ -148,51 +138,49 @@ export function isDepthPrePassMesh(object: THREE.Object3D): boolean {
  * @internal
  */
 export function createDepthPrePassMesh(mesh: THREE.Mesh): THREE.Mesh {
-    const originalGeometry = mesh.geometry
+  const originalGeometry = mesh.geometry
 
-    if (!(originalGeometry instanceof THREE.BufferGeometry)) {
-        throw new Error('#createDepthPassMesh only BufferGeometry is supported')
-    }
-    const positionAttribute = originalGeometry.getAttribute('position')
-    if (!positionAttribute) {
-        throw new Error('#createDepthPassMesh position attribute not found')
-    }
+  if (!(originalGeometry instanceof THREE.BufferGeometry)) {
+    throw new Error('#createDepthPassMesh only BufferGeometry is supported')
+  }
+  const positionAttribute = originalGeometry.getAttribute('position')
+  if (!positionAttribute) {
+    throw new Error('#createDepthPassMesh position attribute not found')
+  }
 
-    const depthPassGeometry = new THREE.BufferGeometry()
-    depthPassGeometry.setAttribute('position', positionAttribute)
-    const uvAttribute = originalGeometry.getAttribute('uv')
-    if (uvAttribute) {
-        depthPassGeometry.setAttribute('uv', uvAttribute)
-    }
-    const normalAttribute = originalGeometry.getAttribute('normal')
-    if (normalAttribute) {
-        depthPassGeometry.setAttribute('normal', normalAttribute)
-    }
-    const extrusionAxisAttribute =
-        originalGeometry.getAttribute('extrusionAxis')
-    if (extrusionAxisAttribute) {
-        depthPassGeometry.setAttribute('extrusionAxis', extrusionAxisAttribute)
-    }
+  const depthPassGeometry = new THREE.BufferGeometry()
+  depthPassGeometry.setAttribute('position', positionAttribute)
+  const uvAttribute = originalGeometry.getAttribute('uv')
+  if (uvAttribute) {
+    depthPassGeometry.setAttribute('uv', uvAttribute)
+  }
+  const normalAttribute = originalGeometry.getAttribute('normal')
+  if (normalAttribute) {
+    depthPassGeometry.setAttribute('normal', normalAttribute)
+  }
+  const extrusionAxisAttribute = originalGeometry.getAttribute('extrusionAxis')
+  if (extrusionAxisAttribute) {
+    depthPassGeometry.setAttribute('extrusionAxis', extrusionAxisAttribute)
+  }
 
-    if (originalGeometry.index) {
-        depthPassGeometry.setIndex(originalGeometry.index)
-    }
+  if (originalGeometry.index) {
+    depthPassGeometry.setIndex(originalGeometry.index)
+  }
 
-    for (const group of originalGeometry.groups) {
-        const { start, count, materialIndex } = group
-        depthPassGeometry.addGroup(start, count, materialIndex)
-    }
+  for (const group of originalGeometry.groups) {
+    const { start, count, materialIndex } = group
+    depthPassGeometry.addGroup(start, count, materialIndex)
+  }
 
-    const depthPassMaterial =
-        mesh.material instanceof Array
-            ? mesh.material.map(createDepthPrePassMaterial)
-            : createDepthPrePassMaterial(mesh.material)
+  const depthPassMaterial =
+    mesh.material instanceof Array
+      ? mesh.material.map(createDepthPrePassMaterial)
+      : createDepthPrePassMaterial(mesh.material)
 
-    const depthPassMesh = new THREE.Mesh(depthPassGeometry, depthPassMaterial)
-    depthPassMesh.renderOrder =
-        mesh.renderOrder - DEPTH_PRE_PASS_RENDER_ORDER_OFFSET
+  const depthPassMesh = new THREE.Mesh(depthPassGeometry, depthPassMaterial)
+  depthPassMesh.renderOrder = mesh.renderOrder - DEPTH_PRE_PASS_RENDER_ORDER_OFFSET
 
-    return depthPassMesh
+  return depthPassMesh
 }
 
 /**
@@ -206,49 +194,46 @@ export function createDepthPrePassMesh(mesh: THREE.Mesh): THREE.Mesh {
  * @param colorMesh - Original mesh.
  * @internal
  */
-export function setDepthPrePassStencil(
-    depthMesh: THREE.Mesh,
-    colorMesh: THREE.Mesh
-) {
-    function setupDepthMaterialStencil(depthMeshMaterial: THREE.Material) {
-        // Set up depth mesh stencil logic.
-        // Set the depth pre-pass stencil bit for all processed fragments. We use
-        // `THREE.AlwaysStencilFunc` and not `THREE.NotEqualStencilFunc` to force all fragments to pass
-        // the stencil test and write the correct depth value.
-        const depthMaterial = depthMeshMaterial as MapMeshStandardMaterial
-        depthMaterial.stencilWrite = true
-        depthMaterial.stencilFail = THREE.KeepStencilOp
-        depthMaterial.stencilZFail = THREE.KeepStencilOp
-        depthMaterial.stencilZPass = THREE.ReplaceStencilOp
-        depthMaterial.stencilFunc = THREE.AlwaysStencilFunc
-        depthMaterial.stencilRef = 0xff
-        ;(depthMaterial as any).stencilFuncMask = DEPTH_PRE_PASS_STENCIL_MASK
-    }
+export function setDepthPrePassStencil(depthMesh: THREE.Mesh, colorMesh: THREE.Mesh) {
+  function setupDepthMaterialStencil(depthMeshMaterial: THREE.Material) {
+    // Set up depth mesh stencil logic.
+    // Set the depth pre-pass stencil bit for all processed fragments. We use
+    // `THREE.AlwaysStencilFunc` and not `THREE.NotEqualStencilFunc` to force all fragments to pass
+    // the stencil test and write the correct depth value.
+    const depthMaterial = depthMeshMaterial as MapMeshStandardMaterial
+    depthMaterial.stencilWrite = true
+    depthMaterial.stencilFail = THREE.KeepStencilOp
+    depthMaterial.stencilZFail = THREE.KeepStencilOp
+    depthMaterial.stencilZPass = THREE.ReplaceStencilOp
+    depthMaterial.stencilFunc = THREE.AlwaysStencilFunc
+    depthMaterial.stencilRef = 0xff
+    ;(depthMaterial as any).stencilFuncMask = DEPTH_PRE_PASS_STENCIL_MASK
+  }
 
-    function setupColorMaterialStencil(colorMeshMaterial: THREE.Material) {
-        // Set up color mesh stencil logic.
-        // Only write color for pixels with the depth pre-pass stencil bit set. Also, once a pixel is
-        // rendered, set the stencil bit to 0 to prevent subsequent pixels in the same clip position
-        // from rendering color again.
-        const colorMaterial = colorMeshMaterial as MapMeshStandardMaterial
-        colorMaterial.stencilWrite = true
-        colorMaterial.stencilFail = THREE.KeepStencilOp
-        colorMaterial.stencilZFail = THREE.KeepStencilOp
-        colorMaterial.stencilZPass = THREE.ZeroStencilOp
-        colorMaterial.stencilFunc = THREE.EqualStencilFunc
-        colorMaterial.stencilRef = 0xff
-        ;(colorMaterial as any).stencilFuncMask = DEPTH_PRE_PASS_STENCIL_MASK
-    }
+  function setupColorMaterialStencil(colorMeshMaterial: THREE.Material) {
+    // Set up color mesh stencil logic.
+    // Only write color for pixels with the depth pre-pass stencil bit set. Also, once a pixel is
+    // rendered, set the stencil bit to 0 to prevent subsequent pixels in the same clip position
+    // from rendering color again.
+    const colorMaterial = colorMeshMaterial as MapMeshStandardMaterial
+    colorMaterial.stencilWrite = true
+    colorMaterial.stencilFail = THREE.KeepStencilOp
+    colorMaterial.stencilZFail = THREE.KeepStencilOp
+    colorMaterial.stencilZPass = THREE.ZeroStencilOp
+    colorMaterial.stencilFunc = THREE.EqualStencilFunc
+    colorMaterial.stencilRef = 0xff
+    ;(colorMaterial as any).stencilFuncMask = DEPTH_PRE_PASS_STENCIL_MASK
+  }
 
-    if (depthMesh.material instanceof Array) {
-        depthMesh.material.map(setupDepthMaterialStencil)
-    } else {
-        setupDepthMaterialStencil(depthMesh.material)
-    }
+  if (depthMesh.material instanceof Array) {
+    depthMesh.material.map(setupDepthMaterialStencil)
+  } else {
+    setupDepthMaterialStencil(depthMesh.material)
+  }
 
-    if (colorMesh.material instanceof Array) {
-        colorMesh.material.map(setupColorMaterialStencil)
-    } else {
-        setupColorMaterialStencil(colorMesh.material)
-    }
+  if (colorMesh.material instanceof Array) {
+    colorMesh.material.map(setupColorMaterialStencil)
+  } else {
+    setupColorMaterialStencil(colorMesh.material)
+  }
 }

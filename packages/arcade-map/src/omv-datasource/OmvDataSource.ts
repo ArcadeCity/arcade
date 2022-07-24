@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { VectorTileDataSource } from '@arca/vectortile-datasource'
+import {
+  VectorTileDataSource
+} from '@arcadecity/arcade-map/vectortile-datasource'
 
 /**
  * `OmvDataSource` is used for the visualization of vector tiles

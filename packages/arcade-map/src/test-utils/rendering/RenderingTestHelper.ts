@@ -10,11 +10,9 @@ import { assert } from 'chai'
 import * as querystring from 'querystring'
 import * as THREE from 'three'
 import { UAParser } from 'ua-parser-js'
-
-import { LoggerManager } from '@arca/utils'
-
+import { LoggerManager } from '@arcadecity/arcade-map/utils'
 import {
-    canvasToImageData, compareImages, loadImageData
+  canvasToImageData, compareImages, loadImageData
 } from './DomImageUtils'
 import { DomReporter } from './DomReporter'
 import { Reporter, TestImageProps } from './Interface'
@@ -27,32 +25,32 @@ const logger = LoggerManager.instance.create('RenderingTestHelper')
  * Specifies how sensitive image comparison should be
  */
 export interface TestOptions {
-    /**
-     * Defines how many pixels can mismatch. If more than maxMismatchedPixels
-     * test fails.
-     */
-    maxMismatchedPixels?: number
-    /**
-     * Matching threshold, ranges from 0 to 1.
-     * Smaller values make the comparison more sensitive. 0 by default.
-     * 0 - accepts perfect match, 1 - accepts many differences
-     * Used with pixelmatch library: https://github.com/mapbox/pixelmatch
-     */
-    threshold?: number
+  /**
+   * Defines how many pixels can mismatch. If more than maxMismatchedPixels
+   * test fails.
+   */
+  maxMismatchedPixels?: number
+  /**
+   * Matching threshold, ranges from 0 to 1.
+   * Smaller values make the comparison more sensitive. 0 by default.
+   * 0 - accepts perfect match, 1 - accepts many differences
+   * Used with pixelmatch library: https://github.com/mapbox/pixelmatch
+   */
+  threshold?: number
 }
 
 /**
  * Defaults used for image comapision
  */
 const TestOptionsDefaults = {
-    /**
-     * By default maxMismatchedPixels equal 0 to have pixel perfect match
-     */
-    maxMismatchedPixels: 0,
-    /**
-     * By default threshold equal 0 to have more sensitive comparision
-     */
-    threshold: 0,
+  /**
+   * By default maxMismatchedPixels equal 0 to have pixel perfect match
+   */
+  maxMismatchedPixels: 0,
+  /**
+   * By default threshold equal 0 to have more sensitive comparision
+   */
+  threshold: 0,
 }
 
 /**
@@ -67,218 +65,180 @@ const TestOptionsDefaults = {
  * browser api like "no-gpu" or "headless" or "-nvidia-gtx-whatever".
  */
 export function getPlatform(): string {
-    let platformExtra: string = ''
+  let platformExtra: string = ''
 
-    if (typeof window !== 'undefined' && window.location) {
-        if (window.location.search) {
-            const queryParams = querystring.parse(
-                window.location.search.substr(1)
-            )
-            if (queryParams.IBCT_PLATFORM_OVERRIDE) {
-                return queryParams.IBCT_PLATFORM_OVERRIDE as string
-            }
-            if (queryParams.IBCT_PLATFORM_EXTRA) {
-                platformExtra = queryParams.IBCT_PLATFORM_EXTRA as string
-            }
-        }
+  if (typeof window !== 'undefined' && window.location) {
+    if (window.location.search) {
+      const queryParams = querystring.parse(window.location.search.substr(1))
+      if (queryParams.IBCT_PLATFORM_OVERRIDE) {
+        return queryParams.IBCT_PLATFORM_OVERRIDE as string
+      }
+      if (queryParams.IBCT_PLATFORM_EXTRA) {
+        platformExtra = queryParams.IBCT_PLATFORM_EXTRA as string
+      }
     }
-    const windowOverride: string = (global as any).IBCT_PLATFORM_OVERRIDE
-    if (windowOverride !== undefined) {
-        return windowOverride
-    }
-    if ((global as any).IBCT_PLATATFORM_EXTRA) {
-        platformExtra = (global as any).IBCT_PLATATFORM_EXTRA
-    }
+  }
+  const windowOverride: string = (global as any).IBCT_PLATFORM_OVERRIDE
+  if (windowOverride !== undefined) {
+    return windowOverride
+  }
+  if ((global as any).IBCT_PLATATFORM_EXTRA) {
+    platformExtra = (global as any).IBCT_PLATATFORM_EXTRA
+  }
 
-    if (typeof navigator === 'undefined') {
-        return 'nodejs'
-    } else {
-        // will have platforms like Chrome-69.2.1945-Linux
-        const ua = new UAParser(navigator.userAgent)
-        let platformParts = [
-            ua.getBrowser().name,
-            ua.getBrowser().version,
-            ua.getOS().name,
-        ]
-        if (platformExtra) {
-            platformParts.push(platformExtra)
-        }
-        platformParts = platformParts
-            .filter((str) => str !== undefined && str !== '')
-            .map((str) => str!.replace(/ /g, ''))
-        return platformParts.join('-')
+  if (typeof navigator === 'undefined') {
+    return 'nodejs'
+  } else {
+    // will have platforms like Chrome-69.2.1945-Linux
+    const ua = new UAParser(navigator.userAgent)
+    let platformParts = [ua.getBrowser().name, ua.getBrowser().version, ua.getOS().name]
+    if (platformExtra) {
+      platformParts.push(platformExtra)
     }
+    platformParts = platformParts
+      .filter((str) => str !== undefined && str !== '')
+      .map((str) => str!.replace(/ /g, ''))
+    return platformParts.join('-')
+  }
 }
 
 const domReporter = new DomReporter()
 const feedbackServerReporter = new RenderingTestResultReporter('')
 
 let ibctReporter: Reporter = {
-    reportImageComparisonResult() {
-        const argsArray = Array.prototype.slice.call(arguments)
-        domReporter.reportImageComparisonResult.apply(
-            domReporter,
-            argsArray as any
-        )
-        feedbackServerReporter.reportImageComparisonResult.apply(
-            feedbackServerReporter,
-            argsArray as any
-        )
-    },
+  reportImageComparisonResult() {
+    const argsArray = Array.prototype.slice.call(arguments)
+    domReporter.reportImageComparisonResult.apply(domReporter, argsArray as any)
+    feedbackServerReporter.reportImageComparisonResult.apply(
+      feedbackServerReporter,
+      argsArray as any
+    )
+  },
 }
 
 export function setGlobalReporter(reporter: Reporter) {
-    ibctReporter = reporter
+  ibctReporter = reporter
 }
 
 export class RenderingTestHelper {
-    /**
-     * Load image data using cache.
-     */
-    static cachedLoadImageData(url: string): Promise<ImageData> {
-        let p = this.preloadedImageCache.get(url)
-        if (p !== undefined) {
-            return p
-        }
-        p = loadImageData(url)
-        this.preloadedImageCache.set(url, p)
-        return p
+  /**
+   * Load image data using cache.
+   */
+  static cachedLoadImageData(url: string): Promise<ImageData> {
+    let p = this.preloadedImageCache.get(url)
+    if (p !== undefined) {
+      return p
+    }
+    p = loadImageData(url)
+    this.preloadedImageCache.set(url, p)
+    return p
+  }
+
+  private static readonly preloadedImageCache = new Map<string, Promise<ImageData>>()
+
+  constructor(public mochaTest: Mocha.Context, public baseImageProps: TestImageProps) {}
+
+  /**
+   * Save actual image only with comparison status OK
+   *
+   * @param canvas - actual image canvas
+   * @param name - test name
+   */
+  async saveCanvasMatchesReference(canvas: HTMLCanvasElement, name: string) {
+    const actualImage = await canvasToImageData(canvas)
+    const imageProps = {
+      ...this.baseImageProps,
+      platform: getPlatform(),
+      name,
+    }
+    const result = {
+      mismatchedPixels: 0,
+      diffImage: actualImage,
     }
 
-    private static readonly preloadedImageCache = new Map<
-        string,
-        Promise<ImageData>
-    >()
+    ibctReporter.reportImageComparisonResult(imageProps, actualImage, true, actualImage, result)
+  }
 
-    constructor(
-        public mochaTest: Mocha.Context,
-        public baseImageProps: TestImageProps
-    ) {}
+  /**
+   * Compare actual image vs reference image then report comparison result to feedbackServer
+   *
+   * @param canvas - actual image canvas
+   * @param name - test name
+   * @param options - test options
+   */
+  async assertCanvasMatchesReference(
+    canvas: HTMLCanvasElement,
+    name: string,
+    options?: TestOptions
+  ) {
+    const actualImage = await canvasToImageData(canvas)
+    const testOptions = { ...TestOptionsDefaults, ...options }
 
-    /**
-     * Save actual image only with comparison status OK
-     *
-     * @param canvas - actual image canvas
-     * @param name - test name
-     */
-    async saveCanvasMatchesReference(canvas: HTMLCanvasElement, name: string) {
-        const actualImage = await canvasToImageData(canvas)
-        const imageProps = {
-            ...this.baseImageProps,
-            platform: getPlatform(),
-            name,
-        }
-        const result = {
-            mismatchedPixels: 0,
-            diffImage: actualImage,
-        }
+    const imageProps = {
+      ...this.baseImageProps,
+      platform: getPlatform(),
+      name,
+    }
+    const referenceImageUrl = getReferenceImageUrl(imageProps)
 
-        ibctReporter.reportImageComparisonResult(
-            imageProps,
-            actualImage,
-            true,
-            actualImage,
-            result
-        )
+    let referenceImageData: ImageData | undefined
+    try {
+      referenceImageData = await RenderingTestHelper.cachedLoadImageData(referenceImageUrl)
+    } catch (error) {
+      logger.log(`[ERROR[ Reference image ${name} not found. Please update reference data`)
+      ibctReporter.reportImageComparisonResult(imageProps, actualImage, false)
+      this.mochaTest.skip()
+      return
     }
 
-    /**
-     * Compare actual image vs reference image then report comparison result to feedbackServer
-     *
-     * @param canvas - actual image canvas
-     * @param name - test name
-     * @param options - test options
-     */
-    async assertCanvasMatchesReference(
-        canvas: HTMLCanvasElement,
-        name: string,
-        options?: TestOptions
-    ) {
-        const actualImage = await canvasToImageData(canvas)
-        const testOptions = { ...TestOptionsDefaults, ...options }
+    const result = compareImages(actualImage, referenceImageData, testOptions)
 
-        const imageProps = {
-            ...this.baseImageProps,
-            platform: getPlatform(),
-            name,
-        }
-        const referenceImageUrl = getReferenceImageUrl(imageProps)
+    ibctReporter.reportImageComparisonResult(
+      imageProps,
+      actualImage,
+      result.mismatchedPixels <= testOptions.maxMismatchedPixels,
+      referenceImageData,
+      result
+    )
 
-        let referenceImageData: ImageData | undefined
-        try {
-            referenceImageData = await RenderingTestHelper.cachedLoadImageData(
-                referenceImageUrl
-            )
-        } catch (error) {
-            logger.log(
-                `[ERROR[ Reference image ${name} not found. Please update reference data`
-            )
-            ibctReporter.reportImageComparisonResult(
-                imageProps,
-                actualImage,
-                false
-            )
-            this.mochaTest.skip()
-            return
-        }
+    assert.equal(actualImage.height, referenceImageData.height)
+    assert.equal(actualImage.width, referenceImageData.width)
 
-        const result = compareImages(
-            actualImage,
-            referenceImageData,
-            testOptions
-        )
-
-        ibctReporter.reportImageComparisonResult(
-            imageProps,
-            actualImage,
-            result.mismatchedPixels <= testOptions.maxMismatchedPixels,
-            referenceImageData,
-            result
-        )
-
-        assert.equal(actualImage.height, referenceImageData.height)
-        assert.equal(actualImage.width, referenceImageData.width)
-
-        assert.isAtMost(
-            result.mismatchedPixels,
-            testOptions.maxMismatchedPixels,
-            `${result.mismatchedPixels} mismatched pixels, reference image: ${name}`
-        )
-    }
+    assert.isAtMost(
+      result.mismatchedPixels,
+      testOptions.maxMismatchedPixels,
+      `${result.mismatchedPixels} mismatched pixels, reference image: ${name}`
+    )
+  }
 }
 
 interface WebGlInfo {
-    vendor?: string
-    gpu?: string
+  vendor?: string
+  gpu?: string
 }
 
 export function getWebGlInfo() {
-    //Enable backward compatibility with three.js <= 0.117
-    const renderer = new ((THREE as any).WebGL1Renderer ??
-        THREE.WebGLRenderer)()
-    const context = renderer.getContext()
-    const result: WebGlInfo = {}
-    const availableExtensions = context.getSupportedExtensions()
-    if (
-        availableExtensions !== null &&
-        availableExtensions.indexOf('WEBGL_debug_renderer_info') > -1
-    ) {
-        const infoExtension = context.getExtension('WEBGL_debug_renderer_info')
-        if (infoExtension !== null) {
-            result.vendor = context.getParameter(
-                infoExtension.UNMASKED_VENDOR_WEBGL
-            )
-            result.gpu = context.getParameter(
-                infoExtension.UNMASKED_RENDERER_WEBGL
-            )
-        }
+  //Enable backward compatibility with three.js <= 0.117
+  const renderer = new ((THREE as any).WebGL1Renderer ?? THREE.WebGLRenderer)()
+  const context = renderer.getContext()
+  const result: WebGlInfo = {}
+  const availableExtensions = context.getSupportedExtensions()
+  if (
+    availableExtensions !== null &&
+    availableExtensions.indexOf('WEBGL_debug_renderer_info') > -1
+  ) {
+    const infoExtension = context.getExtension('WEBGL_debug_renderer_info')
+    if (infoExtension !== null) {
+      result.vendor = context.getParameter(infoExtension.UNMASKED_VENDOR_WEBGL)
+      result.gpu = context.getParameter(infoExtension.UNMASKED_RENDERER_WEBGL)
     }
-    renderer.dispose()
-    return result
+  }
+  renderer.dispose()
+  return result
 }
 
 try {
-    logger.log('WebGlInfo', getWebGlInfo())
+  logger.log('WebGlInfo', getWebGlInfo())
 } catch {
-    logger.warn('WebGL is not supported on this machine')
+  logger.warn('WebGL is not supported on this machine')
 }

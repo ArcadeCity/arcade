@@ -5,9 +5,9 @@
  */
 
 import { PerspectiveCamera } from 'three'
-
-import { GeoPolygon, Projection, ProjectionType } from '@arca/geoutils'
-
+import {
+  GeoPolygon, Projection, ProjectionType
+} from '@arcadecity/arcade-map/geoutils'
 import { PlaneViewBounds } from './PlaneViewBounds'
 import { SphereViewBounds } from './SphereViewBounds'
 import { ViewBounds } from './ViewBounds'
@@ -18,41 +18,34 @@ import { ViewBounds } from './ViewBounds'
  * @internal
  */
 export class BoundsGenerator {
-    private m_viewBounds!: ViewBounds
+  private m_viewBounds!: ViewBounds
 
-    constructor(
-        private readonly m_view: {
-            camera: PerspectiveCamera
-            projection: Projection
-            tileWrappingEnabled: boolean
-        }
-    ) {
-        this.createViewBounds()
+  constructor(
+    private readonly m_view: {
+      camera: PerspectiveCamera
+      projection: Projection
+      tileWrappingEnabled: boolean
     }
+  ) {
+    this.createViewBounds()
+  }
 
-    /**
-     * Generates a {@link @arca/geoutils#GeoPolygon} covering the visible map.
-     * The coordinates are sorted to ccw winding, so a polygon could be drawn with them.
-     * @returns The GeoPolygon with the view bounds or undefined if world is not in view.
-     */
-    generate(): GeoPolygon | undefined {
-        if (this.m_view.projection !== this.m_viewBounds.projection) {
-            this.createViewBounds()
-        }
-        return this.m_viewBounds.generate()
+  /**
+   * Generates a {@link @arcadecity/arcade-map/geoutils#GeoPolygon} covering the visible map.
+   * The coordinates are sorted to ccw winding, so a polygon could be drawn with them.
+   * @returns The GeoPolygon with the view bounds or undefined if world is not in view.
+   */
+  generate(): GeoPolygon | undefined {
+    if (this.m_view.projection !== this.m_viewBounds.projection) {
+      this.createViewBounds()
     }
+    return this.m_viewBounds.generate()
+  }
 
-    private createViewBounds() {
-        this.m_viewBounds =
-            this.m_view.projection.type === ProjectionType.Planar
-                ? new PlaneViewBounds(
-                      this.m_view.camera,
-                      this.m_view.projection,
-                      this.m_view
-                  )
-                : new SphereViewBounds(
-                      this.m_view.camera,
-                      this.m_view.projection
-                  )
-    }
+  private createViewBounds() {
+    this.m_viewBounds =
+      this.m_view.projection.type === ProjectionType.Planar
+        ? new PlaneViewBounds(this.m_view.camera, this.m_view.projection, this.m_view)
+        : new SphereViewBounds(this.m_view.camera, this.m_view.projection)
+  }
 }

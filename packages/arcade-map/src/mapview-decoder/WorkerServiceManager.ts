@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { WorkerServiceProtocol } from '@arca/datasource-protocol'
-
+import {
+  WorkerServiceProtocol
+} from '@arcadecity/arcade-map/datasource-protocol'
 import { WorkerService, WorkerServiceResponse } from './WorkerService'
 
 /**
@@ -17,8 +18,8 @@ export type WorkerServiceFactory = (serviceId: string) => WorkerService
  * Worker service class definition as needed by [[WorkerServiceManager.register]].
  */
 export interface WorkerServiceDescriptor {
-    serviceType: string
-    factory: WorkerServiceFactory
+  serviceType: string
+  factory: WorkerServiceFactory
 }
 
 /**
@@ -28,85 +29,76 @@ export interface WorkerServiceDescriptor {
  * one worker runtime!), starts automatically with first [[getInstance]] call.
  */
 export class WorkerServiceManager extends WorkerService {
-    /**
-     * Gets the default instance of `WorkerServiceManager`. Starts the service when first called.
-     */
-    static getInstance() {
-        if (this.m_service === undefined) {
-            this.m_service = new WorkerServiceManager(
-                WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID
-            )
-        }
-        return this.m_service
+  /**
+   * Gets the default instance of `WorkerServiceManager`. Starts the service when first called.
+   */
+  static getInstance() {
+    if (this.m_service === undefined) {
+      this.m_service = new WorkerServiceManager(
+        WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID
+      )
     }
+    return this.m_service
+  }
 
-    /**
-     * Default instance of `WorkerServiceManager`.
-     */
-    private static m_service: WorkerServiceManager
+  /**
+   * Default instance of `WorkerServiceManager`.
+   */
+  private static m_service: WorkerServiceManager
 
-    /**
-     * Contains all registered service factories indexed by `serviceType`.
-     */
-    private readonly m_factories = new Map<string, WorkerServiceFactory>()
+  /**
+   * Contains all registered service factories indexed by `serviceType`.
+   */
+  private readonly m_factories = new Map<string, WorkerServiceFactory>()
 
-    /**
-     * Contains all managed worker services indexed by their `serviceId`.
-     */
-    private readonly m_services = new Map<string, WorkerService>()
+  /**
+   * Contains all managed worker services indexed by their `serviceId`.
+   */
+  private readonly m_services = new Map<string, WorkerService>()
 
-    private constructor(
-        serviceId: string = WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID
-    ) {
-        super(serviceId)
-    }
+  private constructor(serviceId: string = WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID) {
+    super(serviceId)
+  }
 
-    /**
-     * Register [[WorkerService]] class to this manager.
-     *
-     * @param workerServiceDescriptor - service type and factory
-     */
-    register(workerServiceDescriptor: WorkerServiceDescriptor): void {
-        this.m_factories.set(
-            workerServiceDescriptor.serviceType,
-            workerServiceDescriptor.factory
+  /**
+   * Register [[WorkerService]] class to this manager.
+   *
+   * @param workerServiceDescriptor - service type and factory
+   */
+  register(workerServiceDescriptor: WorkerServiceDescriptor): void {
+    this.m_factories.set(workerServiceDescriptor.serviceType, workerServiceDescriptor.factory)
+  }
+
+  /** @override */
+  protected handleRequest(request: any): Promise<WorkerServiceResponse> {
+    if (request.type === WorkerServiceProtocol.Requests.CreateService) {
+      const existingService = this.m_services.get(request.targetServiceId)
+      if (existingService !== undefined) {
+        throw Error(
+          `error - service with targetServiceId='${request.targetServiceId}' already running, ignoring CreateService request`
         )
+      }
+
+      const factory = this.m_factories.get(request.targetServiceType)
+
+      if (factory === undefined) {
+        throw Error(`unknown targetServiceType requested: '${request.targetServiceType}'`)
+      }
+
+      const service = factory(request.targetServiceId)
+      this.m_services.set(request.targetServiceId, service)
+    }
+    if (request.type === WorkerServiceProtocol.Requests.DestroyService) {
+      const service = this.m_services.get(request.targetServiceId)
+      if (service === undefined) {
+        throw Error(`unknown targetServiceId '${request.targetServiceId}'`)
+      }
+      service.destroy()
+      this.m_services.delete(request.targetServiceId)
     }
 
-    /** @override */
-    protected handleRequest(request: any): Promise<WorkerServiceResponse> {
-        if (request.type === WorkerServiceProtocol.Requests.CreateService) {
-            const existingService = this.m_services.get(request.targetServiceId)
-            if (existingService !== undefined) {
-                throw Error(
-                    `error - service with targetServiceId='${request.targetServiceId}' already running, ignoring CreateService request`
-                )
-            }
-
-            const factory = this.m_factories.get(request.targetServiceType)
-
-            if (factory === undefined) {
-                throw Error(
-                    `unknown targetServiceType requested: '${request.targetServiceType}'`
-                )
-            }
-
-            const service = factory(request.targetServiceId)
-            this.m_services.set(request.targetServiceId, service)
-        }
-        if (request.type === WorkerServiceProtocol.Requests.DestroyService) {
-            const service = this.m_services.get(request.targetServiceId)
-            if (service === undefined) {
-                throw Error(
-                    `unknown targetServiceId '${request.targetServiceId}'`
-                )
-            }
-            service.destroy()
-            this.m_services.delete(request.targetServiceId)
-        }
-
-        return Promise.resolve({
-            response: {},
-        })
-    }
+    return Promise.resolve({
+      response: {},
+    })
+  }
 }

@@ -5,9 +5,8 @@
  */
 
 import {
-    TilerService, WorkerServiceManager
-} from '@arca/mapview-decoder/index-worker'
-
+  TilerService, WorkerServiceManager
+} from '@arcadecity/arcade-map/mapview-decoder/index-worker'
 import { GEOJSON_TILER_SERVICE_TYPE } from './OmvDecoderDefs'
 
 /**
@@ -25,17 +24,17 @@ import { GEOJSON_TILER_SERVICE_TYPE } from './OmvDecoderDefs'
  * ```
  */
 export class GeoJsonTilerService {
-    /**
-     * Register a vector data tiler service with
-     * {@link @arca/mapview-decoder#WorkerServiceManager}.
-     *
-     * @remarks
-     * Has to be called during initialization of decoder bundle.
-     */
-    static start() {
-        WorkerServiceManager.getInstance().register({
-            serviceType: GEOJSON_TILER_SERVICE_TYPE,
-            factory: (serviceId: string) => TilerService.start(serviceId),
-        })
-    }
+  /**
+   * Register a vector data tiler service with
+   * {@link @arcadecity/arcade-map/mapview-decoder#WorkerServiceManager}.
+   *
+   * @remarks
+   * Has to be called during initialization of decoder bundle.
+   */
+  static start() {
+    WorkerServiceManager.getInstance().register({
+      serviceType: GEOJSON_TILER_SERVICE_TYPE,
+      factory: (serviceId: string) => TilerService.start(serviceId),
+    })
+  }
 }

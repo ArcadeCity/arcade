@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MapEnv } from '@arca/datasource-protocol/index-decoder'
-import { LoggerManager } from '@arca/utils'
-
+import {
+  MapEnv
+} from '@arcadecity/arcade-map/datasource-protocol/index-decoder'
+import { LoggerManager } from '@arcadecity/arcade-map/utils'
 import { OmvFeatureModifier } from './OmvDataFilter'
 
 const logger = LoggerManager.instance.create('OmvPoliticalViewFeatureModifier')
@@ -26,101 +27,89 @@ const logger = LoggerManager.instance.create('OmvPoliticalViewFeatureModifier')
  * @hidden
  */
 export class OmvPoliticalViewFeatureModifier implements OmvFeatureModifier {
-    private readonly m_countryCode: string
+  private readonly m_countryCode: string
 
-    /**
-     * C-tor.
-     *
-     * @param pov - The code of the country (in lower-case ISO 3166-1 alpha-2 format) which
-     * point of view should be taken into account.
-     */
-    constructor(pov: string) {
-        this.m_countryCode = pov
-    }
+  /**
+   * C-tor.
+   *
+   * @param pov - The code of the country (in lower-case ISO 3166-1 alpha-2 format) which
+   * point of view should be taken into account.
+   */
+  constructor(pov: string) {
+    this.m_countryCode = pov
+  }
 
-    /**
-     * Simply passes all points to rendering, points features does not support PoliticalView.
-     *
-     * @param layer - Current layer.
-     * @param env - Properties of point feature.
-     * @param level - Level of tile.
-     * @returns always `true` to pass feature.
-     */
-    doProcessPointFeature(layer: string, env: MapEnv, level: number): boolean {
-        return true
-    }
+  /**
+   * Simply passes all points to rendering, points features does not support PoliticalView.
+   *
+   * @param layer - Current layer.
+   * @param env - Properties of point feature.
+   * @param level - Level of tile.
+   * @returns always `true` to pass feature.
+   */
+  doProcessPointFeature(layer: string, env: MapEnv, level: number): boolean {
+    return true
+  }
 
-    /**
-     * Implements line features processing changing "kind" attribute depending on point of view.
-     *
-     * Currently only line features support different point of view.
-     * @param layer - The name of the layer.
-     * @param env - The environment to use.
-     * @returns always `true` to pass lines for rendering.
-     */
-    doProcessLineFeature(layer: string, env: MapEnv, level: number): boolean {
-        this.rewriteEnvironment(layer, env)
-        return true
-    }
+  /**
+   * Implements line features processing changing "kind" attribute depending on point of view.
+   *
+   * Currently only line features support different point of view.
+   * @param layer - The name of the layer.
+   * @param env - The environment to use.
+   * @returns always `true` to pass lines for rendering.
+   */
+  doProcessLineFeature(layer: string, env: MapEnv, level: number): boolean {
+    this.rewriteEnvironment(layer, env)
+    return true
+  }
 
-    /**
-     * Simply pass all polygons to rendering, this feature does not support PoliticalView yet.
-     *
-     * @param layer - Current layer.
-     * @param env - Properties of polygon feature.
-     * @param level - Level of tile.
-     * @returns `true` to pass feature.
-     */
-    doProcessPolygonFeature(
-        layer: string,
-        env: MapEnv,
-        level: number
-    ): boolean {
-        return true
-    }
+  /**
+   * Simply pass all polygons to rendering, this feature does not support PoliticalView yet.
+   *
+   * @param layer - Current layer.
+   * @param env - Properties of polygon feature.
+   * @param level - Level of tile.
+   * @returns `true` to pass feature.
+   */
+  doProcessPolygonFeature(layer: string, env: MapEnv, level: number): boolean {
+    return true
+  }
 
-    /**
-     * Rewrites the Environment to match the different points of view.
-     *
-     * @param layer - The layer name.
-     * @param env - The environment to use.
-     */
-    private rewriteEnvironment(layer: string, env: MapEnv) {
-        // For now we need to rewrite "boundaries" layer only.
-        if (this.isPoliticalViewLayer(layer)) {
-            this.updateEnvironment(env, this.m_countryCode, 'kind')
-        }
+  /**
+   * Rewrites the Environment to match the different points of view.
+   *
+   * @param layer - The layer name.
+   * @param env - The environment to use.
+   */
+  private rewriteEnvironment(layer: string, env: MapEnv) {
+    // For now we need to rewrite "boundaries" layer only.
+    if (this.isPoliticalViewLayer(layer)) {
+      this.updateEnvironment(env, this.m_countryCode, 'kind')
     }
+  }
 
-    private updateEnvironment(
-        env: MapEnv,
-        countryCode: string,
-        propName: string
-    ): void {
-        const value = this.getAlternativePov(env, countryCode, propName)
-        if (value !== undefined) {
-            env.entries[propName] = value
-        }
+  private updateEnvironment(env: MapEnv, countryCode: string, propName: string): void {
+    const value = this.getAlternativePov(env, countryCode, propName)
+    if (value !== undefined) {
+      env.entries[propName] = value
     }
+  }
 
-    private getAlternativePov(
-        env: MapEnv,
-        countryCode: string,
-        propName: string
-    ) {
-        logger.log('Get alternate POV: ', JSON.stringify(env))
-        const cc = countryCode
-        const value = env.lookup(`${propName}:${cc}`)
-        logger.log('Lookup POV: ', `${propName}:${cc}`, value)
-        if (typeof value === 'string' && value.length > 0) {
-            logger.log('Found POV: ', `${propName}:${cc}`, value)
-            return value
-        } else {
-            return undefined
-        }
+  private getAlternativePov(env: MapEnv, countryCode: string, propName: string) {
+    logger.log('Get alternate POV: ', JSON.stringify(env))
+    const cc = countryCode
+    const value = env.lookup(`${propName}:${cc}`)
+    logger.log('Lookup POV: ', `${propName}:${cc}`, value)
+    if (typeof value === 'string' && value.length > 0) {
+      logger.log('Found POV: ', `${propName}:${cc}`, value)
+      return value
+    } else {
+      return undefined
     }
+  }
 
-    private isPoliticalViewLayer(layer: string): boolean {
-        return layer === 'boundaries'
-    }
+  private isPoliticalViewLayer(layer: string): boolean {
+    return layer === 'boundaries'
+  }
 }

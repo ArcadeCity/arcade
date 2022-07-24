@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export * from '@arca/vectortile-datasource/index-worker'
+export * from '@arcadecity/arcade-map/vectortile-datasource/index-worker'
 
 export {
-    VectorTileDataProcessor as OmvDecoder,
-    VectorTileDecoderService as OmvTileDecoderService,
-    VectorTileDecoder as OmvTileDecoder,
-    GeoJsonTilerService as OmvTilerService,
-} from '@arca/vectortile-datasource/index-worker'
+  VectorTileDataProcessor as OmvDecoder,
+  VectorTileDecoderService as OmvTileDecoderService,
+  VectorTileDecoder as OmvTileDecoder,
+  GeoJsonTilerService as OmvTilerService,
+} from '@arcadecity/arcade-map/vectortile-datasource/index-worker'

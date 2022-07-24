@@ -7,12 +7,12 @@ import { Vector3Like } from '../geoutils'
 import { JsonExpr, JsonValue } from './Expr'
 import { InterpolatedPropertyDefinition } from './InterpolatedPropertyDefs'
 import {
-    BaseTechniqueParams, BasicExtrudedLineTechniqueParams,
-    ExtrudedPolygonTechniqueParams, FillTechniqueParams, LineTechniqueParams,
-    MarkerTechniqueParams, Pickability, PointTechniqueParams,
-    SegmentsTechniqueParams, ShaderTechniqueParams, SolidLineTechniqueParams,
-    StandardExtrudedLineTechniqueParams, StandardTechniqueParams,
-    TerrainTechniqueParams, TextTechniqueParams
+  BaseTechniqueParams, BasicExtrudedLineTechniqueParams,
+  ExtrudedPolygonTechniqueParams, FillTechniqueParams, LineTechniqueParams,
+  MarkerTechniqueParams, Pickability, PointTechniqueParams,
+  SegmentsTechniqueParams, ShaderTechniqueParams, SolidLineTechniqueParams,
+  StandardExtrudedLineTechniqueParams, StandardTechniqueParams,
+  TerrainTechniqueParams, TextTechniqueParams
 } from './TechniqueParams'
 
 /**
@@ -20,161 +20,161 @@ import {
  * which lightning is used or whether fog should be displayed.
  */
 export interface Theme {
-    /**
-     * The URI of the JSON schema describing themes.
-     */
-    $schema?: string
+  /**
+   * The URI of the JSON schema describing themes.
+   */
+  $schema?: string
 
-    /**
-     * The base `Theme`s or `theme` URLs to extend.
-     *
-     * @remarks
-     * If used, base themes are loaded first, and then all the properties from inherited theme
-     * overwrite these defined in base theme.
-     */
+  /**
+   * The base `Theme`s or `theme` URLs to extend.
+   *
+   * @remarks
+   * If used, base themes are loaded first, and then all the properties from inherited theme
+   * overwrite these defined in base theme.
+   */
 
-    extends?: string | Theme | Array<string | Theme>
+  extends?: string | Theme | Array<string | Theme>
 
-    /**
-     * Actual URL the theme has been loaded from.
-     */
-    url?: string
+  /**
+   * Actual URL the theme has been loaded from.
+   */
+  url?: string
 
-    /**
-     * Color to be used as a clear background - no map objects.
-     * @format color-hex
-     */
-    clearColor?: string
+  /**
+   * Color to be used as a clear background - no map objects.
+   * @format color-hex
+   */
+  clearColor?: string
 
-    /**
-     * Alpha to be used as a clear background - no map objects.
-     * @format 0-1
-     */
-    clearAlpha?: number
+  /**
+   * Alpha to be used as a clear background - no map objects.
+   * @format 0-1
+   */
+  clearAlpha?: number
 
-    /**
-     * Define the default text style for styling labels and texts.
-     */
-    defaultTextStyle?: TextStyleDefinition
+  /**
+   * Define the default text style for styling labels and texts.
+   */
+  defaultTextStyle?: TextStyleDefinition
 
-    /**
-     * Define the lightning available on the three.js scene.
-     */
-    lights?: Light[]
+  /**
+   * Define the lightning available on the three.js scene.
+   */
+  lights?: Light[]
 
-    /**
-     * Define the style of the sky presented in the map scene.
-     */
-    sky?: Sky
+  /**
+   * Define the style of the sky presented in the map scene.
+   */
+  sky?: Sky
 
-    /**
-     * Define the fog used in the map scene.
-     */
-    fog?: Fog
+  /**
+   * Define the fog used in the map scene.
+   */
+  fog?: Fog
 
-    /**
-     * The definitions exported by these theme.
-     */
-    definitions?: Definitions
+  /**
+   * The definitions exported by these theme.
+   */
+  definitions?: Definitions
 
-    /**
-     * Map styles available for datasources used to render the map.
-     */
-    styles?: StylesDictionary | Styles
+  /**
+   * Map styles available for datasources used to render the map.
+   */
+  styles?: StylesDictionary | Styles
 
-    /**
-     * Define the style to render different types of text used on the map.
-     */
-    textStyles?: TextStyleDefinition[]
+  /**
+   * Define the style to render different types of text used on the map.
+   */
+  textStyles?: TextStyleDefinition[]
 
-    /**
-     * List available fonts to be used while rendering text.
-     */
-    fontCatalogs?: FontCatalogConfig[]
+  /**
+   * List available fonts to be used while rendering text.
+   */
+  fontCatalogs?: FontCatalogConfig[]
 
-    /**
-     * Optional images to be rendered on the map view.
-     */
-    images?: ImageDefinitions
+  /**
+   * Optional images to be rendered on the map view.
+   */
+  images?: ImageDefinitions
 
-    /**
-     * Image textures to be used while rendering geometries on the map view.
-     */
-    imageTextures?: ImageTexture[]
+  /**
+   * Image textures to be used while rendering geometries on the map view.
+   */
+  imageTextures?: ImageTexture[]
 
-    /**
-     * Optional list of [[ThemePoiTableDef]]s.
-     */
-    poiTables?: PoiTableRef[]
+  /**
+   * Optional list of [[ThemePoiTableDef]]s.
+   */
+  poiTables?: PoiTableRef[]
 
-    /**
-     * Optional list of symbolic priorities for the object
-     * created using this {@link Theme}.
-     *
-     * @remarks
-     * The attribute `styleSet` and `category` of the [[Technique]]
-     * are used together with [[Theme.priorities]] to sort
-     * the objects created using this {@link Theme}, for example:
-     *
-     *
-     * ```json
-     * {
-     *      "priorities": [
-     *          { "group": "tilezen", "category": "outline-1" }
-     *      ],
-     *      "styles": [
-     *          {
-     *              "technique": "solid-line",
-     *              "styleSet": "tilezen",
-     *              "category": "outline-1"
-     *          }
-     *      ]
-     * }
-     * ```
-     */
-    priorities?: StylePriority[]
+  /**
+   * Optional list of symbolic priorities for the object
+   * created using this {@link Theme}.
+   *
+   * @remarks
+   * The attribute `styleSet` and `category` of the [[Technique]]
+   * are used together with [[Theme.priorities]] to sort
+   * the objects created using this {@link Theme}, for example:
+   *
+   *
+   * ```json
+   * {
+   *      "priorities": [
+   *          { "group": "tilezen", "category": "outline-1" }
+   *      ],
+   *      "styles": [
+   *          {
+   *              "technique": "solid-line",
+   *              "styleSet": "tilezen",
+   *              "category": "outline-1"
+   *          }
+   *      ]
+   * }
+   * ```
+   */
+  priorities?: StylePriority[]
 
-    /**
-     * Optional list of priorities for the screen-space
-     * objects created using this style.
-     *
-     * @remarks
-     * The name of the `category` attribute of the screen-space
-     * technique (e.g. `"text"`) must match on the strings
-     * defined by this [[Theme.labelPriorities]], for example:
-     *
-     * ```json
-     * {
-     *      "labelPriorities": [
-     *          "continent-labels",
-     *          "country-labels",
-     *          "state-labels"
-     *      ],
-     *      "styles": [
-     *          {
-     *              "technique": "text",
-     *              "category": "state-labels"
-     *          }
-     *      ]
-     * }
-     * ```
-     */
-    labelPriorities?: string[]
+  /**
+   * Optional list of priorities for the screen-space
+   * objects created using this style.
+   *
+   * @remarks
+   * The name of the `category` attribute of the screen-space
+   * technique (e.g. `"text"`) must match on the strings
+   * defined by this [[Theme.labelPriorities]], for example:
+   *
+   * ```json
+   * {
+   *      "labelPriorities": [
+   *          "continent-labels",
+   *          "country-labels",
+   *          "state-labels"
+   *      ],
+   *      "styles": [
+   *          {
+   *              "technique": "text",
+   *              "category": "state-labels"
+   *          }
+   *      ]
+   * }
+   * ```
+   */
+  labelPriorities?: string[]
 }
 
 /**
  * A type representing symbolic render orders.
  */
 export interface StylePriority {
-    /**
-     * The group of this `StylePriority`.
-     */
-    group: string
+  /**
+   * The group of this `StylePriority`.
+   */
+  group: string
 
-    /**
-     * The category of this `StylePriority`.
-     */
-    category?: string
+  /**
+   * The category of this `StylePriority`.
+   */
+  category?: string
 }
 
 /**
@@ -187,20 +187,20 @@ export type Definition = JsonValue | InterpolatedPropertyDefinition<JsonValue>
  * @deprecated
  */
 export interface VerboseDefinition {
-    /**
-     * The type of the definition.
-     */
-    type?: 'selector' | 'boolean' | 'number' | 'string' | 'color'
+  /**
+   * The type of the definition.
+   */
+  type?: 'selector' | 'boolean' | 'number' | 'string' | 'color'
 
-    /**
-     * The value of the definition.
-     */
-    value: Definition
+  /**
+   * The value of the definition.
+   */
+  value: Definition
 
-    /**
-     * The description of the definition.
-     */
-    description?: string
+  /**
+   * The description of the definition.
+   */
+  description?: string
 }
 
 /**
@@ -211,10 +211,8 @@ export interface VerboseDefinition {
  * @param definition
  * @returns `true` if the Definition is of the deprecated {@link VerboseDefinition} type
  */
-export function isVerboseDefinition(
-    definition: VerboseDefinition | Definition
-) {
-    return (definition as VerboseDefinition)?.value !== undefined
+export function isVerboseDefinition(definition: VerboseDefinition | Definition) {
+  return (definition as VerboseDefinition)?.value !== undefined
 }
 
 /**
@@ -225,19 +223,17 @@ export function isVerboseDefinition(
  * @param definition
  * @returns value of the given definition.
  */
-export function getDefinitionValue(
-    definition: VerboseDefinition | Definition
-): Definition {
-    return isVerboseDefinition(definition)
-        ? (definition as VerboseDefinition).value
-        : (definition as Definition)
+export function getDefinitionValue(definition: VerboseDefinition | Definition): Definition {
+  return isVerboseDefinition(definition)
+    ? (definition as VerboseDefinition).value
+    : (definition as Definition)
 }
 
 /*
  * An set of {@link Definition}s.
  */
 export interface Definitions {
-    [name: string]: Definition | VerboseDefinition
+  [name: string]: Definition | VerboseDefinition
 }
 
 export type JsonExprReference = ['ref', string]
@@ -248,156 +244,152 @@ export type JsonExprReference = ['ref', string]
  * @param value - The value of a technique property.
  */
 export function isJsonExprReference(value: any): value is JsonExprReference {
-    return (
-        Array.isArray(value) &&
-        value.length === 2 &&
-        value[0] === 'ref' &&
-        typeof value[1] === 'string'
-    )
+  return (
+    Array.isArray(value) && value.length === 2 && value[0] === 'ref' && typeof value[1] === 'string'
+  )
 }
 
 /**
  * An array of {@link Style}s that are used together to define how a
- * {@link @arca/mapview#DataSource} should be rendered.
+ * {@link @arcadecity/arcade-map/mapview#DataSource} should be rendered.
  *
  * @remarks
  * `StyleSet`s are applied to sources providing vector tiles via their method
  * `setStyleSet`. This is also handle internally when a whole theme is passed to a
- * {@link @arca/mapview#MapView} via {@link @arca/mapview#MapViewtheme}.
+ * {@link @arcadecity/arcade-map/mapview#MapView} via {@link @arcadecity/arcade-map/mapview#MapViewtheme}.
  */
 export type Styles = Style[]
 
 /**
- * The object that defines what way an item of a {@link @arca/mapview#DataSource}
+ * The object that defines what way an item of a {@link @arcadecity/arcade-map/mapview#DataSource}
  * should be decoded to assemble a tile.
  *
  * @remarks
  * {@link Style} is describing which features are shown on a map and in what way they are being
  * shown.
  */
-export type BaseStyle<Technique, Params> = StyleAttributes<Technique, Params> &
-    Partial<Params>
+export type BaseStyle<Technique, Params> = StyleAttributes<Technique, Params> & Partial<Params>
 
 /**
  * The common attributes of a {@link Style}.
  */
 export interface StyleAttributes<Technique, Params> {
-    /**
-     * Unique identifier associated with this `Style`.
-     */
-    id?: string
+  /**
+   * Unique identifier associated with this `Style`.
+   */
+  id?: string
 
-    /**
-     * Reference to the identifier of an existing `Style` to extend.
-     */
-    extends?: string
+  /**
+   * Reference to the identifier of an existing `Style` to extend.
+   */
+  extends?: string
 
-    /**
-     * Condition when this style rule applies.
-     *
-     * @remarks
-     * Condition that is applied to feature properties to check if given {@link Style} this feature
-     * should emit geometry of this style.
-     */
-    when?: string | JsonExpr
+  /**
+   * Condition when this style rule applies.
+   *
+   * @remarks
+   * Condition that is applied to feature properties to check if given {@link Style} this feature
+   * should emit geometry of this style.
+   */
+  when?: string | JsonExpr
 
-    /**
-     * The layer containing the carto features processed by this style rule.
-     */
-    layer?: string
+  /**
+   * The layer containing the carto features processed by this style rule.
+   */
+  layer?: string
 
-    /**
-     * Optional. If `true`, no more matching styles will be evaluated.
-     */
-    final?: boolean
+  /**
+   * Optional. If `true`, no more matching styles will be evaluated.
+   */
+  final?: boolean
 
-    /**
-     * Human readable description.
-     */
-    description?: string
+  /**
+   * Human readable description.
+   */
+  description?: string
 
-    /**
-     * The style set referenced by this styling rule.
-     */
-    styleSet?: string
+  /**
+   * The style set referenced by this styling rule.
+   */
+  styleSet?: string
 
-    /**
-     * The category of this style.
-     */
-    category?: string | JsonExpr
+  /**
+   * The category of this style.
+   */
+  category?: string | JsonExpr
 
-    /**
-     * The name of the technique to use.
-     *
-     * @remarks
-     * Technique name. See the classes extending from this class to determine what possible
-     * techniques are possible, includes `"line"`, `"fill"`, `"solid-line"`, `"extruded-line"`,
-     * `"extruded-polygon"`, `"text"`, `"none"`.
-     */
-    technique: Technique
+  /**
+   * The name of the technique to use.
+   *
+   * @remarks
+   * Technique name. See the classes extending from this class to determine what possible
+   * techniques are possible, includes `"line"`, `"fill"`, `"solid-line"`, `"extruded-line"`,
+   * `"extruded-polygon"`, `"text"`, `"none"`.
+   */
+  technique: Technique
 
-    /**
-     * Specify `renderOrder` of value.
-     *
-     * @remarks
-     * @default If not specified in style file, `renderOrder` will be assigned with monotonically
-     * increasing values according to style position in file.
-     */
-    renderOrder?: number | JsonExpr
+  /**
+   * Specify `renderOrder` of value.
+   *
+   * @remarks
+   * @default If not specified in style file, `renderOrder` will be assigned with monotonically
+   * increasing values according to style position in file.
+   */
+  renderOrder?: number | JsonExpr
 
-    /**
-     * Minimal zoom level. If the current zoom level is smaller, the technique will not be used.
-     */
-    minZoomLevel?: number | JsonExpr
+  /**
+   * Minimal zoom level. If the current zoom level is smaller, the technique will not be used.
+   */
+  minZoomLevel?: number | JsonExpr
 
-    /**
-     * Maximum zoom level. If the current zoom level is larger, the technique will not be used.
-     */
-    maxZoomLevel?: number | JsonExpr
+  /**
+   * Maximum zoom level. If the current zoom level is larger, the technique will not be used.
+   */
+  maxZoomLevel?: number | JsonExpr
 
-    /**
-     * Optional. If `true` or `Pickability.transient`, no IDs will be saved for the geometry
-     * this style creates. Default is `Pickability.onlyVisible`, which allows all pickable and visible
-     * objects to be picked, Pickability.all, will also allow invisible objects to be
-     * picked.
-     * @defaultValue `Pickability.onlyVisible`
-     * The boolean option is for backwardscompatibilty, please use the Pickability.
-     *
-     *
-     * TODO: deprecate and rename to something that makes more sense
-     */
-    transient?: boolean | Pickability
+  /**
+   * Optional. If `true` or `Pickability.transient`, no IDs will be saved for the geometry
+   * this style creates. Default is `Pickability.onlyVisible`, which allows all pickable and visible
+   * objects to be picked, Pickability.all, will also allow invisible objects to be
+   * picked.
+   * @defaultValue `Pickability.onlyVisible`
+   * The boolean option is for backwardscompatibilty, please use the Pickability.
+   *
+   *
+   * TODO: deprecate and rename to something that makes more sense
+   */
+  transient?: boolean | Pickability
 
-    /**
-     * Optional: If `true`, the objects with matching `when` statement will be printed to the
-     * console.
-     */
-    debug?: boolean
+  /**
+   * Optional: If `true`, the objects with matching `when` statement will be printed to the
+   * console.
+   */
+  debug?: boolean
 
-    /**
-     * @deprecated Technique parameters are now properties at the Style interface level.
-     */
-    attr?: Partial<Params>
+  /**
+   * @deprecated Technique parameters are now properties at the Style interface level.
+   */
+  attr?: Partial<Params>
 }
 
 export type Style =
-    | SquaresStyle
-    | CirclesStyle
-    | PoiStyle
-    | LineMarkerStyle
-    | LineStyle
-    | SegmentsStyle
-    | SolidLineStyle
-    | LabelRejectionLineStyle
-    | FillStyle
-    | StandardStyle
-    | BasicExtrudedLineStyle
-    | StandardExtrudedLineStyle
-    | ExtrudedPolygonStyle
-    | ShaderStyle
-    | TerrainStyle
-    | TextTechniqueStyle
-    | NoneStyle
+  | SquaresStyle
+  | CirclesStyle
+  | PoiStyle
+  | LineMarkerStyle
+  | LineStyle
+  | SegmentsStyle
+  | SolidLineStyle
+  | LabelRejectionLineStyle
+  | FillStyle
+  | StandardStyle
+  | BasicExtrudedLineStyle
+  | StandardExtrudedLineStyle
+  | ExtrudedPolygonStyle
+  | ShaderStyle
+  | TerrainStyle
+  | TextTechniqueStyle
+  | NoneStyle
 
 /**
  * A dictionary of {@link Styles}s.
@@ -406,7 +398,7 @@ export type Style =
  * Use {@link Styles} instead, which is just a flat list of {@link Style}
  */
 export interface StylesDictionary {
-    [styleSetName: string]: Styles
+  [styleSetName: string]: Styles
 }
 
 /**
@@ -418,16 +410,16 @@ export interface StylesDictionary {
  *
  */
 function convertDictionaryToStyles(stylesDict: StylesDictionary): Styles {
-    const styles: Styles = []
-    for (const styleSetName in stylesDict) {
-        stylesDict[styleSetName].forEach((style) => {
-            if (style.styleSet === undefined) {
-                style.styleSet = styleSetName
-            }
-            styles.push(style)
-        })
-    }
-    return styles
+  const styles: Styles = []
+  for (const styleSetName in stylesDict) {
+    stylesDict[styleSetName].forEach((style) => {
+      if (style.styleSet === undefined) {
+        style.styleSet = styleSetName
+      }
+      styles.push(style)
+    })
+  }
+  return styles
 }
 
 /**
@@ -437,10 +429,8 @@ function convertDictionaryToStyles(stylesDict: StylesDictionary): Styles {
  * @param styles
  * @returns
  */
-export function isStylesDictionary(
-    styles: StylesDictionary | Styles | undefined
-): boolean {
-    return styles !== undefined && !Array.isArray(styles)
+export function isStylesDictionary(styles: StylesDictionary | Styles | undefined): boolean {
+  return styles !== undefined && !Array.isArray(styles)
 }
 
 /**
@@ -450,16 +440,14 @@ export function isStylesDictionary(
  * @param styles
  * @returns
  */
-export function getStyles(
-    styles: StylesDictionary | Styles | undefined
-): Styles {
-    if (styles === undefined) {
-        return [] as Styles
-    } else if (isStylesDictionary(styles)) {
-        return convertDictionaryToStyles(styles as StylesDictionary)
-    } else {
-        return styles as Styles
-    }
+export function getStyles(styles: StylesDictionary | Styles | undefined): Styles {
+  if (styles === undefined) {
+    return [] as Styles
+  } else if (isStylesDictionary(styles)) {
+    return convertDictionaryToStyles(styles as StylesDictionary)
+  } else {
+    return styles as Styles
+  }
 }
 
 /**
@@ -530,15 +518,9 @@ export type LineStyle = BaseStyle<'line', LineTechniqueParams>
  */
 export type SegmentsStyle = BaseStyle<'segments', SegmentsTechniqueParams>
 
-export type SolidLineStyle = BaseStyle<
-    'solid-line' | 'dashed-line',
-    SolidLineTechniqueParams
->
+export type SolidLineStyle = BaseStyle<'solid-line' | 'dashed-line', SolidLineTechniqueParams>
 
-export type LabelRejectionLineStyle = BaseStyle<
-    'label-rejection-line',
-    BaseTechniqueParams
->
+export type LabelRejectionLineStyle = BaseStyle<'label-rejection-line', BaseTechniqueParams>
 
 export type FillStyle = BaseStyle<'fill', FillTechniqueParams>
 
@@ -546,36 +528,30 @@ export type StandardStyle = BaseStyle<'standard', StandardTechniqueParams>
 
 export type TerrainStyle = BaseStyle<'terrain', TerrainTechniqueParams>
 
-export type BasicExtrudedLineStyle = BaseStyle<
-    'extruded-line',
-    BasicExtrudedLineTechniqueParams
->
+export type BasicExtrudedLineStyle = BaseStyle<'extruded-line', BasicExtrudedLineTechniqueParams>
 
 export type StandardExtrudedLineStyle = BaseStyle<
-    'extruded-line',
-    StandardExtrudedLineTechniqueParams
+  'extruded-line',
+  StandardExtrudedLineTechniqueParams
 >
 
 /**
  * Style used to draw a geometry as an extruded polygon, for example extruded buildings.
  */
-export type ExtrudedPolygonStyle = BaseStyle<
-    'extruded-polygon',
-    ExtrudedPolygonTechniqueParams
->
+export type ExtrudedPolygonStyle = BaseStyle<'extruded-polygon', ExtrudedPolygonTechniqueParams>
 
 export type ShaderStyle = BaseStyle<'shader', ShaderTechniqueParams>
 
 export type TextTechniqueStyle = BaseStyle<'text', TextTechniqueParams>
 
 export interface NoneStyle
-    extends BaseStyle<
-        'none',
-        {
-            [name: string]: any
-        }
-    > {
-    [name: string]: any
+  extends BaseStyle<
+    'none',
+    {
+      [name: string]: any
+    }
+  > {
+  [name: string]: any
 }
 
 /**
@@ -584,145 +560,145 @@ export interface NoneStyle
 export type Light = AmbientLight | DirectionalLight
 
 export interface BaseLight {
-    type: string
-    name: string
+  type: string
+  name: string
 }
 
 /**
  * Ambient light
  */
 export interface AmbientLight extends BaseLight {
-    /**
-     * The type of the light.
-     */
-    type: 'ambient'
+  /**
+   * The type of the light.
+   */
+  type: 'ambient'
 
-    /**
-     * The color of this ambient light.
-     */
-    color: string
+  /**
+   * The color of this ambient light.
+   */
+  color: string
 
-    /**
-     * The intensity of this ambient light.
-     */
-    intensity?: number
+  /**
+   * The intensity of this ambient light.
+   */
+  intensity?: number
 }
 
 /**
  * Directional light.
  */
 export interface DirectionalLight extends BaseLight {
-    /**
-     * The type of the light.
-     */
-    type: 'directional'
+  /**
+   * The type of the light.
+   */
+  type: 'directional'
 
-    /**
-     * The color of this directional light.
-     */
-    color: string
+  /**
+   * The color of this directional light.
+   */
+  color: string
 
-    /**
-     * The intensity of this directional light.
-     */
-    intensity: number
+  /**
+   * The intensity of this directional light.
+   */
+  intensity: number
 
-    /**
-     * The direction of this directional light.
-     */
-    direction: Vector3Like
+  /**
+   * The direction of this directional light.
+   */
+  direction: Vector3Like
 
-    /**
-     * Determine if this light casts dynamic shadows.
-     *
-     * @defaultValue false
-     */
-    castShadow?: boolean
+  /**
+   * Determine if this light casts dynamic shadows.
+   *
+   * @defaultValue false
+   */
+  castShadow?: boolean
 }
 
 /**
  * Various text styles used with labels and texts.
  */
 export interface TextStyleDefinition {
-    name?: string
-    fontCatalogName?: string
+  name?: string
+  fontCatalogName?: string
 
-    fontName?: string
-    size?: number
-    backgroundSize?: number
-    fontStyle?: 'Regular' | 'Bold' | 'Italic' | 'BoldItalic'
-    fontVariant?: 'Regular' | 'AllCaps' | 'SmallCaps'
-    rotation?: number
-    /**
-     * @format color-hex
-     */
-    color?: string
-    /**
-     * @format color-hex
-     */
-    backgroundColor?: string
-    opacity?: number
-    backgroundOpacity?: number
+  fontName?: string
+  size?: number
+  backgroundSize?: number
+  fontStyle?: 'Regular' | 'Bold' | 'Italic' | 'BoldItalic'
+  fontVariant?: 'Regular' | 'AllCaps' | 'SmallCaps'
+  rotation?: number
+  /**
+   * @format color-hex
+   */
+  color?: string
+  /**
+   * @format color-hex
+   */
+  backgroundColor?: string
+  opacity?: number
+  backgroundOpacity?: number
 
-    tracking?: number
-    leading?: number
-    maxLines?: number
-    lineWidth?: number
-    canvasRotation?: number
-    lineRotation?: number
-    wrappingMode?: 'None' | 'Character' | 'Word'
-    hAlignment?: 'Left' | 'Center' | 'Right'
-    vAlignment?: 'Above' | 'Center' | 'Below'
-    /**
-     * @format comma separated list of placement tokens, i.e. "TR, TL, C"
-     * @see [[PlacementToken]]
-     */
-    placements?: string
+  tracking?: number
+  leading?: number
+  maxLines?: number
+  lineWidth?: number
+  canvasRotation?: number
+  lineRotation?: number
+  wrappingMode?: 'None' | 'Character' | 'Word'
+  hAlignment?: 'Left' | 'Center' | 'Right'
+  vAlignment?: 'Above' | 'Center' | 'Below'
+  /**
+   * @format comma separated list of placement tokens, i.e. "TR, TL, C"
+   * @see [[PlacementToken]]
+   */
+  placements?: string
 }
 
 /**
  * Interface that defines a procedural gradient sky.
  */
 export interface GradientSky {
-    /** Sky type. */
-    type: 'gradient'
-    /**
-     * Color of the upper part of the gradient.
-     * @format color-hex
-     */
-    topColor: string
-    /**
-     * Color of bottom part of the gradient.
-     * @format color-hex
-     */
-    bottomColor: string
-    /**
-     * Color of the ground plane.
-     * @format color-hex
-     */
-    groundColor: string
-    /** Texture's gradient power. */
-    monomialPower?: number
+  /** Sky type. */
+  type: 'gradient'
+  /**
+   * Color of the upper part of the gradient.
+   * @format color-hex
+   */
+  topColor: string
+  /**
+   * Color of bottom part of the gradient.
+   * @format color-hex
+   */
+  bottomColor: string
+  /**
+   * Color of the ground plane.
+   * @format color-hex
+   */
+  groundColor: string
+  /** Texture's gradient power. */
+  monomialPower?: number
 }
 
 /**
  * Interface that defines a cubemap sky.
  */
 export interface CubemapSky {
-    /** Sky type. */
-    type: 'cubemap'
-    /** Positive X cube map face. */
-    positiveX: string
-    /** Negative X cube map face. */
-    negativeX: string
-    /** Positive Y cube map face. */
-    positiveY: string
-    /** Negative Y cube map face. */
-    negativeY: string
-    /** Positive Z cube map face. */
-    positiveZ: string
-    /** Negative Z cube map face. */
-    negativeZ: string
+  /** Sky type. */
+  type: 'cubemap'
+  /** Positive X cube map face. */
+  positiveX: string
+  /** Negative X cube map face. */
+  negativeX: string
+  /** Positive Y cube map face. */
+  positiveY: string
+  /** Negative Y cube map face. */
+  negativeY: string
+  /** Positive Z cube map face. */
+  positiveZ: string
+  /** Negative Z cube map face. */
+  negativeZ: string
 }
 
 /**
@@ -734,119 +710,119 @@ export type Sky = GradientSky | CubemapSky
  * Interface that defines the options to configure fog.
  */
 export interface Fog {
-    /** Fog's color. */
-    color: string
-    /** Distance ratio to far plane at which the linear fog begins. */
-    startRatio: number
+  /** Fog's color. */
+  color: string
+  /** Distance ratio to far plane at which the linear fog begins. */
+  startRatio: number
 }
 
 /**
  * Define an image (e.g. icon).
  */
 export interface ImageDefinition {
-    /** Url to load content from. */
-    url: string
-    /** `true` to start loading at init tile, `false` to lazily wait until required. */
-    preload: boolean
-    /** Url of JSON file containing the texture atlas */
-    atlas?: string
+  /** Url to load content from. */
+  url: string
+  /** `true` to start loading at init tile, `false` to lazily wait until required. */
+  preload: boolean
+  /** Url of JSON file containing the texture atlas */
+  atlas?: string
 }
 
 export interface ImageDefinitions {
-    /** Name of Image. */
-    [name: string]: ImageDefinition
+  /** Name of Image. */
+  [name: string]: ImageDefinition
 }
 
 /**
  * Can be used to create a texture atlas.
  */
 export interface ImageTexture {
-    /** Name of ImageTexture. Used to reference texture in the styles. */
-    name: string
-    /** Name of ImageDefinition to use. */
-    image: string
-    /** Origin of image, defaults to "topleft" */
-    origin?: string
-    /** Specify sub-region: Defaults to 0. */
-    xOffset?: number
-    /** Specify sub-region: Defaults to 0. */
-    yOffset?: number
-    /** Specify sub-region:  Defaults to 0, meaning width is taken from loaded image. */
-    width?: number
-    /** Specify sub-region:  Defaults to 0, meaning height is taken from loaded image. */
-    height?: number
-    /** Defaults to false. */
-    flipH?: boolean
-    /** Defaults to false. */
-    flipV?: boolean
-    /** Defaults to 1. */
-    opacity?: number
+  /** Name of ImageTexture. Used to reference texture in the styles. */
+  name: string
+  /** Name of ImageDefinition to use. */
+  image: string
+  /** Origin of image, defaults to "topleft" */
+  origin?: string
+  /** Specify sub-region: Defaults to 0. */
+  xOffset?: number
+  /** Specify sub-region: Defaults to 0. */
+  yOffset?: number
+  /** Specify sub-region:  Defaults to 0, meaning width is taken from loaded image. */
+  width?: number
+  /** Specify sub-region:  Defaults to 0, meaning height is taken from loaded image. */
+  height?: number
+  /** Defaults to false. */
+  flipH?: boolean
+  /** Defaults to false. */
+  flipV?: boolean
+  /** Defaults to 1. */
+  opacity?: number
 }
 
 /**
  * Definition for a [[PoiTable]] reference as part of the {@link Theme} object.
  */
 export interface PoiTableRef {
-    /** Required name of the [[PoiTable]] for later reference. */
-    name: string
-    /**
-     * Required URL from where to load [[PoiTable]].
-     *
-     * Should refer to JSON that is matched [[PoiTableDef]] interface.
-     */
-    url: string
-    /**
-     * If set to `true`, the list of values in the field "altNames" will be used as names for this
-     * POI.
-     */
-    useAltNamesForKey: boolean
+  /** Required name of the [[PoiTable]] for later reference. */
+  name: string
+  /**
+   * Required URL from where to load [[PoiTable]].
+   *
+   * Should refer to JSON that is matched [[PoiTableDef]] interface.
+   */
+  url: string
+  /**
+   * If set to `true`, the list of values in the field "altNames" will be used as names for this
+   * POI.
+   */
+  useAltNamesForKey: boolean
 }
 
 /**
  * Interface for the JSON description of the [[PoiTable]]. It is being implemented in [[PoiTable]].
  */
 export interface PoiTableDef {
-    /** Name of the `PoiTable`. Must be unique. */
-    name?: string
-    /**
-     * Stores the list of {@link PoiTableEntryDef}s.
-     */
-    poiList?: PoiTableEntryDef[]
+  /** Name of the `PoiTable`. Must be unique. */
+  name?: string
+  /**
+   * Stores the list of {@link PoiTableEntryDef}s.
+   */
+  poiList?: PoiTableEntryDef[]
 }
 
 /**
  * Interface descrining POI entries.
  */
 export interface PoiTableEntryDef {
-    /** Default name of the POI as the key for looking it up. */
-    name?: string
-    /** Alternative names of the POI. */
-    altNames?: string[]
-    /** Visibility of the POI. If `false`, the POI will not be rendered. */
-    visible?: boolean
-    /** Name of the icon, defined in the the texture atlases. */
-    iconName?: string
-    /** Stacking mode of the POI. For future use. */
-    stackMode?: string
-    /**
-     * Priority of the POI to select the visible set in case there are more POIs than can be
-     * handled.
-     */
-    priority?: number
-    /** Minimum zoom level to render the icon on. */
-    iconMinLevel?: number
-    /** Maximum zoom level to render the icon on. */
-    iconMaxLevel?: number
-    /** Minimum zoom level to render the text label on. */
-    textMinLevel?: number
-    /** Maximum zoom level to render the text label on. */
-    textMaxLevel?: number
+  /** Default name of the POI as the key for looking it up. */
+  name?: string
+  /** Alternative names of the POI. */
+  altNames?: string[]
+  /** Visibility of the POI. If `false`, the POI will not be rendered. */
+  visible?: boolean
+  /** Name of the icon, defined in the the texture atlases. */
+  iconName?: string
+  /** Stacking mode of the POI. For future use. */
+  stackMode?: string
+  /**
+   * Priority of the POI to select the visible set in case there are more POIs than can be
+   * handled.
+   */
+  priority?: number
+  /** Minimum zoom level to render the icon on. */
+  iconMinLevel?: number
+  /** Maximum zoom level to render the icon on. */
+  iconMaxLevel?: number
+  /** Minimum zoom level to render the text label on. */
+  textMinLevel?: number
+  /** Maximum zoom level to render the text label on. */
+  textMaxLevel?: number
 }
 
 /**
  * Fonts used for all text related rendering.
  */
 export interface FontCatalogConfig {
-    url: string
-    name: string
+  url: string
+  name: string
 }

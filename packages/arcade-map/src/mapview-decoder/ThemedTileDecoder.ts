@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {
-    DecodedTile, DecoderOptions, ITileDecoder, OptionsMap, TileInfo
-} from '@arca/datasource-protocol'
+  DecodedTile, DecoderOptions, ITileDecoder, OptionsMap, TileInfo
+} from '@arcadecity/arcade-map/datasource-protocol'
 import {
-    StyleSetEvaluator, StyleSetOptions
-} from '@arca/datasource-protocol/index-decoder'
-import { Projection, TileKey } from '@arca/geoutils'
-import { LoggerManager } from '@arca/utils'
+  StyleSetEvaluator, StyleSetOptions
+} from '@arcadecity/arcade-map/datasource-protocol/index-decoder'
+import { Projection, TileKey } from '@arcadecity/arcade-map/geoutils'
+import { LoggerManager } from '@arcadecity/arcade-map/utils'
 
 const logger = LoggerManager.instance.create('ThemedTileDecoder')
 
@@ -22,73 +22,63 @@ const logger = LoggerManager.instance.create('ThemedTileDecoder')
  * reasons.
  */
 export abstract class ThemedTileDecoder implements ITileDecoder {
-    languages?: string[]
-    m_storageLevelOffset: number = 0
+  languages?: string[]
+  m_storageLevelOffset: number = 0
 
-    protected m_styleSetEvaluator?: StyleSetEvaluator
-    abstract connect(): Promise<void>
+  protected m_styleSetEvaluator?: StyleSetEvaluator
+  abstract connect(): Promise<void>
 
-    dispose() {
-        // implemented in subclasses
+  dispose() {
+    // implemented in subclasses
+  }
+
+  decodeTile(
+    data: ArrayBufferLike | {},
+    tileKey: TileKey,
+    projection: Projection
+  ): Promise<DecodedTile | undefined> {
+    if (this.m_styleSetEvaluator === undefined) {
+      logger.info('cannot decode tile, as there is not style available')
+      return Promise.resolve(undefined)
     }
 
-    decodeTile(
-        data: ArrayBufferLike | {},
-        tileKey: TileKey,
-        projection: Projection
-    ): Promise<DecodedTile | undefined> {
-        if (this.m_styleSetEvaluator === undefined) {
-            logger.info('cannot decode tile, as there is not style available')
-            return Promise.resolve(undefined)
-        }
+    return this.decodeThemedTile(data, tileKey, this.m_styleSetEvaluator, projection)
+  }
 
-        return this.decodeThemedTile(
-            data,
-            tileKey,
-            this.m_styleSetEvaluator,
-            projection
-        )
+  getTileInfo(
+    data: ArrayBufferLike,
+    tileKey: TileKey,
+    projection: Projection
+  ): Promise<TileInfo | undefined> {
+    return Promise.resolve(undefined)
+  }
+
+  configure(options?: DecoderOptions, customOptions?: OptionsMap): void {
+    if (options?.styleSet !== undefined) {
+      this.m_styleSetEvaluator = new StyleSetEvaluator(options as StyleSetOptions)
     }
-
-    getTileInfo(
-        data: ArrayBufferLike,
-        tileKey: TileKey,
-        projection: Projection
-    ): Promise<TileInfo | undefined> {
-        return Promise.resolve(undefined)
+    if (options?.languages !== undefined) {
+      this.languages = options.languages
     }
-
-    configure(options?: DecoderOptions, customOptions?: OptionsMap): void {
-        if (options?.styleSet !== undefined) {
-            this.m_styleSetEvaluator = new StyleSetEvaluator(
-                options as StyleSetOptions
-            )
-        }
-        if (options?.languages !== undefined) {
-            this.languages = options.languages
-        }
-        if (
-            customOptions !== undefined &&
-            customOptions.storageLevelOffset !== undefined
-        ) {
-            this.m_storageLevelOffset = customOptions.storageLevelOffset
-        }
+    if (customOptions !== undefined && customOptions.storageLevelOffset !== undefined) {
+      this.m_storageLevelOffset = customOptions.storageLevelOffset
     }
+  }
 
-    /**
-     * Create a [[DecodedTile]] from binary tile data and a theme description in form of a
-     * [[StyleSetEvaluator]].
-     *
-     * @param data - Binary data in form of [[ArrayBufferLike]], or any object.
-     * @param tileKey - Quadtree address of tile.
-     * @param styleSetEvaluator - Processor of [[Theme]], identifies styling techniques applicable
-     *                            to individual objects.
-     * @param projection - Projection used by the individual data sources.
-     */
-    abstract decodeThemedTile(
-        data: ArrayBufferLike | {},
-        tileKey: TileKey,
-        styleSetEvaluator: StyleSetEvaluator,
-        projection: Projection
-    ): Promise<DecodedTile>
+  /**
+   * Create a [[DecodedTile]] from binary tile data and a theme description in form of a
+   * [[StyleSetEvaluator]].
+   *
+   * @param data - Binary data in form of [[ArrayBufferLike]], or any object.
+   * @param tileKey - Quadtree address of tile.
+   * @param styleSetEvaluator - Processor of [[Theme]], identifies styling techniques applicable
+   *                            to individual objects.
+   * @param projection - Projection used by the individual data sources.
+   */
+  abstract decodeThemedTile(
+    data: ArrayBufferLike | {},
+    tileKey: TileKey,
+    styleSetEvaluator: StyleSetEvaluator,
+    projection: Projection
+  ): Promise<DecodedTile>
 }
