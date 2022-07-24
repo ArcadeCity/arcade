@@ -2,6 +2,7 @@ import React from 'react'
 import { Pressable, View, ViewStyle } from 'react-native'
 import { AccountHome } from 'views/account/AccountHome'
 import { FeedHome } from 'views/feed/FeedHome'
+import { MapHome } from 'views/map/MapHome'
 import { color, palette, typography } from '@arcadecity/ui'
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -30,7 +31,7 @@ export function BottomTabNavigator() {
       }}>
       <BottomTab.Screen
         name='MapHome'
-        component={AccountHome}
+        component={MapHome}
         options={{
           title: 'Map',
           headerShown: false,
