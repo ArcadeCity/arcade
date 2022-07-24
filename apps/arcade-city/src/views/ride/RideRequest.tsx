@@ -1,4 +1,4 @@
-import { RideRequest as RideRequestType } from 'lib/nostr/types'
+import { RideRequest as RideRequestType } from 'lib/nostr'
 import moment from 'moment'
 import React from 'react'
 import { TouchableOpacity, View } from 'react-native'

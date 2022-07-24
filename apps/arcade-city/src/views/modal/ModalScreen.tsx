@@ -5,7 +5,7 @@ import { Text } from '@arcadecity/ui'
 export default function ModalScreen() {
   return (
     <View style={styles.container}>
-      <Text preset='description' text='Hello world' />
+      <Text preset='description' text="Isn't this cool?!" />
     </View>
   )
 }

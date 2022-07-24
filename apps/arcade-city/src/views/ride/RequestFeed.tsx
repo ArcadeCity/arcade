@@ -1,4 +1,4 @@
-import { RideRequest as RideRequestType } from 'lib/nostr/types'
+import { RideRequest as RideRequestType } from 'lib/nostr'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { RideRequest } from './RideRequest'
