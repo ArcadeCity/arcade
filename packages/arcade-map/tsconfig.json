@@ -3,6 +3,10 @@
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "baseUrl": "./" /* Base directory to resolve non-absolute module names. */,
+    "paths": {
+      "@arcadecity/arcade-map/*": ["src/*"]
+    }
   }
 }
