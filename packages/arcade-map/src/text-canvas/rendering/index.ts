@@ -1,0 +1,7 @@
+export * from './FontCatalog'
+export * from './GlyphData'
+export * from './GlyphTextureCache'
+export * from './TextBufferObject'
+export * from './TextGeometry'
+export * from './TextMaterials'
+export * from './TextStyle'
