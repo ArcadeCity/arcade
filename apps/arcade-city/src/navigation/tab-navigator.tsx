@@ -33,6 +33,7 @@ export function BottomTabNavigator() {
         component={AccountHome}
         options={{
           title: 'Map',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='globe-americas' color={color} focused={focused} />
           ),
