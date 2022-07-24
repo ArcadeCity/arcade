@@ -2,11 +2,12 @@ import {
   getEventHash, NostrEvent, NostrEventToSerialize, NostrEventToSign, signEvent
 } from 'lib/nostr'
 import { createNewAccount, pool } from 'lib/nostr/nostr'
+import { RootStackScreenProps } from 'navigation/types'
 import React from 'react'
 import { Button, StyleSheet, View } from 'react-native'
 import { color } from '@arcadecity/ui'
 
-export const NewRequestScreen = () => {
+export const NewRequestScreen = ({ navigation }: RootStackScreenProps<'NewRequest'>) => {
   const clickedNew = async () => {
     const { pubkey, priv } = createNewAccount()
     const date = new Date()
@@ -32,6 +33,7 @@ export const NewRequestScreen = () => {
     // console.log(nostrEvent)
 
     pool.publish(nostrEventToSerialize)
+    navigation.goBack()
   }
   return (
     <View style={styles.container}>

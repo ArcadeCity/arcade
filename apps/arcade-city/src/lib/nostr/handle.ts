@@ -1,6 +1,7 @@
 import { normalizeRideRequestEvent } from './normalize'
 import { useStore } from './store'
-import { NostrEvent, NostrKind } from './types'
+import { NostrEvent } from './tools'
+import { NostrKind } from './types'
 
 export const handle = (event: NostrEvent) => {
   switch (event.kind) {

@@ -1,14 +1,22 @@
-import { RideRequest as RideRequestType } from 'lib/nostr'
+import {
+  NostrEvent, NostrKind, RideRequest as RideRequestType
+} from 'lib/nostr'
+import { createNewAccount, subscribeToEvents } from 'lib/nostr/nostr'
 import { useStore } from 'lib/nostr/store'
 import { RootTabScreenProps } from 'navigation/types'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { RideRequest } from 'views/ride/RideRequest'
-import { ACTIVE_OPACITY, palette } from '@arcadecity/ui'
+import { ACTIVE_OPACITY, palette, Text } from '@arcadecity/ui'
 import { AntDesign } from '@expo/vector-icons'
 
 export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
-  const events = useStore((s) => s.requests)
+  useEffect(() => {
+    createNewAccount()
+    subscribeToEvents([NostrKind.text], 50)
+  }, [])
+
+  const events = useStore((s) => s.events)
   const sortedEvents = events
     .sort((a: RideRequestType, b: RideRequestType) => {
       return b.created_at - a.created_at
@@ -23,7 +31,10 @@ export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
     <View style={styles.container}>
       <FlatList
         data={arrayUniqueByKey}
-        renderItem={({ item }: { item: RideRequestType }) => <RideRequest request={item} />}
+        renderItem={({ item }: { item: NostrEvent }) => (
+          <Text text={item.content} preset='description' />
+        )}
+        // renderItem={({ item }: { item: RideRequestType }) => <RideRequest request={item} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 20 }}
