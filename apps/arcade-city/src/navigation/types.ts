@@ -28,8 +28,9 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >
 
 export type RootTabParamList = {
-  FeedHome: undefined
   AccountHome: undefined
+  FeedHome: undefined
+  MapHome: undefined
 }
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
