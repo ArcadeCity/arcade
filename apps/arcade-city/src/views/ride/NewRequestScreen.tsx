@@ -14,9 +14,21 @@ export const NewRequestScreen = ({ navigation }: RootStackScreenProps<'NewReques
     const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
     const nostrEventToSerialize: NostrEventToSerialize = {
       created_at: dateTimeInSeconds,
-      kind: 1,
+      kind: 60,
       tags: [],
-      content: 'My apartment smells of rich mahogany',
+      content: JSON.stringify({
+        from: {
+          lat: 0,
+          lng: 0,
+        },
+        to: {
+          lat: 1,
+          lng: 1,
+        },
+        name: 'Bobo',
+        amount: 1337,
+        expires: dateTimeInSeconds - 1,
+      }),
       pubkey,
     }
     // const id = getEventHash(nostrEventToSerialize)

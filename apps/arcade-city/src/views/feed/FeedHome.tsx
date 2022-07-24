@@ -13,10 +13,10 @@ import { AntDesign } from '@expo/vector-icons'
 export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
   useEffect(() => {
     createNewAccount()
-    subscribeToEvents([NostrKind.text], 50)
+    subscribeToEvents([NostrKind.riderequest], 30)
   }, [])
 
-  const events = useStore((s) => s.events)
+  const events = useStore((s) => s.requests)
   const sortedEvents = events
     .sort((a: RideRequestType, b: RideRequestType) => {
       return b.created_at - a.created_at
@@ -31,10 +31,10 @@ export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
     <View style={styles.container}>
       <FlatList
         data={arrayUniqueByKey}
-        renderItem={({ item }: { item: NostrEvent }) => (
-          <Text text={item.content} preset='description' />
-        )}
-        // renderItem={({ item }: { item: RideRequestType }) => <RideRequest request={item} />}
+        // renderItem={({ item }: { item: NostrEvent }) => (
+        //   <Text text={item.content} preset='description' />
+        // )}
+        renderItem={({ item }: { item: RideRequestType }) => <RideRequest request={item} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 20 }}

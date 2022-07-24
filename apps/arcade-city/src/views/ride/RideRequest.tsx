@@ -42,7 +42,7 @@ export const RideRequest = ({ request }: { request: RideRequestType }) => {
             flexDirection: 'column',
             alignItems: 'flex-end',
           }}>
-          {/* <Text text={`${statusText}`} preset='bold' /> */}
+          <Text text={`${request.name}`} preset='bold' />
           <Text
             text={`${request.amount} sats`}
             // text={`${request?.chatroom?.messages.length ?? 0} ${translate(
