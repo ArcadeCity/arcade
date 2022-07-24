@@ -1,6 +1,6 @@
-import { RideRequest } from './store'
+import { NostrEvent, RideRequest } from './types'
 
-export const normalizeRideRequestEvent = (event: any) => {
+export const normalizeRideRequestEvent = (event: NostrEvent) => {
   try {
     const content = JSON.parse(event.content)
     if (!content.to) return

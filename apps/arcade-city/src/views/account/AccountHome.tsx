@@ -1,8 +1,7 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Text } from '@arcadecity/ui'
 
-export default function TabTwoScreen() {
+export const AccountHome = () => {
   return (
     <View style={styles.container}>
       {/* <Text preset='title' text='Tab Two' /> */}
