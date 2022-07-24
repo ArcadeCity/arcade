@@ -33,7 +33,7 @@ export class Nostr {
   }
 
   subscribeToRides(cb: (event: NostrEvent, url: string) => void, limit = 50) {
-    const filter = { kinds: [60] }
+    const filter = { kinds: [60], limit }
     const id = Math.random().toString().slice(2)
     this.relays[0].relay.sub({ cb, filter }, id)
   }

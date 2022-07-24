@@ -1,4 +1,5 @@
 import { RideRequest as RideRequestType } from 'lib/nostr'
+import { values } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { RootTabScreenProps } from 'navigation/types'
 import React, { useEffect } from 'react'
@@ -14,14 +15,17 @@ export const FeedHome = observer(({ navigation }: RootTabScreenProps<'FeedHome'>
     relayStore.initRideRequestDemo()
   }, [])
 
-  const events: any[] = []
+  // const events: any[] = []
   // const events = useStore((s) => s.requests)
+  const events: any = values(relayStore.requests)
   const sortedEvents = events.sort((a: RideRequestType, b: RideRequestType) => {
     return b.created_at - a.created_at
   })
   // .slice(20)
   const key = 'id'
-  const arrayUniqueByKey = [...new Map(sortedEvents.map((item) => [item[key], item])).values()]
+  const arrayUniqueByKey: any[] = [
+    ...new Map(sortedEvents.map((item: any) => [item[key], item])).values(),
+  ]
   const clickNewRequest = () => {
     navigation.navigate('NewRequest')
   }
