@@ -3,8 +3,8 @@ import { display } from 'lib'
 import { delay } from 'lib/delay'
 import {
   generateSeedWords, getEventHash, getPublicKey, NostrEvent,
-  NostrEventToSerialize, NostrEventToSign, privateKeyFromSeed, seedFromWords,
-  signEvent
+  NostrEventToSerialize, NostrEventToSign, NostrKind, privateKeyFromSeed,
+  seedFromWords, signEvent
 } from 'lib/nostr'
 import { Relay } from './Relay'
 
@@ -19,9 +19,6 @@ export class Nostr {
   async setup() {
     this.addRelay('wss://relay.damus.io')
     this.createNewAccount()
-    await delay(1000)
-    this.subscribeToRides()
-    // this.sendDemoEvent()
   }
 
   createNewAccount() {
@@ -35,20 +32,16 @@ export class Nostr {
     return { pubkey, priv }
   }
 
-  subscribeToRides() {
-    const cb = (event: NostrEvent, url: string) => {
-      // console.log('callback w event', event.id)
-      console.log(event)
-    }
-    const filter = {
-      kinds: [60],
-    }
-    const beforeSend = () => {}
+  subscribeToRides(cb: (event: NostrEvent, url: string) => void, limit = 50) {
+    const filter = { kinds: [60] }
     const id = Math.random().toString().slice(2)
-    this.relays[0].relay.sub(
-      { cb: (event: NostrEvent) => cb(event, 'wss://relay.damus.io'), filter },
-      id
-    )
+    this.relays[0].relay.sub({ cb, filter }, id)
+  }
+
+  subscribeToEvents(cb: (event: NostrEvent, url: string) => void, kinds: NostrKind[], limit = 50) {
+    const filter = { kinds, limit }
+    const id = Math.random().toString().slice(2)
+    this.relays[0].relay.sub({ cb, filter }, id)
   }
 
   addRelay(relayUrl: string) {
