@@ -1,13 +1,3 @@
-export interface NostrEvent {
-  content: string
-  created_at: number
-  id: string
-  kind: NostrKind
-  pubkey: string
-  sig: string
-  tags: string[]
-}
-
 export enum NostrKind {
   metadata = 0,
   text = 1,
