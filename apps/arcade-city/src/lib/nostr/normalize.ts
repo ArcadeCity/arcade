@@ -1,4 +1,5 @@
-import { NostrEvent, RideRequest } from './types'
+import { NostrEvent } from './tools'
+import { RideRequest } from './types'
 
 export const normalizeRideRequestEvent = (event: NostrEvent) => {
   try {

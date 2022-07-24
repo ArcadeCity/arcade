@@ -1,20 +1,31 @@
 import { RideRequest as RideRequestType } from 'lib/nostr'
-import { useStore } from 'lib/nostr/store'
+import { values } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import { RootTabScreenProps } from 'navigation/types'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useStores } from 'stores'
 import { RideRequest } from 'views/ride/RideRequest'
 import { ACTIVE_OPACITY, palette } from '@arcadecity/ui'
 import { AntDesign } from '@expo/vector-icons'
 
-export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
-  const events = useStore((s) => s.requests)
+export const FeedHome = observer(({ navigation }: RootTabScreenProps<'FeedHome'>) => {
+  const { relayStore } = useStores()
+  useEffect(() => {
+    relayStore.initRideRequestDemo()
+  }, [])
+
+  // const events: any[] = []
+  // const events = useStore((s) => s.requests)
+  const events: any = values(relayStore.requests)
   const sortedEvents = events.sort((a: RideRequestType, b: RideRequestType) => {
     return b.created_at - a.created_at
   })
   // .slice(20)
   const key = 'id'
-  const arrayUniqueByKey = [...new Map(sortedEvents.map((item) => [item[key], item])).values()]
+  const arrayUniqueByKey: any[] = [
+    ...new Map(sortedEvents.map((item: any) => [item[key], item])).values(),
+  ]
   const clickNewRequest = () => {
     navigation.navigate('NewRequest')
   }
@@ -33,13 +44,12 @@ export const FeedHome = ({ navigation }: RootTabScreenProps<'FeedHome'>) => {
       <TouchableOpacity
         activeOpacity={ACTIVE_OPACITY}
         style={styles.floatingButton}
-        onPress={clickNewRequest}
-      >
+        onPress={clickNewRequest}>
         <AntDesign name='plus' size={26} color='white' />
       </TouchableOpacity>
     </View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   container: {

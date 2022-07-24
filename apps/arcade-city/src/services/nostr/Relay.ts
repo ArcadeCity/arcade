@@ -1,21 +1,27 @@
 import 'websocket-polyfill'
 import { display } from 'lib'
+import { NostrEvent } from 'lib/nostr'
 import { validateEvent, verifySignature } from 'lib/nostr/nostr-tools/event'
 import { matchFilters } from 'lib/nostr/nostr-tools/filter'
 
 export class Relay {
   read: boolean = true
   write: boolean = true
+  relay: any
   url: string
 
   constructor(url: string) {
     this.url = url
-    this.relayConnect(
+    this.relay = this.relayConnect(
       url,
       (e: Event) => {},
       (e: Event) => {}
     )
     display({ name: 'Nostr Relay', value: url, preview: `Added relay ${url}` })
+  }
+
+  publish(event: NostrEvent) {
+    this.relay.publish(event)
   }
 
   normalizeRelayURL(url: string) {
