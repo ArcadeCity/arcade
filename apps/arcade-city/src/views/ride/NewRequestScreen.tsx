@@ -16,30 +16,18 @@ export const NewRequestScreen = () => {
       content: 'My apartment smells of rich mahogany',
       pubkey,
     }
-    console.log(nostrEventToSerialize)
     const id = getEventHash(nostrEventToSerialize)
-    console.log(id)
-
     const nostrEventToSign: NostrEventToSign = {
       ...nostrEventToSerialize,
       id,
     }
-    console.log('nostrEventToSign', nostrEventToSign)
-
-    try {
-      const sig = await signEvent(nostrEventToSign, priv)
-      console.log(sig)
-    } catch (e) {
-      console.error(e)
-      console.log(e)
+    const sig = await signEvent(nostrEventToSign, priv)
+    const nostrEvent: NostrEvent = {
+      ...nostrEventToSerialize,
+      id,
+      sig,
     }
-
-    // const nostrEvent: NostrEvent = {
-    //   ...nostrEventToSerialize,
-    //   id,
-    //   sig,
-    // }
-    // console.log('NOSTREVENT --- ', nostrEvent)
+    console.log(nostrEvent)
   }
   return (
     <View style={styles.container}>
