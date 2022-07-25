@@ -1,8 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect, useState } from 'react'
-import {
-  Inter_400Regular, Inter_700Bold, useFonts
-} from '@expo-google-fonts/inter'
+import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter'
 import { Lexend_400Regular, Lexend_700Bold } from '@expo-google-fonts/lexend'
 
 export function useCachedResources() {

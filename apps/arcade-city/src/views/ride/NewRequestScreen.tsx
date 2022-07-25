@@ -1,5 +1,9 @@
 import {
-  getEventHash, NostrEvent, NostrEventToSerialize, NostrEventToSign, signEvent
+  getEventHash,
+  NostrEvent,
+  NostrEventToSerialize,
+  NostrEventToSign,
+  signEvent,
 } from 'lib/nostr'
 import { createNewAccount, pool } from 'lib/nostr/nostr'
 import { RootStackScreenProps } from 'navigation/types'
