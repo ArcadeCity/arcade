@@ -5,7 +5,8 @@
   "scripts": {
     "start": "expo start",
     "start:dev-client": "expo start --dev-client",
-    "dev": "yarn ios",
+    "dev": "yarn web",
+    "dev:ios": "yarn ios",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
