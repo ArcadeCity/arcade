@@ -9,7 +9,7 @@ import { MapControls } from '@here/harp-map-controls'
 import { MapView } from '@here/harp-mapview'
 import { VectorTileDataSource } from '@here/harp-vectortile-datasource'
 
-const defaultTheme = 'resources/berlin_tilezen_base.json'
+const defaultTheme = 'resources/arcade.json'
 
 export interface ViewParameters {
   theme?: string | Theme

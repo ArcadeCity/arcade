@@ -5,7 +5,6 @@
  */
 
 import { GeoCoordinates } from '@here/harp-geoutils'
-
 import { View } from './View'
 
 const app = new View({
@@ -13,6 +12,7 @@ const app = new View({
 })
 
 const mapView = app.mapView
+mapView.renderLabels = false
 
 // make map full-screen
 mapView.resize(window.innerWidth, window.innerHeight)
@@ -23,7 +23,7 @@ window.addEventListener('resize', () => {
 })
 
 // center the camera to New York
-mapView.lookAt({ target: new GeoCoordinates(40.70398928, -74.01319808), zoomLevel: 17, tilt: 40 })
+mapView.lookAt({ target: new GeoCoordinates(40.70398928, -74.01219808), zoomLevel: 17, tilt: 40 })
 
 // make sure the map is rendered
 mapView.update()
