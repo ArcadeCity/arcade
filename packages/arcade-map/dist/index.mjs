@@ -45,9 +45,12 @@ var ContextLogger = class {
   constructor(m_logger, headerMessage) {
     this.m_logger = m_logger;
     this.headerMessage = headerMessage;
+    __publicField(this, "context", []);
+    __publicField(this, "m_headerLogged", false);
+    __publicField(this, "warn", this.createLogMethod("warn"));
+    __publicField(this, "info", this.createLogMethod("info"));
+    __publicField(this, "error", this.createLogMethod("error"));
   }
-  context = [];
-  m_headerLogged = false;
   pushAttr(name2) {
     this.context.push(`${this.context.length > 0 ? "." : ""}${name2}`);
   }
@@ -57,9 +60,6 @@ var ContextLogger = class {
   pop() {
     this.context.pop();
   }
-  warn = this.createLogMethod("warn");
-  info = this.createLogMethod("info");
-  error = this.createLogMethod("error");
   createLogMethod(severity) {
     return (message, ...rest) => {
       if (!this.m_headerLogged) {
@@ -148,7 +148,9 @@ var PriorityListGroup = class {
   }
 };
 var GroupedPriorityList = class {
-  groups = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "groups", /* @__PURE__ */ new Map());
+  }
   add(element) {
     this.getGroup(element.priority).elements.push(element);
   }
@@ -238,12 +240,12 @@ var Logger = class {
   constructor(name2, m_channel, options) {
     this.name = name2;
     this.m_channel = m_channel;
+    __publicField(this, "enabled", true);
+    __publicField(this, "level", 0 /* Trace */);
     if (options !== void 0) {
       this.update(options);
     }
   }
-  enabled = true;
-  level = 0 /* Trace */;
   error(message, ...optionalParams) {
     if (this.enabled && this.level <= 5 /* Error */) {
       this.m_channel.error(this.prefix, message, ...optionalParams);
@@ -338,10 +340,10 @@ var WorkerChannel = class {
 
 // src/utils/Logger/LoggerManagerImpl.ts
 var LoggerManagerImpl = class {
-  channel;
-  m_loggers = [];
-  m_levelSetForAll;
   constructor() {
+    __publicField(this, "channel");
+    __publicField(this, "m_loggers", []);
+    __publicField(this, "m_levelSetForAll");
     this.channel = typeof self === "undefined" || typeof self.document !== "undefined" ? new ConsoleChannel() : new WorkerChannel();
   }
   getLoggerNames() {
@@ -418,15 +420,15 @@ var Entry = class {
   }
 };
 var LRUCache = class {
-  evictionCallback;
-  canEvict;
-  m_capacity;
-  m_size = 0;
-  m_map = /* @__PURE__ */ new Map();
-  m_newest = null;
-  m_oldest = null;
-  m_sizeFunction;
   constructor(cacheCapacity, sizeFunction = () => 1) {
+    __publicField(this, "evictionCallback");
+    __publicField(this, "canEvict");
+    __publicField(this, "m_capacity");
+    __publicField(this, "m_size", 0);
+    __publicField(this, "m_map", /* @__PURE__ */ new Map());
+    __publicField(this, "m_newest", null);
+    __publicField(this, "m_oldest", null);
+    __publicField(this, "m_sizeFunction");
     this.m_capacity = cacheCapacity;
     this.m_sizeFunction = sizeFunction;
   }
@@ -880,15 +882,14 @@ function sampleBilinear(texture, width, height, u, v) {
 var TaskQueue = class {
   constructor(m_options) {
     this.m_options = m_options;
-    var _a;
-    (_a = this.m_options.groups) == null ? void 0 : _a.forEach((group) => {
+    __publicField(this, "m_taskLists", /* @__PURE__ */ new Map());
+    this.m_options.groups?.forEach((group) => {
       this.m_taskLists.set(group, []);
     });
     if (this.m_options.prioSortFn) {
       this.sort = this.m_options.prioSortFn;
     }
   }
-  m_taskLists = /* @__PURE__ */ new Map();
   update(group) {
     if (group === void 0) {
       this.m_taskLists.forEach((taskList) => {
@@ -902,36 +903,33 @@ var TaskQueue = class {
     }
   }
   add(task) {
-    var _a;
     if (this.m_taskLists.has(task.group)) {
       const taskList = this.m_taskLists.get(task.group);
-      if (!(taskList == null ? void 0 : taskList.includes(task))) {
-        (_a = this.m_taskLists.get(task.group)) == null ? void 0 : _a.push(task);
+      if (!taskList?.includes(task)) {
+        this.m_taskLists.get(task.group)?.push(task);
         return true;
       }
     }
     return false;
   }
   remove(task) {
-    var _a, _b;
     if (this.m_taskLists.has(task.group)) {
-      const index = (_a = this.m_taskLists.get(task.group)) == null ? void 0 : _a.indexOf(task);
+      const index = this.m_taskLists.get(task.group)?.indexOf(task);
       if (index !== -1) {
-        (_b = this.m_taskLists.get(task.group)) == null ? void 0 : _b.splice(index, 1);
+        this.m_taskLists.get(task.group)?.splice(index, 1);
         return true;
       }
     }
     return false;
   }
   numItemsLeft(group) {
-    var _a;
     let numLeft = 0;
     if (group === void 0) {
       this.m_taskLists.forEach((tasklist) => {
         numLeft += tasklist.length;
       });
     } else {
-      numLeft += ((_a = this.getTaskList(group)) == null ? void 0 : _a.length) ?? 0;
+      numLeft += this.getTaskList(group)?.length ?? 0;
     }
     return numLeft;
   }
@@ -942,7 +940,7 @@ var TaskQueue = class {
     for (let i = 0; i < n && this.numItemsLeft(group) > 0; i++) {
       const nextTask = this.pull(group, true);
       if (nextTask !== void 0) {
-        if (!shouldProcess || (shouldProcess == null ? void 0 : shouldProcess(nextTask))) {
+        if (!shouldProcess || shouldProcess?.(nextTask)) {
           nextTask.execute();
         } else {
           this.add(nextTask);
@@ -955,12 +953,11 @@ var TaskQueue = class {
     this.m_taskLists.clear();
   }
   pull(group, checkIfExpired = false) {
-    var _a, _b;
     const taskList = this.getTaskList(group);
     let nextTask;
     if (taskList) {
-      nextTask = (_a = this.getTaskList(group)) == null ? void 0 : _a.pop();
-      if (checkIfExpired && nextTask && ((_b = nextTask.isExpired) == null ? void 0 : _b.call(nextTask))) {
+      nextTask = this.getTaskList(group)?.pop();
+      if (checkIfExpired && nextTask && nextTask.isExpired?.()) {
         return this.pull(group, checkIfExpired);
       }
     }
@@ -973,10 +970,9 @@ var TaskQueue = class {
     return this.m_taskLists.get(group);
   }
   updateTaskList(taskList) {
-    var _a;
     for (let i = 0; i < taskList.length; i++) {
       const task = taskList[i];
-      if ((_a = task == null ? void 0 : task.isExpired) == null ? void 0 : _a.call(task)) {
+      if (task?.isExpired?.()) {
         taskList.splice(i, 1);
         i--;
       }
@@ -1161,7 +1157,7 @@ function parseStringLiteral(text, formats, pixelToMeters = 1) {
     const components = parseCSSColor(text);
     return Array.isArray(components) && !components.some((c) => isNaN(c)) ? ColorUtils.getHexFromRgba(components[0] / 255, components[1] / 255, components[2] / 255, components[3]) : void 0;
   }
-  switch (matchedFormat == null ? void 0 : matchedFormat.type) {
+  switch (matchedFormat?.type) {
     case 1 /* Pixels */:
       return tmpBuffer[0] * pixelToMeters;
     case 2 /* Hex */:
@@ -1553,8 +1549,8 @@ function isAntimeridianCrossing(lonStart, lonEnd) {
   return Math.sign(lonStart) === -Math.sign(lonEnd) && computeLonSpanAcrossGreewich(lonStart, lonEnd) > 180;
 }
 var GeoPolygon = class {
-  m_coordinates;
   constructor(coordinates, needsSort = false, needsWrapping = false) {
+    __publicField(this, "m_coordinates");
     this.m_coordinates = coordinates.map((coord) => {
       return geoCoordLikeToGeoCoordinatesLike(coord);
     });
@@ -1796,12 +1792,12 @@ function intersectsSlab(rayDir, p, axis, extent, t) {
 var tmpVec = new Vector32();
 var tmpT = { min: -Infinity, max: Infinity };
 var OrientedBox3 = class {
-  position = new Vector32();
-  xAxis = new Vector32(1, 0, 0);
-  yAxis = new Vector32(0, 1, 0);
-  zAxis = new Vector32(0, 0, 1);
-  extents = new Vector32();
   constructor(position, rotationMatrix, extents) {
+    __publicField(this, "position", new Vector32());
+    __publicField(this, "xAxis", new Vector32(1, 0, 0));
+    __publicField(this, "yAxis", new Vector32(0, 1, 0));
+    __publicField(this, "zAxis", new Vector32(0, 0, 1));
+    __publicField(this, "extents", new Vector32());
     if (position !== void 0) {
       this.position.copy(position);
     }
@@ -1953,7 +1949,10 @@ var Projection = class {
 
 // src/geoutils/projection/EquirectangularProjection.ts
 var _EquirectangularProjection = class extends Projection {
-  type = 0 /* Planar */;
+  constructor() {
+    super(...arguments);
+    __publicField(this, "type", 0 /* Planar */);
+  }
   getScaleFactor(_worldPoint) {
     return 1;
   }
@@ -2050,6 +2049,10 @@ var equirectangularProjection = new EquirectangularProjection(EarthConstants.EQU
 // src/geoutils/projection/MercatorProjection.ts
 import * as THREE6 from "three";
 var MercatorProjection = class extends Projection {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "type", 0 /* Planar */);
+  }
   static clamp(val, min, max) {
     return Math.min(Math.max(min, val), max);
   }
@@ -2065,7 +2068,6 @@ var MercatorProjection = class extends Projection {
   static unprojectLatitude(y) {
     return 2 * Math.atan(Math.exp(Math.PI * y)) - Math.PI * 0.5;
   }
-  type = 0 /* Planar */;
   getScaleFactor(worldPoint) {
     return Math.cosh(2 * Math.PI * (worldPoint.y / this.unitScale - 0.5));
   }
@@ -2323,7 +2325,10 @@ function project(geoPoint, worldpoint, unitScale) {
   return worldpoint;
 }
 var SphereProjection = class extends Projection {
-  type = 1 /* Spherical */;
+  constructor() {
+    super(...arguments);
+    __publicField(this, "type", 1 /* Spherical */);
+  }
   worldExtent(_minElevation, maxElevation, result = new THREE7.Box3()) {
     const radius = this.unitScale + maxElevation;
     result.min.x = -radius;
@@ -2496,6 +2501,9 @@ var TransverseMercatorProjection = class extends Projection {
   constructor(unitScale) {
     super(unitScale);
     this.unitScale = unitScale;
+    __publicField(this, "type", 0 /* Planar */);
+    __publicField(this, "m_phi0", 0);
+    __publicField(this, "m_lambda0", 0);
   }
   static clampGeoPoint(geoPoint, _unitScale) {
     const lat = geoPoint.latitude;
@@ -2518,9 +2526,6 @@ var TransverseMercatorProjection = class extends Projection {
     }
     return geoPoint;
   }
-  type = 0 /* Planar */;
-  m_phi0 = 0;
-  m_lambda0 = 0;
   getScaleFactor(worldPoint) {
     return Math.cosh((worldPoint.x / this.unitScale - 0.5) * 2 * Math.PI);
   }
@@ -2754,6 +2759,9 @@ var FlatTileBoundingBoxGenerator = class {
     this.tilingScheme = tilingScheme;
     this.minElevation = minElevation;
     this.maxElevation = maxElevation;
+    __publicField(this, "m_tilingScheme");
+    __publicField(this, "m_worldDimensions");
+    __publicField(this, "m_worldBox");
     this.m_tilingScheme = tilingScheme;
     this.m_worldBox = tilingScheme.projection.worldExtent(minElevation, maxElevation);
     const { min, max } = this.m_worldBox;
@@ -2763,9 +2771,6 @@ var FlatTileBoundingBoxGenerator = class {
       z: max.z - min.z
     };
   }
-  m_tilingScheme;
-  m_worldDimensions;
-  m_worldBox;
   get projection() {
     return this.m_tilingScheme.projection;
   }
@@ -2858,6 +2863,8 @@ var TileKey = class {
     this.row = row;
     this.column = column;
     this.level = level;
+    __publicField(this, "m_mortonCode");
+    __publicField(this, "m_hereTile");
   }
   static fromRowColumnLevel(row, column, level) {
     return new TileKey(row, column, level);
@@ -2915,8 +2922,6 @@ var TileKey = class {
   static parentMortonCode(mortonCode) {
     return Math.floor(mortonCode / 4);
   }
-  m_mortonCode;
-  m_hereTile;
   parent() {
     if (this.level === 0) {
       throw new Error("Cannot get the parent of the root tile key");
@@ -3158,8 +3163,8 @@ var SubTiles = class {
 
 // src/geoutils/tiling/TileTreeTraverse.ts
 var TileTreeTraverse = class {
-  m_subdivisionScheme;
   constructor(subdivisionScheme) {
+    __publicField(this, "m_subdivisionScheme");
     this.m_subdivisionScheme = subdivisionScheme;
   }
   subTiles(tileKey) {
@@ -3174,11 +3179,11 @@ var TilingScheme = class {
   constructor(subdivisionScheme, projection) {
     this.subdivisionScheme = subdivisionScheme;
     this.projection = projection;
+    __publicField(this, "boundingBoxGenerator");
+    __publicField(this, "tileTreeTraverse");
     this.boundingBoxGenerator = new FlatTileBoundingBoxGenerator(this);
     this.tileTreeTraverse = new TileTreeTraverse(subdivisionScheme);
   }
-  boundingBoxGenerator;
-  tileTreeTraverse;
   getSubTileKeys(tileKey) {
     return this.tileTreeTraverse.subTiles(tileKey);
   }
@@ -4288,16 +4293,15 @@ var ExprEvaluatorContext = class {
     this.cache = cache6;
   }
   evaluate(expr) {
-    var _a, _b;
     if (expr === void 0) {
       throw new Error("Failed to evaluate expression");
     }
-    const cachedResult = (_a = this.cache) == null ? void 0 : _a.get(expr);
+    const cachedResult = this.cache?.get(expr);
     if (cachedResult !== void 0) {
       return cachedResult;
     }
     const result = expr.accept(this.evaluator, this);
-    (_b = this.cache) == null ? void 0 : _b.set(expr, result);
+    this.cache?.set(expr, result);
     return result;
   }
   wrapValue(value2) {
@@ -4367,7 +4371,7 @@ var ExprEvaluator = class {
           if (branches === void 0) {
             branches = [];
           }
-          branches == null ? void 0 : branches.push([
+          branches?.push([
             context.wrapValue(evaluatedCondition),
             context.wrapValue(evaluatedBody)
           ]);
@@ -4721,11 +4725,11 @@ function tokenSpell(token) {
 var Lexer = class {
   constructor(code) {
     this.code = code;
+    __publicField(this, "m_token", 1 /* Error */);
+    __publicField(this, "m_index", 0);
+    __publicField(this, "m_char", 10 /* Lf */);
+    __publicField(this, "m_text");
   }
-  m_token = 1 /* Error */;
-  m_index = 0;
-  m_char = 10 /* Lf */;
-  m_text;
   token() {
     return this.m_token;
   }
@@ -4887,8 +4891,8 @@ function getRelationalOp(token) {
   }
 }
 var ExprParser = class {
-  lex;
   constructor(code) {
+    __publicField(this, "lex");
     this.lex = new Lexer(code);
     this.lex.next();
   }
@@ -5069,7 +5073,7 @@ function interpolatedPropertyDefinitionToJsonExpr(property) {
 
 // src/datasource-protocol/Theme.ts
 function isVerboseDefinition(definition) {
-  return (definition == null ? void 0 : definition.value) !== void 0;
+  return definition?.value !== void 0;
 }
 function getDefinitionValue(definition) {
   return isVerboseDefinition(definition) ? definition.value : definition;
@@ -5106,9 +5110,11 @@ function getStyles(styles) {
 var exprEvaluator = new ExprEvaluator();
 var exprInstantiator = new ExprInstantiator();
 var ExprDependencies = class {
-  properties = /* @__PURE__ */ new Set();
-  featureState;
-  volatile;
+  constructor() {
+    __publicField(this, "properties", /* @__PURE__ */ new Set());
+    __publicField(this, "featureState");
+    __publicField(this, "volatile");
+  }
 };
 var _ComputeExprDependencies = class {
   static of(expr) {
@@ -5189,6 +5195,10 @@ function isJsonExpr(v) {
   return Array.isArray(v) && v.length > 0 && typeof v[0] === "string";
 }
 var Expr3 = class {
+  constructor() {
+    __publicField(this, "m_dependencies");
+    __publicField(this, "m_isDynamic");
+  }
   static isExpr(value2) {
     return value2 instanceof Expr3;
   }
@@ -5205,8 +5215,6 @@ var Expr3 = class {
     } : void 0;
     return parseNode(json, referenceResolverState);
   }
-  m_dependencies;
-  m_isDynamic;
   evaluate(env, scope = 0 /* Value */, cache6) {
     return this.accept(exprEvaluator, new ExprEvaluatorContext(exprEvaluator, env, scope, cache6));
   }
@@ -5264,9 +5272,9 @@ var LiteralExpr = class extends Expr3 {
   }
 };
 var _NullLiteralExpr = class extends LiteralExpr {
-  value = null;
   constructor() {
     super();
+    __publicField(this, "value", null);
   }
   accept(visitor, context) {
     return visitor.visitNullLiteralExpr(this, context);
@@ -5299,8 +5307,8 @@ var StringLiteralExpr = class extends LiteralExpr {
   constructor(value2) {
     super();
     this.value = value2;
+    __publicField(this, "m_promotedValue");
   }
-  m_promotedValue;
   get promotedValue() {
     if (this.m_promotedValue === void 0) {
       this.m_promotedValue = RGBA.parse(this.value) ?? Pixels.parse(this.value) ?? null;
@@ -5340,8 +5348,8 @@ var CallExpr7 = class extends Expr3 {
     super();
     this.op = op;
     this.args = args;
+    __publicField(this, "descriptor");
   }
-  descriptor;
   get children() {
     return this.args;
   }
@@ -5923,7 +5931,7 @@ function setTechniqueRenderOrderOrPriority(technique, priorities, labelPrioritie
     }
   } else if (priorities && technique._styleSet !== void 0) {
     const computeRenderOrder = (category) => {
-      const priority = priorities == null ? void 0 : priorities.findIndex((entry) => entry.group === technique._styleSet && entry.category === category);
+      const priority = priorities?.findIndex((entry) => entry.group === technique._styleSet && entry.category === category);
       return priority !== void 0 && priority !== -1 ? (priority + 1) * 10 : void 0;
     };
     if (typeof technique._category === "string") {
@@ -5992,18 +6000,20 @@ function getFeatureId(attributeMap) {
 
 // src/datasource-protocol/ExprPool.ts
 var ExprPool = class {
-  m_booleanLiterals = /* @__PURE__ */ new Map();
-  m_numberLiterals = /* @__PURE__ */ new Map();
-  m_stringLiterals = /* @__PURE__ */ new Map();
-  m_objectLiterals = /* @__PURE__ */ new Map();
-  m_arrayLiterals = [];
-  m_varExprs = /* @__PURE__ */ new Map();
-  m_hasAttributeExprs = /* @__PURE__ */ new Map();
-  m_matchExprs = [];
-  m_caseExprs = [];
-  m_interpolateExprs = [];
-  m_stepExprs = [];
-  m_callExprs = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "m_booleanLiterals", /* @__PURE__ */ new Map());
+    __publicField(this, "m_numberLiterals", /* @__PURE__ */ new Map());
+    __publicField(this, "m_stringLiterals", /* @__PURE__ */ new Map());
+    __publicField(this, "m_objectLiterals", /* @__PURE__ */ new Map());
+    __publicField(this, "m_arrayLiterals", []);
+    __publicField(this, "m_varExprs", /* @__PURE__ */ new Map());
+    __publicField(this, "m_hasAttributeExprs", /* @__PURE__ */ new Map());
+    __publicField(this, "m_matchExprs", []);
+    __publicField(this, "m_caseExprs", []);
+    __publicField(this, "m_interpolateExprs", []);
+    __publicField(this, "m_stepExprs", []);
+    __publicField(this, "m_callExprs", /* @__PURE__ */ new Map());
+  }
   add(expr) {
     return expr.accept(this, void 0);
   }
@@ -6453,8 +6463,8 @@ function getTechniqueDescriptor(technique) {
 }
 function getTechniqueAttributeDescriptor(technique, attrName) {
   const techniqueDescriptor = getTechniqueDescriptor(technique);
-  const attrDescriptors = techniqueDescriptor == null ? void 0 : techniqueDescriptor.attrDescriptors;
-  const descriptor = attrDescriptors == null ? void 0 : attrDescriptors[attrName];
+  const attrDescriptors = techniqueDescriptor?.attrDescriptors;
+  const descriptor = attrDescriptors?.[attrName];
   if (typeof descriptor === void 0) {
     return void 0;
   } else if (typeof descriptor === "object") {
@@ -6464,7 +6474,6 @@ function getTechniqueAttributeDescriptor(technique, attrName) {
 }
 var automaticAttributeCache = /* @__PURE__ */ new Map();
 function getTechniqueAutomaticAttrs(technique) {
-  var _a;
   if (typeof technique !== "string") {
     technique = technique.name;
   }
@@ -6472,7 +6481,7 @@ function getTechniqueAutomaticAttrs(technique) {
     return automaticAttributeCache.get(technique);
   }
   const descriptors = [];
-  const attrDescriptors = (_a = getTechniqueDescriptor(technique)) == null ? void 0 : _a.attrDescriptors;
+  const attrDescriptors = getTechniqueDescriptor(technique)?.attrDescriptors;
   if (attrDescriptors === void 0) {
     return descriptors;
   }
@@ -6672,7 +6681,7 @@ function getShaderDefine(defines, key) {
 // src/materials/RawShaderMaterial.ts
 var RawShaderMaterial2 = class extends THREE16.RawShaderMaterial {
   constructor(params) {
-    const isWebGL2 = (params == null ? void 0 : params.rendererCapabilities.isWebGL2) === true;
+    const isWebGL2 = params?.rendererCapabilities.isWebGL2 === true;
     const shaderParams = params ? {
       ...params,
       glslVersion: isWebGL2 ? THREE16.GLSL3 : THREE16.GLSL1,
@@ -6684,7 +6693,7 @@ var RawShaderMaterial2 = class extends THREE16.RawShaderMaterial {
     }
     super(shaderParams);
     this.invalidateFog();
-    this.setOpacity(shaderParams == null ? void 0 : shaderParams.opacity);
+    this.setOpacity(shaderParams?.opacity);
   }
   invalidateFog() {
     if (this.defines !== void 0 && this.fog !== getShaderMaterialDefine(this, "USE_FOG")) {
@@ -6692,10 +6701,9 @@ var RawShaderMaterial2 = class extends THREE16.RawShaderMaterial {
     }
   }
   setOpacity(opacity) {
-    var _a;
     if (opacity !== void 0) {
       this.opacity = opacity;
-      if ((_a = this.uniforms) == null ? void 0 : _a.opacity) {
+      if (this.uniforms?.opacity) {
         this.uniforms.opacity.value = opacity;
       }
     }
@@ -7073,13 +7081,15 @@ var DisplacementFeature;
   DisplacementFeature3.onBeforeCompile = onBeforeCompile;
 })(DisplacementFeature || (DisplacementFeature = {}));
 var DisplacementFeatureMixin = class {
-  needsUpdate;
-  uniformsNeedUpdate;
-  defines;
-  shaderDefines;
-  shaderUniforms;
-  onBeforeCompile;
-  m_displacementMap = null;
+  constructor() {
+    __publicField(this, "needsUpdate");
+    __publicField(this, "uniformsNeedUpdate");
+    __publicField(this, "defines");
+    __publicField(this, "shaderDefines");
+    __publicField(this, "shaderUniforms");
+    __publicField(this, "onBeforeCompile");
+    __publicField(this, "m_displacementMap", null);
+  }
   get displacementMap() {
     return this.m_displacementMap;
   }
@@ -7191,14 +7201,16 @@ var FadingFeature;
   FadingFeature2.addRenderHelper = addRenderHelper;
 })(FadingFeature || (FadingFeature = {}));
 var FadingFeatureMixin = class {
-  needsUpdate;
-  uniformsNeedUpdate;
-  defines;
-  shaderDefines;
-  shaderUniforms;
-  onBeforeCompile;
-  m_fadeNear = FadingFeature.DEFAULT_FADE_NEAR;
-  m_fadeFar = FadingFeature.DEFAULT_FADE_FAR;
+  constructor() {
+    __publicField(this, "needsUpdate");
+    __publicField(this, "uniformsNeedUpdate");
+    __publicField(this, "defines");
+    __publicField(this, "shaderDefines");
+    __publicField(this, "shaderUniforms");
+    __publicField(this, "onBeforeCompile");
+    __publicField(this, "m_fadeNear", FadingFeature.DEFAULT_FADE_NEAR);
+    __publicField(this, "m_fadeFar", FadingFeature.DEFAULT_FADE_FAR);
+  }
   getFadeNear() {
     return this.m_fadeNear;
   }
@@ -7302,13 +7314,15 @@ var ExtrusionFeature;
   ExtrusionFeature4.onBeforeCompile = onBeforeCompile;
 })(ExtrusionFeature || (ExtrusionFeature = {}));
 var ExtrusionFeatureMixin = class {
-  needsUpdate;
-  uniformsNeedUpdate;
-  defines;
-  shaderDefines;
-  shaderUniforms;
-  onBeforeCompile;
-  m_extrusion = ExtrusionFeatureDefs.DEFAULT_RATIO_MAX;
+  constructor() {
+    __publicField(this, "needsUpdate");
+    __publicField(this, "uniformsNeedUpdate");
+    __publicField(this, "defines");
+    __publicField(this, "shaderDefines");
+    __publicField(this, "shaderUniforms");
+    __publicField(this, "onBeforeCompile");
+    __publicField(this, "m_extrusion", ExtrusionFeatureDefs.DEFAULT_RATIO_MAX);
+  }
   getExtrusionRatio() {
     return this.m_extrusion;
   }
@@ -7437,16 +7451,16 @@ var MapMeshDepthMaterial = class extends THREE19.MeshDepthMaterial {
   }
 };
 var MapMeshStandardMaterial = class extends THREE19.MeshStandardMaterial {
-  uniformsNeedUpdate;
   constructor(params) {
     super(params);
+    __publicField(this, "uniformsNeedUpdate");
     FadingFeature.patchGlobalShaderChunks();
     this.addFadingProperties();
     this.applyFadingParameters(params);
     ExtrusionFeature.patchGlobalShaderChunks();
     this.addExtrusionProperties();
     this.applyExtrusionParameters({ ...params, zFightingWorkaround: true });
-    if ((params == null ? void 0 : params.removeDiffuseLight) === true) {
+    if (params?.removeDiffuseLight === true) {
       this.onBeforeCompile = chainCallbacks(this.onBeforeCompile, (shaderParameters) => {
         const shader = shaderParameters;
         shader.fragmentShader = THREE19.ShaderChunk.meshphysical_frag.replace("#include <lights_physical_pars_fragment>", simpleLightingShadowChunk);
@@ -8382,7 +8396,6 @@ void main() {
     #endif
 }`;
 var _HighPrecisionLineMaterial = class extends RawShaderMaterial2 {
-  isHighPrecisionLineMaterial;
   constructor(params) {
     Object.assign(THREE22.ShaderChunk, LinesChunks_default);
     const shaderParams = params ? {
@@ -8400,6 +8413,7 @@ var _HighPrecisionLineMaterial = class extends RawShaderMaterial2 {
     } : void 0;
     Object.assign(shaderParams, params);
     super(shaderParams);
+    __publicField(this, "isHighPrecisionLineMaterial");
     this.type = "HighPrecisionLineMaterial";
     this.isHighPrecisionLineMaterial = true;
     if (params) {
@@ -8460,14 +8474,14 @@ void main() {
     gl_PointSize = size;
 }`;
 var _HighPrecisionPointMaterial = class extends THREE23.PointsMaterial {
-  isHighPrecisionPointMaterial;
-  uniforms;
-  vertexShader;
-  fragmentShader;
   constructor(params) {
     Object.assign(THREE23.ShaderChunk, LinesChunks_default);
     const shaderParams = params;
     super(shaderParams);
+    __publicField(this, "isHighPrecisionPointMaterial");
+    __publicField(this, "uniforms");
+    __publicField(this, "vertexShader");
+    __publicField(this, "fragmentShader");
     this.type = "HighPrecisionPointMaterial";
     this.vertexShader = vertexSource3;
     this.fragmentShader = THREE23.ShaderChunk.points_frag;
@@ -9440,10 +9454,9 @@ var _SolidLineMaterial = class extends RawShaderMaterial2 {
     return this.uniforms.gapSize.value;
   }
   set gapSize(value2) {
-    var _a, _b;
     this.uniforms.gapSize.value = value2;
     setShaderMaterialDefine(this, "USE_DASHED_LINE", value2 > 0);
-    if (((_b = (_a = this.uniforms) == null ? void 0 : _a.gapSize) == null ? void 0 : _b.value) === 0) {
+    if (this.uniforms?.gapSize?.value === 0) {
       this.stencilWrite = this.opacity < 0.98;
     }
   }
@@ -9575,14 +9588,14 @@ var DEFAULT_MIN_ZOOM_LEVEL = 1;
 var AnimatedExtrusionHandler = class {
   constructor(m_mapView) {
     this.m_mapView = m_mapView;
+    __publicField(this, "enabled", true);
+    __publicField(this, "duration", DEFAULT_EXTRUSION_DURATION);
+    __publicField(this, "m_minZoomLevel", DEFAULT_MIN_ZOOM_LEVEL);
+    __publicField(this, "m_forceEnabled", false);
+    __publicField(this, "m_dataSourceMap", /* @__PURE__ */ new Map());
+    __publicField(this, "m_state", 0 /* None */);
+    __publicField(this, "m_startTime", -1);
   }
-  enabled = true;
-  duration = DEFAULT_EXTRUSION_DURATION;
-  m_minZoomLevel = DEFAULT_MIN_ZOOM_LEVEL;
-  m_forceEnabled = false;
-  m_dataSourceMap = /* @__PURE__ */ new Map();
-  m_state = 0 /* None */;
-  m_startTime = -1;
   get forceEnabled() {
     return this.m_forceEnabled;
   }
@@ -9655,7 +9668,6 @@ var AnimatedExtrusionHandler = class {
     return this.wasAnyAncestorAnimated(tile) || this.wasAnyDescendantAnimated(tile);
   }
   wasAnyAncestorAnimated(tile) {
-    var _a;
     const minLevel = tile.dataSource.getDataZoomLevel(this.m_minZoomLevel);
     const distanceToMinLevel = Math.max(0, tile.tileKey.level - minLevel);
     const levelsUp = Math.min(distanceToMinLevel, this.m_mapView.visibleTileSet.options.quadTreeSearchDistanceUp);
@@ -9666,14 +9678,13 @@ var AnimatedExtrusionHandler = class {
     let lastTileKey = tile.tileKey;
     for (let deltaUp = 1; deltaUp <= levelsUp; ++deltaUp) {
       lastTileKey = lastTileKey.parent();
-      if (((_a = tileMap.get(lastTileKey.mortonCode())) == null ? void 0 : _a.animated) ?? false) {
+      if (tileMap.get(lastTileKey.mortonCode())?.animated ?? false) {
         return true;
       }
     }
     return false;
   }
   wasAnyDescendantAnimated(tile) {
-    var _a;
     const distanceToMaxLevel = tile.dataSource.maxDataLevel - tile.tileKey.level;
     const levelsDown = Math.min(distanceToMaxLevel, this.m_mapView.visibleTileSet.options.quadTreeSearchDistanceDown);
     const tileMap = this.getTileMap(tile.dataSource);
@@ -9687,7 +9698,7 @@ var AnimatedExtrusionHandler = class {
       childTileKeys.length = 0;
       for (const tileKey of nextTileKeys) {
         for (const childTileKey of tilingScheme.getSubTileKeys(tileKey)) {
-          if (((_a = tileMap.get(childTileKey.mortonCode())) == null ? void 0 : _a.animated) ?? false) {
+          if (tileMap.get(childTileKey.mortonCode())?.animated ?? false) {
             return true;
           }
           childTileKeys.push(childTileKey);
@@ -9773,14 +9784,14 @@ var BaseTileLoader = class {
   constructor(dataSource, tileKey) {
     this.dataSource = dataSource;
     this.tileKey = tileKey;
+    __publicField(this, "state", 0 /* Initialized */);
+    __publicField(this, "error");
+    __publicField(this, "m_priority", 0);
+    __publicField(this, "loadAbortController", new AbortController());
+    __publicField(this, "donePromise");
+    __publicField(this, "resolveDonePromise");
+    __publicField(this, "rejectedDonePromise");
   }
-  state = 0 /* Initialized */;
-  error;
-  m_priority = 0;
-  loadAbortController = new AbortController();
-  donePromise;
-  resolveDonePromise;
-  rejectedDonePromise;
   get priority() {
     return this.m_priority;
   }
@@ -9936,8 +9947,7 @@ function computeFocalLengthFromFov(fov, viewportSide, ppOffset) {
 var CameraUtils;
 ((CameraUtils2) => {
   function getFocalLength(camera) {
-    var _a;
-    return (_a = camera.userData) == null ? void 0 : _a.focalLength;
+    return camera.userData?.focalLength;
   }
   CameraUtils2.getFocalLength = getFocalLength;
   function setFocalLength(camera, focalLength, viewportHeight) {
@@ -9985,13 +9995,11 @@ var CameraUtils;
   }
   CameraUtils2.setPrincipalPoint = setPrincipalPoint;
   function getHorizontalFov(camera) {
-    var _a;
-    return ((_a = getFovs(camera)) == null ? void 0 : _a.horizontal) ?? 2 * Math.atan(Math.tan(THREE30.MathUtils.degToRad(camera.fov) / 2) * camera.aspect);
+    return getFovs(camera)?.horizontal ?? 2 * Math.atan(Math.tan(THREE30.MathUtils.degToRad(camera.fov) / 2) * camera.aspect);
   }
   CameraUtils2.getHorizontalFov = getHorizontalFov;
   function getTopFov(camera) {
-    var _a;
-    return ((_a = getFovs(camera)) == null ? void 0 : _a.top) ?? THREE30.MathUtils.degToRad(camera.fov / 2);
+    return getFovs(camera)?.top ?? THREE30.MathUtils.degToRad(camera.fov / 2);
   }
   CameraUtils2.getTopFov = getTopFov;
   function getBottomFov(camera) {
@@ -9999,13 +10007,11 @@ var CameraUtils;
   }
   CameraUtils2.getBottomFov = getBottomFov;
   function getRightFov(camera) {
-    var _a;
-    return ((_a = getFovs(camera)) == null ? void 0 : _a.right) ?? getHorizontalFov(camera) / 2;
+    return getFovs(camera)?.right ?? getHorizontalFov(camera) / 2;
   }
   CameraUtils2.getRightFov = getRightFov;
   function getLeftFov(camera) {
-    var _a;
-    return ((_a = getFovs(camera)) == null ? void 0 : _a.right) !== void 0 ? getHorizontalFov(camera) - getRightFov(camera) : getHorizontalFov(camera) / 2;
+    return getFovs(camera)?.right !== void 0 ? getHorizontalFov(camera) - getRightFov(camera) : getHorizontalFov(camera) / 2;
   }
   CameraUtils2.getLeftFov = getLeftFov;
 })(CameraUtils || (CameraUtils = {}));
@@ -10019,9 +10025,9 @@ import * as THREE95 from "three";
 // src/mapview/geometry/LodMesh.ts
 import * as THREE31 from "three";
 var LodMesh = class extends THREE31.Mesh {
-  m_geometries;
   constructor(geometries, material) {
     super(void 0, material);
+    __publicField(this, "m_geometries");
     this.geometries = geometries;
   }
   set geometries(geometries) {
@@ -10074,13 +10080,13 @@ import * as THREE34 from "three";
 var logger3 = LoggerManager.instance.create("CameraKeyTrackAnimation");
 var MIN_DISTANCE = 0;
 var ControlPoint = class {
-  timestamp = 0;
-  target;
-  name;
-  tilt;
-  heading;
-  distance;
   constructor(options) {
+    __publicField(this, "timestamp", 0);
+    __publicField(this, "target");
+    __publicField(this, "name");
+    __publicField(this, "tilt");
+    __publicField(this, "heading");
+    __publicField(this, "distance");
     this.timestamp = options.timestamp;
     this.target = options.target ? GeoCoordinates.fromObject(options.target) : new GeoCoordinates(0, 0);
     this.tilt = options.tilt ?? 0;
@@ -10090,9 +10096,9 @@ var ControlPoint = class {
   }
 };
 var AnimationDummy = class extends THREE34.Object3D {
-  distance = 0;
   constructor(name2) {
     super();
+    __publicField(this, "distance", 0);
     this.name = name2;
   }
 };
@@ -10100,6 +10106,17 @@ var CameraKeyTrackAnimation = class {
   constructor(m_mapView, m_options) {
     this.m_mapView = m_mapView;
     this.m_options = m_options;
+    __publicField(this, "m_animationClip");
+    __publicField(this, "m_animationMixer");
+    __publicField(this, "m_animationAction");
+    __publicField(this, "m_dummy", new AnimationDummy("dummy"));
+    __publicField(this, "m_azimuthAxis", new THREE34.Vector3(0, 0, 1));
+    __publicField(this, "m_altitudeAxis", new THREE34.Vector3(1, 0, 0));
+    __publicField(this, "m_running", false);
+    __publicField(this, "m_onFinished");
+    __publicField(this, "m_name");
+    __publicField(this, "m_lastFrameTime", 0);
+    __publicField(this, "m_animateCb");
     const interpolation = this.m_options.interpolation !== void 0 ? this.m_options.interpolation : THREE34.InterpolateSmooth;
     this.m_options.loop = this.m_options.loop ?? THREE34.LoopOnce;
     this.m_options.repetitions = this.m_options.repetitions ?? 1;
@@ -10145,17 +10162,6 @@ var CameraKeyTrackAnimation = class {
     this.m_animateCb = this.animate.bind(this);
     this.m_animationMixer.addEventListener("finished", this.stop.bind(this));
   }
-  m_animationClip;
-  m_animationMixer;
-  m_animationAction;
-  m_dummy = new AnimationDummy("dummy");
-  m_azimuthAxis = new THREE34.Vector3(0, 0, 1);
-  m_altitudeAxis = new THREE34.Vector3(1, 0, 0);
-  m_running = false;
-  m_onFinished;
-  m_name;
-  m_lastFrameTime = 0;
-  m_animateCb;
   set loop(value2) {
     this.m_options.loop = value2;
     this.m_animationAction.setLoop(this.m_options.loop, this.m_options.repetitions);
@@ -10899,7 +10905,10 @@ if (hasWindow && Platform.OS == "web") {
 
 // src/Rotating.ts
 var Rotating = class extends Component {
-  speed = 1;
+  constructor() {
+    super(...arguments);
+    __publicField(this, "speed", 1);
+  }
 };
 Rotating.schema = {
   speed: { default: 1, type: Types.Number }
@@ -10909,29 +10918,29 @@ Rotating.schema = {
 import * as THREE36 from "three";
 var logger4 = LoggerManager.instance.create("DataSource");
 var _DataSource = class extends THREE36.EventDispatcher {
-  UPDATE_EVENT = { type: "update" };
-  enabled = true;
-  cacheable = false;
-  useGeometryLoader = false;
-  name;
-  addGroundPlane = false;
-  minDataLevel = 1;
-  maxDataLevel = 20;
-  minDisplayLevel = 1;
-  maxDisplayLevel = 20;
-  allowOverlappingTiles = true;
-  enablePicking = true;
-  dataSourceOrder = 0;
-  exprPool = new ExprPool();
-  m_mapView;
-  m_styleSetName;
-  m_maxGeometryHeight = 0;
-  m_minGeometryHeight = 0;
-  m_storageLevelOffset = 0;
-  m_featureStateMap = /* @__PURE__ */ new Map();
-  languages;
   constructor(options = {}) {
     super();
+    __publicField(this, "UPDATE_EVENT", { type: "update" });
+    __publicField(this, "enabled", true);
+    __publicField(this, "cacheable", false);
+    __publicField(this, "useGeometryLoader", false);
+    __publicField(this, "name");
+    __publicField(this, "addGroundPlane", false);
+    __publicField(this, "minDataLevel", 1);
+    __publicField(this, "maxDataLevel", 20);
+    __publicField(this, "minDisplayLevel", 1);
+    __publicField(this, "maxDisplayLevel", 20);
+    __publicField(this, "allowOverlappingTiles", true);
+    __publicField(this, "enablePicking", true);
+    __publicField(this, "dataSourceOrder", 0);
+    __publicField(this, "exprPool", new ExprPool());
+    __publicField(this, "m_mapView");
+    __publicField(this, "m_styleSetName");
+    __publicField(this, "m_maxGeometryHeight", 0);
+    __publicField(this, "m_minGeometryHeight", 0);
+    __publicField(this, "m_storageLevelOffset", 0);
+    __publicField(this, "m_featureStateMap", /* @__PURE__ */ new Map());
+    __publicField(this, "languages");
     let { name: name2 } = options;
     const {
       styleSetName,
@@ -11125,11 +11134,11 @@ import { Vector2 as Vector29, Vector3 as Vector315 } from "three";
 var ClipEdge = class {
   constructor(x1, y1, x2, y2, isInside) {
     this.isInside = isInside;
+    __publicField(this, "p0");
+    __publicField(this, "p1");
     this.p0 = new Vector29(x1, y1);
     this.p1 = new Vector29(x2, y2);
   }
-  p0;
-  p1;
   inside(point) {
     return this.isInside(point);
   }
@@ -11202,7 +11211,7 @@ var ClippingEdge = class {
     polygon = [];
     const pushPoint = (point) => {
       const lastAddedPoint = polygon[polygon.length - 1];
-      if (!(lastAddedPoint == null ? void 0 : lastAddedPoint.equals(point)) || point.isClipped === true && !(lastAddedPoint == null ? void 0 : lastAddedPoint.isClipped) || !point.isClipped && (lastAddedPoint == null ? void 0 : lastAddedPoint.isClipped) === true) {
+      if (!lastAddedPoint?.equals(point) || point.isClipped === true && !lastAddedPoint?.isClipped || !point.isClipped && lastAddedPoint?.isClipped === true) {
         polygon.push(point);
       }
     };
@@ -11401,6 +11410,10 @@ var EdgeLengthGeometrySubdivisionModifier = class extends SubdivisionModifier {
     this.geoBox = geoBox;
     this.subdivisionMode = subdivisionMode;
     this.projection = projection;
+    __publicField(this, "m_projectedBox");
+    __publicField(this, "m_maxLength");
+    __publicField(this, "m_maxLengthX");
+    __publicField(this, "m_maxLengthY");
     assert(projection.type === 0 /* Planar */, "EdgeLengthGeometrySubdivisionModifier only supports planar projections");
     const northEast = projection.projectPoint(geoBox.northEast, VERTEX_POSITION_CACHE[0]);
     const southWest = projection.projectPoint(geoBox.southWest, VERTEX_POSITION_CACHE[1]);
@@ -11424,10 +11437,6 @@ var EdgeLengthGeometrySubdivisionModifier = class extends SubdivisionModifier {
     }
     this.m_maxLength = Math.sqrt(this.m_maxLengthX * this.m_maxLengthX + this.m_maxLengthY * this.m_maxLengthY);
   }
-  m_projectedBox;
-  m_maxLength;
-  m_maxLengthX;
-  m_maxLengthY;
   get maxLength() {
     return this.m_maxLength;
   }
@@ -11505,11 +11514,11 @@ var ClipEdge2 = class extends ClippingEdge {
   constructor(p0, p1, isInside) {
     super();
     this.isInside = isInside;
+    __publicField(this, "p0");
+    __publicField(this, "p1");
     this.p0 = new Vector211().fromArray(p0);
     this.p1 = new Vector211().fromArray(p1);
   }
-  p0;
-  p1;
   inside(point, extent) {
     return this.isInside(point);
   }
@@ -11562,13 +11571,13 @@ var Invalid = -1;
 var VertexCache = class {
   constructor(maxVertexCount) {
     this.maxVertexCount = maxVertexCount;
+    __publicField(this, "m_cache", []);
+    __publicField(this, "m_vertexCount", 0);
+    __publicField(this, "m_oldestIdx", 0);
+    __publicField(this, "m_newestIdx", 0);
     this.m_cache.length = this.maxVertexCount * 6 /* Count */;
     this.clear();
   }
-  m_cache = [];
-  m_vertexCount = 0;
-  m_oldestIdx = 0;
-  m_newestIdx = 0;
   clear() {
     this.m_cache.fill(Invalid);
     this.m_vertexCount = 0;
@@ -11662,15 +11671,15 @@ var _DisplacedBufferAttribute = class extends THREE38.BufferAttribute {
     this.originalAttribute = originalAttribute;
     this.m_normals = m_normals;
     this.m_uvs = m_uvs;
+    __publicField(this, "m_texture");
+    __publicField(this, "m_textureWidth", 0);
+    __publicField(this, "m_textureHeight", 0);
+    __publicField(this, "m_cache", new VertexCache(_DisplacedBufferAttribute.MAX_CACHE_SIZE));
+    __publicField(this, "m_lastBufferIndex");
+    __publicField(this, "m_lastPos", new THREE38.Vector3());
+    __publicField(this, "m_tmpNormal", new THREE38.Vector3());
     this.resetTexture(displacementMap);
   }
-  m_texture;
-  m_textureWidth = 0;
-  m_textureHeight = 0;
-  m_cache = new VertexCache(_DisplacedBufferAttribute.MAX_CACHE_SIZE);
-  m_lastBufferIndex;
-  m_lastPos = new THREE38.Vector3();
-  m_tmpNormal = new THREE38.Vector3();
   reset(originalAttribute, normals, uvs, displacementMap) {
     this.array = originalAttribute.array;
     this.itemSize = originalAttribute.itemSize;
@@ -11740,6 +11749,8 @@ var DisplacedBufferGeometry = class extends THREE39.BufferGeometry {
     super();
     this.originalGeometry = originalGeometry;
     this.displacementRange = displacementRange;
+    __publicField(this, "m_displacedPositions");
+    __publicField(this, "m_originalBoundingBox", new THREE39.Box3());
     if (!displacedPositions) {
       this.m_displacedPositions = new DisplacedBufferAttribute(originalGeometry.attributes.position, originalGeometry.attributes.normal, originalGeometry.attributes.uv, displacementMap);
     } else {
@@ -11747,8 +11758,6 @@ var DisplacedBufferGeometry = class extends THREE39.BufferGeometry {
     }
     this.resetAttributes();
   }
-  m_displacedPositions;
-  m_originalBoundingBox = new THREE39.Box3();
   reset(geometry, displacementMap, displacementRange) {
     this.originalGeometry = geometry;
     const positions = geometry.attributes.position;
@@ -11820,6 +11829,7 @@ var _DisplacedMesh = class extends THREE40.Mesh {
     super(geometry, material);
     this.m_getDisplacementRange = m_getDisplacementRange;
     this.m_raycastStrategy = m_raycastStrategy;
+    __publicField(this, "displacedGeometry");
   }
   static getDisplacedPositionAttribute(geometry, displacementMap) {
     if (!_DisplacedMesh.displacedPositions) {
@@ -11829,7 +11839,6 @@ var _DisplacedMesh = class extends THREE40.Mesh {
     }
     return _DisplacedMesh.displacedPositions;
   }
-  displacedGeometry;
   raycast(raycaster, intersects) {
     const firstMaterial = this.firstMaterial;
     if (!isDisplacementMaterial(firstMaterial) || !isDataTextureMap(firstMaterial.displacementMap)) {
@@ -12066,7 +12075,10 @@ var SolidLineMesh = class extends THREE41.Mesh {
 // src/mapview/MapViewPoints.ts
 import * as THREE42 from "three";
 var MapViewPoints = class extends THREE42.Points {
-  enableRayTesting = true;
+  constructor() {
+    super(...arguments);
+    __publicField(this, "enableRayTesting", true);
+  }
   raycast(raycaster, intersects) {
     if (!this.enableRayTesting) {
       return;
@@ -12368,7 +12380,7 @@ function createMaterial(rendererCapabilities, options, onTextureCreated) {
     TEXTURE_PROPERTY_KEYS.forEach((texturePropertyName) => {
       const texturePromise = createTexture(material, texturePropertyName, options);
       if (texturePromise) {
-        onTextureCreated == null ? void 0 : onTextureCreated(texturePromise);
+        onTextureCreated?.(texturePromise);
       }
     });
   }
@@ -12669,8 +12681,7 @@ function getBaseColorProp(technique) {
   return void 0;
 }
 function getBaseColorPropName(technique) {
-  var _a;
-  return (_a = getTechniqueDescriptor(technique)) == null ? void 0 : _a.attrTransparencyColor;
+  return getTechniqueDescriptor(technique)?.attrTransparencyColor;
 }
 function getTextureBuffer(buffer, textureDataType) {
   if (textureDataType === void 0) {
@@ -12702,9 +12713,32 @@ function isTextureProperty(propertyName) {
   return TEXTURE_PROPERTY_KEYS.includes(propertyName);
 }
 var MapMaterialAdapter = class {
+  constructor(material, styledProperties) {
+    __publicField(this, "material");
+    __publicField(this, "styledProperties");
+    __publicField(this, "currentStyledProperties");
+    __publicField(this, "m_lastUpdateFrameNumber", -1);
+    __publicField(this, "m_dynamicProperties");
+    __publicField(this, "tmpColor", new THREE45.Color());
+    this.material = material;
+    this.styledProperties = styledProperties;
+    this.currentStyledProperties = {};
+    this.m_dynamicProperties = [];
+    for (const propName in styledProperties) {
+      if (!styledProperties.hasOwnProperty(propName)) {
+        continue;
+      }
+      const propDefinition = styledProperties[propName];
+      if (Expr3.isExpr(propDefinition) || typeof propDefinition === "function") {
+        this.m_dynamicProperties.push([propName, propDefinition]);
+      } else {
+        this.currentStyledProperties[propName] = propDefinition;
+      }
+    }
+    this.setupStaticProperties();
+  }
   static get(material) {
-    var _a;
-    const mapAdapter = (_a = material.userData) == null ? void 0 : _a.mapAdapter;
+    const mapAdapter = material.userData?.mapAdapter;
     if (mapAdapter instanceof MapMaterialAdapter) {
       return mapAdapter;
     } else if (mapAdapter !== void 0) {
@@ -12723,32 +12757,7 @@ var MapMaterialAdapter = class {
     return MapMaterialAdapter.install(new MapMaterialAdapter(material, styledProperties));
   }
   static ensureUpdated(material, context) {
-    var _a;
-    return ((_a = MapMaterialAdapter.get(material)) == null ? void 0 : _a.ensureUpdated(context)) ?? false;
-  }
-  material;
-  styledProperties;
-  currentStyledProperties;
-  m_lastUpdateFrameNumber = -1;
-  m_dynamicProperties;
-  tmpColor = new THREE45.Color();
-  constructor(material, styledProperties) {
-    this.material = material;
-    this.styledProperties = styledProperties;
-    this.currentStyledProperties = {};
-    this.m_dynamicProperties = [];
-    for (const propName in styledProperties) {
-      if (!styledProperties.hasOwnProperty(propName)) {
-        continue;
-      }
-      const propDefinition = styledProperties[propName];
-      if (Expr3.isExpr(propDefinition) || typeof propDefinition === "function") {
-        this.m_dynamicProperties.push([propName, propDefinition]);
-      } else {
-        this.currentStyledProperties[propName] = propDefinition;
-      }
-    }
-    this.setupStaticProperties();
+    return MapMaterialAdapter.get(material)?.ensureUpdated(context) ?? false;
   }
   toJSON() {
     return { styledProperties: this.styledProperties };
@@ -12893,9 +12902,25 @@ var MapMaterialAdapter = class {
 
 // src/mapview/MapObjectAdapter.ts
 var MapObjectAdapter = class {
+  constructor(object, params) {
+    __publicField(this, "object");
+    __publicField(this, "technique");
+    __publicField(this, "kind");
+    __publicField(this, "dataSource");
+    __publicField(this, "level");
+    __publicField(this, "m_pickability");
+    __publicField(this, "m_lastUpdateFrameNumber", -1);
+    __publicField(this, "m_notCompletlyTransparent", true);
+    this.object = object;
+    this.technique = params.technique;
+    this.kind = params.kind;
+    this.dataSource = params.dataSource;
+    this.m_pickability = params.pickability ?? "only-visible" /* onlyVisible */;
+    this.m_notCompletlyTransparent = this.getObjectMaterials().some((material) => material.opacity > 0);
+    this.level = params.level;
+  }
   static get(object) {
-    var _a;
-    return ((_a = object.userData) == null ? void 0 : _a.mapAdapter) instanceof MapObjectAdapter ? object.userData.mapAdapter : void 0;
+    return object.userData?.mapAdapter instanceof MapObjectAdapter ? object.userData.mapAdapter : void 0;
   }
   static install(objData) {
     if (!objData.object.userData) {
@@ -12907,25 +12932,7 @@ var MapObjectAdapter = class {
     return MapObjectAdapter.install(new MapObjectAdapter(object, params));
   }
   static ensureUpdated(object, context) {
-    var _a;
-    return ((_a = MapObjectAdapter.get(object)) == null ? void 0 : _a.ensureUpdated(context)) ?? false;
-  }
-  object;
-  technique;
-  kind;
-  dataSource;
-  level;
-  m_pickability;
-  m_lastUpdateFrameNumber = -1;
-  m_notCompletlyTransparent = true;
-  constructor(object, params) {
-    this.object = object;
-    this.technique = params.technique;
-    this.kind = params.kind;
-    this.dataSource = params.dataSource;
-    this.m_pickability = params.pickability ?? "only-visible" /* onlyVisible */;
-    this.m_notCompletlyTransparent = this.getObjectMaterials().some((material) => material.opacity > 0);
-    this.level = params.level;
+    return MapObjectAdapter.get(object)?.ensureUpdated(context) ?? false;
   }
   toJSON() {
     return { kind: this.kind, technique: this.technique };
@@ -13085,9 +13092,9 @@ function createGroundPlaneMaterial(color, receiveShadow, depthWrite, opacity) {
 
 // src/mapview/BackgroundDataSource.ts
 var _BackgroundDataSource = class extends DataSource {
-  m_tilingScheme = _BackgroundDataSource.DEFAULT_TILING_SCHEME;
   constructor() {
     super({ name: "background" });
+    __publicField(this, "m_tilingScheme", _BackgroundDataSource.DEFAULT_TILING_SCHEME);
     this.cacheable = true;
     this.addGroundPlane = true;
     this.enablePicking = false;
@@ -13145,16 +13152,25 @@ var CameraMovementDetector = class {
     this.m_throttlingTimeout = m_throttlingTimeout;
     this.m_movementStartedFunc = m_movementStartedFunc;
     this.m_movementFinishedFunc = m_movementFinishedFunc;
+    __publicField(this, "m_lastAttitude");
+    __publicField(this, "m_lastCameraPos", new Vector326());
+    __publicField(this, "m_newCameraPos", new Vector326());
+    __publicField(this, "m_cameraMovedLastFrame");
+    __publicField(this, "m_throttlingTimerId");
+    __publicField(this, "m_movementDetectorDeadline", 0);
+    __publicField(this, "onDeadlineTimer", () => {
+      this.m_throttlingTimerId = void 0;
+      const now2 = performance.now();
+      if (now2 >= this.m_movementDetectorDeadline) {
+        this.movementFinished();
+      } else {
+        this.startMovementFinishedTimer(now2);
+      }
+    });
     if (this.m_throttlingTimeout === void 0) {
       this.m_throttlingTimeout = DEFAULT_THROTTLING_TIMEOUT;
     }
   }
-  m_lastAttitude;
-  m_lastCameraPos = new Vector326();
-  m_newCameraPos = new Vector326();
-  m_cameraMovedLastFrame;
-  m_throttlingTimerId = void 0;
-  m_movementDetectorDeadline = 0;
   checkCameraMoved(mapView, now2) {
     const newAttitude = MapViewUtils.extractAttitude(mapView, mapView.camera);
     const newCameraPos = mapView.camera.getWorldPosition(this.m_newCameraPos);
@@ -13217,15 +13233,6 @@ var CameraMovementDetector = class {
       this.m_throttlingTimerId = setTimeout(this.onDeadlineTimer, remainingTime);
     }
   }
-  onDeadlineTimer = () => {
-    this.m_throttlingTimerId = void 0;
-    const now2 = performance.now();
-    if (now2 >= this.m_movementDetectorDeadline) {
-      this.movementFinished();
-    } else {
-      this.startMovementFinishedTimer(now2);
-    }
-  };
   removeMovementFinishedTimer() {
     if (this.m_throttlingTimerId !== void 0) {
       clearTimeout(this.m_throttlingTimerId);
@@ -13280,9 +13287,9 @@ var SphericalProj;
   SphericalProj2.getNormalToFwdAngle = getNormalToFwdAngle;
 })(SphericalProj || (SphericalProj = {}));
 var ElevationBasedClipPlanesEvaluator = class {
-  m_maxElevation;
-  m_minElevation;
   constructor(maxElevation, minElevation) {
+    __publicField(this, "m_maxElevation");
+    __publicField(this, "m_minElevation");
     assert(maxElevation >= minElevation);
     this.m_minElevation = minElevation;
     this.m_maxElevation = maxElevation;
@@ -13308,6 +13315,13 @@ var TopViewClipPlanesEvaluator = class extends ElevationBasedClipPlanesEvaluator
     this.nearMin = nearMin;
     this.nearFarMarginRatio = nearFarMarginRatio;
     this.farMaxRatio = farMaxRatio;
+    __publicField(this, "m_tmpVectors", [
+      new THREE47.Vector3(),
+      new THREE47.Vector3(),
+      new THREE47.Vector3()
+    ]);
+    __publicField(this, "m_tmpQuaternion", new THREE47.Quaternion());
+    __publicField(this, "m_minimumViewRange");
     assert(nearMin > 0);
     assert(nearFarMarginRatio >= 0);
     assert(farMaxRatio > 1);
@@ -13319,13 +13333,6 @@ var TopViewClipPlanesEvaluator = class extends ElevationBasedClipPlanesEvaluator
       maximum: Math.max(nearMin * farMaxRatio, nearMin + nearFarMargin)
     };
   }
-  m_tmpVectors = [
-    new THREE47.Vector3(),
-    new THREE47.Vector3(),
-    new THREE47.Vector3()
-  ];
-  m_tmpQuaternion = new THREE47.Quaternion();
-  m_minimumViewRange;
   evaluateClipPlanes(camera, projection, elevationProvider) {
     assert(camera instanceof THREE47.PerspectiveCamera, "Unsupported camera type.");
     const persCamera = camera;
@@ -13409,7 +13416,10 @@ var TopViewClipPlanesEvaluator = class extends ElevationBasedClipPlanesEvaluator
   }
 };
 var TiltViewClipPlanesEvaluator = class extends TopViewClipPlanesEvaluator {
-  m_tmpV2 = new THREE47.Vector2();
+  constructor() {
+    super(...arguments);
+    __publicField(this, "m_tmpV2", new THREE47.Vector2());
+  }
   evaluateDistancePlanarProj(camera, projection, elevationProvider) {
     assert(projection.type !== 1 /* Spherical */);
     const viewRanges = { ...this.minimumViewRange };
@@ -13497,8 +13507,10 @@ import * as THREE49 from "three";
 // src/mapview/composing/Pass.ts
 import * as THREE48 from "three";
 var Pass = class {
-  enabled = false;
-  renderToScreen = false;
+  constructor() {
+    __publicField(this, "enabled", false);
+    __publicField(this, "renderToScreen", false);
+  }
   setSize(width, height) {
   }
   render(renderer, scene, camera, writeBuffer, readBuffer, delta) {
@@ -13517,6 +13529,9 @@ var ShaderPass = class extends Pass {
   constructor(shader, textureID = "tDiffuse") {
     super();
     this.textureID = textureID;
+    __publicField(this, "uniforms");
+    __publicField(this, "material");
+    __publicField(this, "fsQuad");
     if (shader instanceof THREE48.ShaderMaterial) {
       this.uniforms = shader.uniforms;
       this.material = shader;
@@ -13531,9 +13546,6 @@ var ShaderPass = class extends Pass {
     }
     this.fsQuad = new FullScreenQuad(this.material);
   }
-  uniforms;
-  material;
-  fsQuad;
   render(renderer, scene, camera, writeBuffer, readBuffer, delta) {
     if (this.uniforms[this.textureID]) {
       this.uniforms[this.textureID].value = readBuffer.texture;
@@ -13544,9 +13556,9 @@ var ShaderPass = class extends Pass {
   }
 };
 var FullScreenQuad = class {
-  m_mesh;
-  m_camera;
   constructor(material) {
+    __publicField(this, "m_mesh");
+    __publicField(this, "m_camera");
     this.m_camera = new THREE48.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geometry = new THREE48.PlaneBufferGeometry(2, 2);
     this.m_mesh = new THREE48.Mesh(geometry, material);
@@ -13567,19 +13579,19 @@ var LowResRenderPass = class extends Pass {
   constructor(lowResPixelRatio) {
     super();
     this.lowResPixelRatio = lowResPixelRatio;
+    __publicField(this, "m_renderTarget", null);
+    __publicField(this, "m_localCamera", new THREE49.OrthographicCamera(-1, 1, 1, -1, 0, 1));
+    __publicField(this, "m_quadScene", new THREE49.Scene());
+    __publicField(this, "m_quadUniforms", CopyShader.uniforms);
+    __publicField(this, "m_quadMaterial", new CopyMaterial(this.m_quadUniforms));
+    __publicField(this, "m_quad", new THREE49.Mesh(new THREE49.PlaneBufferGeometry(2, 2), this.m_quadMaterial));
+    __publicField(this, "m_pixelRatio");
+    __publicField(this, "m_savedWidth", 0);
+    __publicField(this, "m_savedHeight", 0);
     this.m_quad.frustumCulled = false;
     this.m_quadScene.add(this.m_quad);
     this.m_pixelRatio = lowResPixelRatio;
   }
-  m_renderTarget = null;
-  m_localCamera = new THREE49.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  m_quadScene = new THREE49.Scene();
-  m_quadUniforms = CopyShader.uniforms;
-  m_quadMaterial = new CopyMaterial(this.m_quadUniforms);
-  m_quad = new THREE49.Mesh(new THREE49.PlaneBufferGeometry(2, 2), this.m_quadMaterial);
-  m_pixelRatio;
-  m_savedWidth = 0;
-  m_savedHeight = 0;
   dispose() {
     this.m_quadMaterial.dispose();
     this.m_quad.geometry.dispose();
@@ -13645,16 +13657,16 @@ var MSAASampling = /* @__PURE__ */ ((MSAASampling2) => {
   return MSAASampling2;
 })(MSAASampling || {});
 var _MSAARenderPass = class extends Pass {
-  samplingLevel = 1 /* Level_1 */;
-  m_renderTarget = null;
-  m_localCamera = new THREE50.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  m_quadScene = new THREE50.Scene();
-  m_quadUniforms = CopyShader.uniforms;
-  m_quadMaterial = new MSAAMaterial(this.m_quadUniforms);
-  m_quad = new THREE50.Mesh(new THREE50.PlaneBufferGeometry(2, 2), this.m_quadMaterial);
-  m_tmpColor = new THREE50.Color();
   constructor() {
     super();
+    __publicField(this, "samplingLevel", 1 /* Level_1 */);
+    __publicField(this, "m_renderTarget", null);
+    __publicField(this, "m_localCamera", new THREE50.OrthographicCamera(-1, 1, 1, -1, 0, 1));
+    __publicField(this, "m_quadScene", new THREE50.Scene());
+    __publicField(this, "m_quadUniforms", CopyShader.uniforms);
+    __publicField(this, "m_quadMaterial", new MSAAMaterial(this.m_quadUniforms));
+    __publicField(this, "m_quad", new THREE50.Mesh(new THREE50.PlaneBufferGeometry(2, 2), this.m_quadMaterial));
+    __publicField(this, "m_tmpColor", new THREE50.Color());
     this.m_quad.frustumCulled = false;
     this.m_quadScene.add(this.m_quad);
   }
@@ -13894,36 +13906,36 @@ void main() {
 var OutlineEffect = class {
   constructor(m_renderer) {
     this.m_renderer = m_renderer;
+    __publicField(this, "enabled", true);
+    __publicField(this, "autoClear");
+    __publicField(this, "domElement");
+    __publicField(this, "shadowMap");
+    __publicField(this, "m_defaultThickness", 0.02);
+    __publicField(this, "m_defaultColor", new THREE51.Color(0, 0, 0));
+    __publicField(this, "m_defaultAlpha", 1);
+    __publicField(this, "m_defaultKeepAlive", false);
+    __publicField(this, "m_ghostExtrudedPolygons", false);
+    __publicField(this, "m_cache", {});
+    __publicField(this, "m_removeThresholdCount", 60);
+    __publicField(this, "m_originalMaterials", {});
+    __publicField(this, "m_originalOnBeforeRenders", {});
+    __publicField(this, "m_shaderIDs", {
+      MeshBasicMaterial: "basic",
+      MeshLambertMaterial: "lambert",
+      MeshPhongMaterial: "phong",
+      MeshToonMaterial: "phong",
+      MeshStandardMaterial: "physical",
+      MeshPhysicalMaterial: "physical"
+    });
+    __publicField(this, "m_uniformsChunk", {
+      outlineThickness: { value: this.m_defaultThickness },
+      outlineColor: { value: this.m_defaultColor },
+      outlineAlpha: { value: this.m_defaultAlpha }
+    });
     this.autoClear = m_renderer.autoClear;
     this.domElement = m_renderer.domElement;
     this.shadowMap = m_renderer.shadowMap;
   }
-  enabled = true;
-  autoClear;
-  domElement;
-  shadowMap;
-  m_defaultThickness = 0.02;
-  m_defaultColor = new THREE51.Color(0, 0, 0);
-  m_defaultAlpha = 1;
-  m_defaultKeepAlive = false;
-  m_ghostExtrudedPolygons = false;
-  m_cache = {};
-  m_removeThresholdCount = 60;
-  m_originalMaterials = {};
-  m_originalOnBeforeRenders = {};
-  m_shaderIDs = {
-    MeshBasicMaterial: "basic",
-    MeshLambertMaterial: "lambert",
-    MeshPhongMaterial: "phong",
-    MeshToonMaterial: "phong",
-    MeshStandardMaterial: "physical",
-    MeshPhysicalMaterial: "physical"
-  };
-  m_uniformsChunk = {
-    outlineThickness: { value: this.m_defaultThickness },
-    outlineColor: { value: this.m_defaultColor },
-    outlineAlpha: { value: this.m_defaultAlpha }
-  };
   set thickness(thickness) {
     this.m_defaultThickness = thickness;
     this.m_uniformsChunk.outlineThickness.value = thickness;
@@ -14125,7 +14137,6 @@ var OutlineEffect = class {
     this.updateUniforms(material, originalMaterial);
   }
   updateUniforms(material, originalMaterial) {
-    var _a;
     const outlineParameters = originalMaterial.userData.outlineParameters;
     const outlineUniforms = material.uniforms;
     outlineUniforms.outlineAlpha.value = originalMaterial.opacity;
@@ -14146,7 +14157,7 @@ var OutlineEffect = class {
       material.extrusionRatio = value2;
       material.uniforms.extrusionRatio.value = value2 !== void 0 ? value2 : ExtrusionFeatureDefs.DEFAULT_RATIO_MIN;
     }
-    if (((_a = material.defines) == null ? void 0 : _a.USE_FADING) !== void 0 && originalUniforms.fadeNear !== void 0 && originalUniforms.fadeFar !== void 0 && originalUniforms.fadeFar.value >= 0) {
+    if (material.defines?.USE_FADING !== void 0 && originalUniforms.fadeNear !== void 0 && originalUniforms.fadeFar !== void 0 && originalUniforms.fadeFar.value >= 0) {
       outlineUniforms.fadeNear.value = originalUniforms.fadeNear.value;
       outlineUniforms.fadeFar.value = originalUniforms.fadeFar.value;
     }
@@ -14202,33 +14213,33 @@ import * as THREE52 from "three";
 var BlurDirectionX = new THREE52.Vector2(1, 0);
 var BlurDirectionY = new THREE52.Vector2(0, 1);
 var BloomPass = class extends Pass {
-  strength;
-  radius;
-  threshold;
-  resolution = new THREE52.Vector2(256, 256);
-  m_renderTargetsHorizontal = [];
-  m_renderTargetsVertical = [];
-  m_nMips = 5;
-  m_highPassUniforms;
-  m_materialHighPassFilter;
-  m_separableBlurMaterials = [];
-  m_materialCopy;
-  m_copyUniforms;
-  m_compositeMaterial;
-  m_camera = new THREE52.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  m_scene = new THREE52.Scene();
-  m_basic = new THREE52.MeshBasicMaterial();
-  m_quad = new THREE52.Mesh(new THREE52.PlaneBufferGeometry(2, 2));
-  m_bloomTintColors = [
-    new THREE52.Vector3(1, 1, 1),
-    new THREE52.Vector3(1, 1, 1),
-    new THREE52.Vector3(1, 1, 1),
-    new THREE52.Vector3(1, 1, 1),
-    new THREE52.Vector3(1, 1, 1)
-  ];
-  m_renderTargetBright;
   constructor(resolution, strength, radius, threshold) {
     super();
+    __publicField(this, "strength");
+    __publicField(this, "radius");
+    __publicField(this, "threshold");
+    __publicField(this, "resolution", new THREE52.Vector2(256, 256));
+    __publicField(this, "m_renderTargetsHorizontal", []);
+    __publicField(this, "m_renderTargetsVertical", []);
+    __publicField(this, "m_nMips", 5);
+    __publicField(this, "m_highPassUniforms");
+    __publicField(this, "m_materialHighPassFilter");
+    __publicField(this, "m_separableBlurMaterials", []);
+    __publicField(this, "m_materialCopy");
+    __publicField(this, "m_copyUniforms");
+    __publicField(this, "m_compositeMaterial");
+    __publicField(this, "m_camera", new THREE52.OrthographicCamera(-1, 1, 1, -1, 0, 1));
+    __publicField(this, "m_scene", new THREE52.Scene());
+    __publicField(this, "m_basic", new THREE52.MeshBasicMaterial());
+    __publicField(this, "m_quad", new THREE52.Mesh(new THREE52.PlaneBufferGeometry(2, 2)));
+    __publicField(this, "m_bloomTintColors", [
+      new THREE52.Vector3(1, 1, 1),
+      new THREE52.Vector3(1, 1, 1),
+      new THREE52.Vector3(1, 1, 1),
+      new THREE52.Vector3(1, 1, 1),
+      new THREE52.Vector3(1, 1, 1)
+    ]);
+    __publicField(this, "m_renderTargetBright");
     this.strength = strength;
     this.radius = radius;
     this.threshold = threshold;
@@ -14464,45 +14475,45 @@ lerpBloomFactor(bloomFactors[4]) * vec4(bloomTintColors[4], 1.0) * texture2D(blu
 var DEFAULT_DYNAMIC_MSAA_SAMPLING_LEVEL = 1 /* Level_1 */;
 var DEFAULT_STATIC_MSAA_SAMPLING_LEVEL = 4 /* Level_4 */;
 var MapRenderingManager = class {
-  bloom = {
-    enabled: false,
-    strength: 1.5,
-    radius: 0.4,
-    threshold: 0.85
-  };
-  outline = {
-    enabled: false,
-    thickness: 5e-3,
-    color: "#000000",
-    ghostExtrudedPolygons: false,
-    needsUpdate: false
-  };
-  vignette = {
-    enabled: false,
-    offset: 1,
-    darkness: 1
-  };
-  sepia = {
-    enabled: false,
-    amount: 0.5
-  };
-  m_width = 1;
-  m_height = 1;
-  m_outlineEffect;
-  m_msaaPass;
-  m_renderPass = new RenderPass();
-  m_target1 = new THREE53.WebGLRenderTarget(1, 1);
-  m_target2 = new THREE53.WebGLRenderTarget(1, 1);
-  m_bloomPass;
-  m_sepiaPass = new ShaderPass(SepiaShader);
-  m_vignettePass = new ShaderPass(VignetteShader);
-  m_readBuffer;
-  m_dynamicMsaaSamplingLevel;
-  m_staticMsaaSamplingLevel;
-  m_lowResPass;
   constructor(width, height, lowResPixelRatio, antialiasSettings = {
     msaaEnabled: false
   }) {
+    __publicField(this, "bloom", {
+      enabled: false,
+      strength: 1.5,
+      radius: 0.4,
+      threshold: 0.85
+    });
+    __publicField(this, "outline", {
+      enabled: false,
+      thickness: 5e-3,
+      color: "#000000",
+      ghostExtrudedPolygons: false,
+      needsUpdate: false
+    });
+    __publicField(this, "vignette", {
+      enabled: false,
+      offset: 1,
+      darkness: 1
+    });
+    __publicField(this, "sepia", {
+      enabled: false,
+      amount: 0.5
+    });
+    __publicField(this, "m_width", 1);
+    __publicField(this, "m_height", 1);
+    __publicField(this, "m_outlineEffect");
+    __publicField(this, "m_msaaPass");
+    __publicField(this, "m_renderPass", new RenderPass());
+    __publicField(this, "m_target1", new THREE53.WebGLRenderTarget(1, 1));
+    __publicField(this, "m_target2", new THREE53.WebGLRenderTarget(1, 1));
+    __publicField(this, "m_bloomPass");
+    __publicField(this, "m_sepiaPass", new ShaderPass(SepiaShader));
+    __publicField(this, "m_vignettePass", new ShaderPass(VignetteShader));
+    __publicField(this, "m_readBuffer");
+    __publicField(this, "m_dynamicMsaaSamplingLevel");
+    __publicField(this, "m_staticMsaaSamplingLevel");
+    __publicField(this, "m_lowResPass");
     this.m_readBuffer = new THREE53.WebGLRenderTarget(width, height);
     this.m_msaaPass = new MSAARenderPass();
     this.m_msaaPass.enabled = antialiasSettings !== void 0 ? antialiasSettings.msaaEnabled === true : false;
@@ -14761,20 +14772,78 @@ var DEFAULT_WORKER_INITIALIZATION_TIMEOUT = 1e4;
 var ConcurrentWorkerSet = class {
   constructor(m_options) {
     this.m_options = m_options;
+    __publicField(this, "m_workerChannelLogger", LoggerManager.instance.create("WorkerChannel"));
+    __publicField(this, "m_eventListeners", /* @__PURE__ */ new Map());
+    __publicField(this, "m_workers", new Array());
+    __publicField(this, "m_availableWorkers", new Array());
+    __publicField(this, "m_workerPromises", new Array());
+    __publicField(this, "m_workerCount");
+    __publicField(this, "m_readyPromises", /* @__PURE__ */ new Map());
+    __publicField(this, "m_requests", /* @__PURE__ */ new Map());
+    __publicField(this, "m_workerRequestQueue", []);
+    __publicField(this, "m_nextMessageId", 0);
+    __publicField(this, "m_stopped", true);
+    __publicField(this, "m_referenceCount", 0);
+    __publicField(this, "onWorkerMessage", (workerId, event) => {
+      if (WorkerServiceProtocol.isResponseMessage(event.data)) {
+        const response = event.data;
+        if (response.messageId === null) {
+          logger7.error(`[${this.m_options.scriptUrl}]: Bad ResponseMessage: no messageId`);
+          return;
+        }
+        const entry = this.m_requests.get(response.messageId);
+        if (entry === void 0) {
+          logger7.error(`[${this.m_options.scriptUrl}]: Bad ResponseMessage: invalid messageId`);
+          return;
+        }
+        if (workerId >= 0 && workerId < this.m_workers.length) {
+          const worker = this.m_workers[workerId];
+          this.m_availableWorkers.push(worker);
+          this.checkWorkerRequestQueue();
+        } else {
+          logger7.error(`[${this.m_options.scriptUrl}]: onWorkerMessage: invalid workerId`);
+        }
+        if (response.errorMessage !== void 0) {
+          const error = new Error(response.errorMessage);
+          if (response.errorStack !== void 0) {
+            error.stack = response.errorStack;
+          }
+          entry.resolver(error);
+        } else {
+          entry.resolver(void 0, response.response);
+        }
+      } else if (WorkerServiceProtocol.isInitializedMessage(event.data)) {
+        const readyPromise = this.getReadyPromise(event.data.service);
+        if (++readyPromise.count === this.m_workerPromises.length) {
+          readyPromise.resolve();
+        }
+      } else if (isLoggingMessage(event.data)) {
+        switch (event.data.level) {
+          case 0 /* Trace */:
+            this.m_workerChannelLogger.trace(...event.data.message);
+            break;
+          case 1 /* Debug */:
+            this.m_workerChannelLogger.debug(...event.data.message);
+            break;
+          case 2 /* Log */:
+            this.m_workerChannelLogger.log(...event.data.message);
+            break;
+          case 3 /* Info */:
+            this.m_workerChannelLogger.info(...event.data.message);
+            break;
+          case 4 /* Warn */:
+            this.m_workerChannelLogger.warn(...event.data.message);
+            break;
+          case 5 /* Error */:
+            this.m_workerChannelLogger.error(...event.data.message);
+            break;
+        }
+      } else {
+        this.eventHandler(event);
+      }
+    });
     this.start();
   }
-  m_workerChannelLogger = LoggerManager.instance.create("WorkerChannel");
-  m_eventListeners = /* @__PURE__ */ new Map();
-  m_workers = new Array();
-  m_availableWorkers = new Array();
-  m_workerPromises = new Array();
-  m_workerCount;
-  m_readyPromises = /* @__PURE__ */ new Map();
-  m_requests = /* @__PURE__ */ new Map();
-  m_workerRequestQueue = [];
-  m_nextMessageId = 0;
-  m_stopped = true;
-  m_referenceCount = 0;
   addReference() {
     this.m_referenceCount += 1;
     if (this.m_referenceCount === 1 && this.m_stopped) {
@@ -14930,64 +14999,6 @@ var ConcurrentWorkerSet = class {
     }
     this.dispatchEvent(event.data.type, event);
   }
-  onWorkerMessage = (workerId, event) => {
-    if (WorkerServiceProtocol.isResponseMessage(event.data)) {
-      const response = event.data;
-      if (response.messageId === null) {
-        logger7.error(`[${this.m_options.scriptUrl}]: Bad ResponseMessage: no messageId`);
-        return;
-      }
-      const entry = this.m_requests.get(response.messageId);
-      if (entry === void 0) {
-        logger7.error(`[${this.m_options.scriptUrl}]: Bad ResponseMessage: invalid messageId`);
-        return;
-      }
-      if (workerId >= 0 && workerId < this.m_workers.length) {
-        const worker = this.m_workers[workerId];
-        this.m_availableWorkers.push(worker);
-        this.checkWorkerRequestQueue();
-      } else {
-        logger7.error(`[${this.m_options.scriptUrl}]: onWorkerMessage: invalid workerId`);
-      }
-      if (response.errorMessage !== void 0) {
-        const error = new Error(response.errorMessage);
-        if (response.errorStack !== void 0) {
-          error.stack = response.errorStack;
-        }
-        entry.resolver(error);
-      } else {
-        entry.resolver(void 0, response.response);
-      }
-    } else if (WorkerServiceProtocol.isInitializedMessage(event.data)) {
-      const readyPromise = this.getReadyPromise(event.data.service);
-      if (++readyPromise.count === this.m_workerPromises.length) {
-        readyPromise.resolve();
-      }
-    } else if (isLoggingMessage(event.data)) {
-      switch (event.data.level) {
-        case 0 /* Trace */:
-          this.m_workerChannelLogger.trace(...event.data.message);
-          break;
-        case 1 /* Debug */:
-          this.m_workerChannelLogger.debug(...event.data.message);
-          break;
-        case 2 /* Log */:
-          this.m_workerChannelLogger.log(...event.data.message);
-          break;
-        case 3 /* Info */:
-          this.m_workerChannelLogger.info(...event.data.message);
-          break;
-        case 4 /* Warn */:
-          this.m_workerChannelLogger.warn(...event.data.message);
-          break;
-        case 5 /* Error */:
-          this.m_workerChannelLogger.error(...event.data.message);
-          break;
-      }
-    } else {
-      this.eventHandler(event);
-    }
-  };
   postRequestMessage(message, buffers, requestController) {
     this.ensureStarted();
     if (this.m_workers.length === 0) {
@@ -15107,11 +15118,11 @@ var WorkerBasedDecoder = class {
   constructor(workerSet, decoderServiceType) {
     this.workerSet = workerSet;
     this.decoderServiceType = decoderServiceType;
+    __publicField(this, "serviceId");
+    __publicField(this, "m_serviceCreated", false);
     this.workerSet.addReference();
     this.serviceId = `${this.decoderServiceType}-${nextUniqueServiceId++}`;
   }
-  serviceId;
-  m_serviceCreated = false;
   dispose() {
     if (this.m_serviceCreated) {
       this.workerSet.broadcastRequest(WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID, {
@@ -15264,7 +15275,9 @@ var CopyrightInfo;
 
 // src/mapview/EventDispatcher.ts
 var EventDispatcher = class {
-  m_listeners = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "m_listeners", /* @__PURE__ */ new Map());
+  }
   dispose() {
     this.removeAllEventListeners();
   }
@@ -15341,19 +15354,19 @@ import * as THREE55 from "three";
 var MapTileCuller = class {
   constructor(m_camera) {
     this.m_camera = m_camera;
+    __publicField(this, "m_globalFrustumMin", new THREE55.Vector3());
+    __publicField(this, "m_globalFrustumMax", new THREE55.Vector3());
+    __publicField(this, "m_frustumCorners", [
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3(),
+      new THREE55.Vector3()
+    ]);
   }
-  m_globalFrustumMin = new THREE55.Vector3();
-  m_globalFrustumMax = new THREE55.Vector3();
-  m_frustumCorners = [
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3(),
-    new THREE55.Vector3()
-  ];
   setup() {
     const frustumCorners = this.getFrustumCorners();
     const matrix = this.m_camera.matrixWorld;
@@ -15427,13 +15440,13 @@ var FrustumIntersection = class {
     this.m_tileWrappingEnabled = m_tileWrappingEnabled;
     this.m_enableMixedLod = m_enableMixedLod;
     this.m_tilePixelSize = m_tilePixelSize;
+    __publicField(this, "m_frustum", new THREE56.Frustum());
+    __publicField(this, "m_viewProjectionMatrix", new THREE56.Matrix4());
+    __publicField(this, "m_mapTileCuller");
+    __publicField(this, "m_rootTileKeys", []);
+    __publicField(this, "m_tileKeyEntries", /* @__PURE__ */ new Map());
     this.m_mapTileCuller = new MapTileCuller(m_camera);
   }
-  m_frustum = new THREE56.Frustum();
-  m_viewProjectionMatrix = new THREE56.Matrix4();
-  m_mapTileCuller;
-  m_rootTileKeys = [];
-  m_tileKeyEntries = /* @__PURE__ */ new Map();
   get camera() {
     return this.m_camera;
   }
@@ -15594,6 +15607,12 @@ var FrustumIntersection = class {
 var TileGeometryManager = class {
   constructor(mapView) {
     this.mapView = mapView;
+    __publicField(this, "enableFilterByKind", true);
+    __publicField(this, "enabledKinds", new GeometryKindSet());
+    __publicField(this, "disabledKinds", new GeometryKindSet());
+    __publicField(this, "hiddenKinds", new GeometryKindSet());
+    __publicField(this, "m_tileUpdateCallback");
+    __publicField(this, "m_visibilityCounter", 1);
   }
   get enabledGeometryKinds() {
     return this.enabledKinds;
@@ -15614,15 +15633,9 @@ var TileGeometryManager = class {
     this.hiddenKinds = kinds;
     this.incrementVisibilityCounter();
   }
-  enableFilterByKind = true;
   get visibilityCounter() {
     return this.m_visibilityCounter;
   }
-  enabledKinds = new GeometryKindSet();
-  disabledKinds = new GeometryKindSet();
-  hiddenKinds = new GeometryKindSet();
-  m_tileUpdateCallback;
-  m_visibilityCounter = 1;
   updateTiles(tiles) {
     let prio = 0;
     for (const tile of tiles) {
@@ -15682,7 +15695,7 @@ var TileGeometryManager = class {
       tile.visibilityCounter = this.visibilityCounter;
       for (const object of tile.objects) {
         const objectAdapter = MapObjectAdapter.get(object);
-        const geometryKind = objectAdapter == null ? void 0 : objectAdapter.kind;
+        const geometryKind = objectAdapter?.kind;
         if (geometryKind !== void 0) {
           const nowVisible = !geometryKind.some((kind) => this.hiddenKinds.has(kind));
           needUpdate = needUpdate || object.visible !== nowVisible;
@@ -15735,23 +15748,23 @@ import * as THREE58 from "three";
 import * as THREE57 from "three";
 var isNode = true;
 var MipMapGenerator = class {
-  static getPaddedSize(width, height) {
-    return {
-      width: THREE57.MathUtils.ceilPowerOfTwo(width),
-      height: THREE57.MathUtils.ceilPowerOfTwo(height)
-    };
-  }
-  m_paddingCanvas;
-  m_paddingContext;
-  m_resizeCanvas;
-  m_resizeContext;
   constructor() {
+    __publicField(this, "m_paddingCanvas");
+    __publicField(this, "m_paddingContext");
+    __publicField(this, "m_resizeCanvas");
+    __publicField(this, "m_resizeContext");
     if (!isNode) {
       this.m_paddingCanvas = document.createElement("canvas");
       this.m_paddingContext = this.m_paddingCanvas.getContext("2d");
       this.m_resizeCanvas = document.createElement("canvas");
       this.m_resizeContext = this.m_resizeCanvas.getContext("2d");
     }
+  }
+  static getPaddedSize(width, height) {
+    return {
+      width: THREE57.MathUtils.ceilPowerOfTwo(width),
+      height: THREE57.MathUtils.ceilPowerOfTwo(height)
+    };
   }
   generateTextureAtlasMipMap(image) {
     if (isNode) {
@@ -15810,10 +15823,10 @@ var ImageItem = class {
   constructor(url, image) {
     this.url = url;
     this.image = image;
+    __publicField(this, "mipMaps");
+    __publicField(this, "cancelled");
+    __publicField(this, "loadingPromise");
   }
-  mipMaps;
-  cancelled;
-  loadingPromise;
   get loaded() {
     return this.image !== void 0 && this.mipMaps !== void 0;
   }
@@ -15869,6 +15882,9 @@ var ImageItem = class {
 
 // src/mapview/image/ImageCache.ts
 var _ImageCache = class {
+  constructor() {
+    __publicField(this, "m_images", /* @__PURE__ */ new Map());
+  }
   static get instance() {
     if (_ImageCache.m_instance === void 0) {
       _ImageCache.m_instance = new _ImageCache();
@@ -15878,7 +15894,6 @@ var _ImageCache = class {
   static dispose() {
     _ImageCache.m_instance = void 0;
   }
-  m_images = /* @__PURE__ */ new Map();
   registerImage(owner, url, image) {
     let imageCacheItem = this.findImageCacheItem(url);
     if (imageCacheItem) {
@@ -15941,8 +15956,10 @@ __publicField(ImageCache, "m_instance");
 
 // src/mapview/image/MapViewImageCache.ts
 var MapViewImageCache = class {
-  m_name2Url = /* @__PURE__ */ new Map();
-  m_urlNameCount = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "m_name2Url", /* @__PURE__ */ new Map());
+    __publicField(this, "m_urlNameCount", /* @__PURE__ */ new Map());
+  }
   addImage(name2, urlOrImage, startLoading = true) {
     if (typeof urlOrImage === "string") {
       const url = urlOrImage;
@@ -16008,8 +16025,10 @@ var MapViewImageCache = class {
 // src/mapview/MapAnchors.ts
 import * as THREE59 from "three";
 var MapAnchors = class {
-  m_anchors = [];
-  m_priorities = [];
+  constructor() {
+    __publicField(this, "m_anchors", []);
+    __publicField(this, "m_priorities", []);
+  }
   get children() {
     return this.m_anchors;
   }
@@ -16031,9 +16050,8 @@ var MapAnchors = class {
   update(projection, cameraPosition, rootNode, overlayRootNode) {
     const worldPosition = new THREE59.Vector3();
     this.m_anchors.forEach((mapAnchor) => {
-      var _a;
       if (mapAnchor.styleSet !== void 0) {
-        const priority = (_a = this.m_priorities) == null ? void 0 : _a.findIndex((entry) => entry.group === mapAnchor.styleSet && entry.category === mapAnchor.category);
+        const priority = this.m_priorities?.findIndex((entry) => entry.group === mapAnchor.styleSet && entry.category === mapAnchor.category);
         if (priority !== void 0 && priority !== -1) {
           mapAnchor.renderOrder = (priority + 1) * 10;
         }
@@ -16064,11 +16082,11 @@ import * as THREE60 from "three";
 var MapViewFog = class {
   constructor(m_scene) {
     this.m_scene = m_scene;
+    __publicField(this, "m_enabled", true);
+    __publicField(this, "m_fog", new THREE60.Fog(0));
+    __publicField(this, "m_fogIsDefined", false);
+    __publicField(this, "m_cachedFog");
   }
-  m_enabled = true;
-  m_fog = new THREE60.Fog(0);
-  m_fogIsDefined = false;
-  m_cachedFog;
   set enabled(enableFog) {
     this.m_enabled = enableFog;
     if (enableFog && this.m_fogIsDefined && this.m_scene.fog === null) {
@@ -16148,8 +16166,8 @@ var SkyCubemapFaceId = /* @__PURE__ */ ((SkyCubemapFaceId2) => {
   return SkyCubemapFaceId2;
 })(SkyCubemapFaceId || {});
 var SkyCubemapTexture = class {
-  m_skybox;
   constructor(sky) {
+    __publicField(this, "m_skybox");
     const faces = this.createCubemapFaceArray(sky);
     this.m_skybox = faces !== void 0 ? new CubeTextureLoader().load(faces) : new CubeTexture();
   }
@@ -16227,6 +16245,16 @@ var SkyGradientTexture = class {
   constructor(sky, m_projectionType, m_height = DEFAULT_TEXTURE_SIZE) {
     this.m_projectionType = m_projectionType;
     this.m_height = m_height;
+    __publicField(this, "m_width");
+    __publicField(this, "m_faceCount");
+    __publicField(this, "m_faces");
+    __publicField(this, "m_skybox");
+    __publicField(this, "m_farClipPlaneDividedVertically");
+    __publicField(this, "m_groundPlane");
+    __publicField(this, "m_bottomMidFarPoint");
+    __publicField(this, "m_topMidFarPoint");
+    __publicField(this, "m_horizonPosition");
+    __publicField(this, "m_farClipPlaneCorners");
     const topColor = new Color16(sky.topColor);
     const bottomColor = new Color16(sky.bottomColor);
     const groundColor = new Color16(sky.groundColor);
@@ -16253,16 +16281,6 @@ var SkyGradientTexture = class {
       this.m_farClipPlaneCorners = [new Vector332(), new Vector332(), new Vector332(), new Vector332()];
     }
   }
-  m_width;
-  m_faceCount;
-  m_faces;
-  m_skybox;
-  m_farClipPlaneDividedVertically;
-  m_groundPlane;
-  m_bottomMidFarPoint;
-  m_topMidFarPoint;
-  m_horizonPosition;
-  m_farClipPlaneCorners;
   dispose() {
     for (let i = 0; i < this.m_faceCount; ++i) {
       this.m_faces[i].dispose();
@@ -16344,6 +16362,7 @@ var SkyBackground = class {
   constructor(m_sky, m_projectionType, camera) {
     this.m_sky = m_sky;
     this.m_projectionType = m_projectionType;
+    __publicField(this, "m_skyTexture");
     switch (this.m_sky.type) {
       case "gradient":
         this.m_skyTexture = new SkyGradientTexture(this.m_sky, this.m_projectionType);
@@ -16355,7 +16374,6 @@ var SkyBackground = class {
       }
     }
   }
-  m_skyTexture;
   dispose() {
     this.m_skyTexture.dispose();
   }
@@ -16413,6 +16431,11 @@ var cache = {
 var MapViewEnvironment = class {
   constructor(m_mapView, options) {
     this.m_mapView = m_mapView;
+    __publicField(this, "m_fog");
+    __publicField(this, "m_skyBackground");
+    __publicField(this, "m_createdLights");
+    __publicField(this, "m_overlayCreatedLights");
+    __publicField(this, "m_backgroundDataSource");
     this.m_fog = new MapViewFog(this.m_mapView.scene);
     if (options.addBackgroundDatasource !== false) {
       this.m_backgroundDataSource = new BackgroundDataSource();
@@ -16423,11 +16446,6 @@ var MapViewEnvironment = class {
     }
     this.updateClearColor();
   }
-  m_fog;
-  m_skyBackground;
-  m_createdLights;
-  m_overlayCreatedLights;
-  m_backgroundDataSource;
   get lights() {
     return this.m_createdLights ?? [];
   }
@@ -16469,13 +16487,12 @@ var MapViewEnvironment = class {
     }
   }
   updateLighting(lights) {
-    var _a;
     if (this.m_createdLights) {
       this.m_createdLights.forEach((light) => {
         this.m_mapView.scene.remove(light);
       });
     }
-    (_a = this.m_overlayCreatedLights) == null ? void 0 : _a.forEach((light) => {
+    this.m_overlayCreatedLights?.forEach((light) => {
       this.m_mapView.overlayScene.remove(light);
       if (light instanceof THREE61.DirectionalLight) {
         this.m_mapView.overlayScene.remove(light.target);
@@ -16571,13 +16588,12 @@ var MapViewEnvironment = class {
     }
   }
   updateSkyBackgroundColors(sky, clearColor) {
-    var _a;
     if (sky.type === "gradient" && sky.groundColor === void 0) {
       sky.groundColor = getOptionValue(clearColor, "#000000");
     }
     if (this.m_skyBackground !== void 0) {
       this.m_skyBackground.updateTexture(sky, this.m_mapView.projection.type);
-      this.m_mapView.scene.background = (_a = this.m_skyBackground) == null ? void 0 : _a.texture;
+      this.m_mapView.scene.background = this.m_skyBackground?.texture;
     }
   }
   viewToLightSpace(viewPos, camera) {
@@ -16593,14 +16609,14 @@ var logger11 = LoggerManager.instance.create("Statistics");
 var RingBuffer = class {
   constructor(capacity) {
     this.capacity = capacity;
+    __publicField(this, "buffer");
+    __publicField(this, "size");
+    __publicField(this, "head");
+    __publicField(this, "tail");
     this.buffer = new Array(capacity);
     this.capacity = capacity;
     this.head = this.tail = this.size = 0;
   }
-  buffer;
-  size;
-  head;
-  tail;
   clear() {
     this.head = this.tail = this.size = 0;
   }
@@ -16685,9 +16701,9 @@ var SimpleTimer = class {
   constructor(statistics, name2) {
     this.statistics = statistics;
     this.name = name2;
+    __publicField(this, "running", false);
+    __publicField(this, "m_currentValue");
   }
-  running = false;
-  m_currentValue;
   get value() {
     return this.m_currentValue;
   }
@@ -16738,10 +16754,10 @@ var SampledTimer = class extends SimpleTimer {
     super(statistics, name2);
     this.statistics = statistics;
     this.name = name2;
+    __publicField(this, "numResets", 0);
+    __publicField(this, "maxNumSamples", 1e3);
+    __publicField(this, "samples", new RingBuffer(this.maxNumSamples));
   }
-  numResets = 0;
-  maxNumSamples = 1e3;
-  samples = new RingBuffer(this.maxNumSamples);
   reset() {
     super.reset();
     this.getStats();
@@ -16830,6 +16846,7 @@ var MultiStageTimer = class {
     this.statistics = statistics;
     this.name = name2;
     this.stages = stages;
+    __publicField(this, "currentStage");
     if (stages.length < 1) {
       throw new Error("MultiStageTimer needs stages");
     }
@@ -16839,7 +16856,6 @@ var MultiStageTimer = class {
       }
     });
   }
-  currentStage;
   get value() {
     return this.statistics.getTimer(this.stages[this.stages.length - 1]).value;
   }
@@ -16879,11 +16895,11 @@ var Statistics = class {
   constructor(name2, enabled = false) {
     this.name = name2;
     this.enabled = enabled;
+    __publicField(this, "timers");
+    __publicField(this, "nullTimer");
     this.timers = /* @__PURE__ */ new Map();
     this.nullTimer = new SimpleTimer(this, "<null>");
   }
-  timers;
-  nullTimer;
   createTimer(name2, keepSamples = true) {
     const timer = keepSamples ? new SampledTimer(this, name2) : new SimpleTimer(this, name2);
     return this.addTimer(timer);
@@ -16939,8 +16955,10 @@ var Statistics = class {
   }
 };
 var FrameStats = class {
-  entries = /* @__PURE__ */ new Map();
-  messages = void 0;
+  constructor() {
+    __publicField(this, "entries", /* @__PURE__ */ new Map());
+    __publicField(this, "messages");
+  }
   getValue(name2) {
     return this.entries.get(name2);
   }
@@ -16967,10 +16985,10 @@ var FrameStats = class {
 var FrameStatsArray = class {
   constructor(capacity = 0) {
     this.capacity = capacity;
+    __publicField(this, "frameEntries", /* @__PURE__ */ new Map());
+    __publicField(this, "messages");
     this.messages = new RingBuffer(capacity);
   }
-  frameEntries = /* @__PURE__ */ new Map();
-  messages;
   get length() {
     return this.messages.size;
   }
@@ -17018,6 +17036,10 @@ var _PerformanceStatistics = class {
   constructor(enabled = true, maxNumFrames = 1e3) {
     this.enabled = enabled;
     this.maxNumFrames = maxNumFrames;
+    __publicField(this, "currentFrame", new FrameStats());
+    __publicField(this, "appResults", /* @__PURE__ */ new Map());
+    __publicField(this, "configs", /* @__PURE__ */ new Map());
+    __publicField(this, "m_frameEvents");
     _PerformanceStatistics.m_instance = this;
     this.m_frameEvents = new FrameStatsArray(maxNumFrames);
   }
@@ -17030,13 +17052,9 @@ var _PerformanceStatistics = class {
     }
     return _PerformanceStatistics.m_instance;
   }
-  currentFrame = new FrameStats();
   get frameEvents() {
     return this.m_frameEvents;
   }
-  appResults = /* @__PURE__ */ new Map();
-  configs = /* @__PURE__ */ new Map();
-  m_frameEvents;
   clear() {
     this.clearFrames();
     this.configs.clear();
@@ -17167,6 +17185,8 @@ var MapViewTaskScheduler = class extends THREE62.EventDispatcher {
   constructor(m_maxFps = DEFAULT_MAX_FPS) {
     super();
     this.m_maxFps = m_maxFps;
+    __publicField(this, "m_taskQueue");
+    __publicField(this, "m_throttlingEnabled", false);
     this.m_taskQueue = new TaskQueue({
       groups: ["fetch" /* FETCH_AND_DECODE */, "create" /* CREATE */],
       prioSortFn: (a, b) => {
@@ -17175,8 +17195,6 @@ var MapViewTaskScheduler = class extends THREE62.EventDispatcher {
     });
     this.maxFps = m_maxFps;
   }
-  m_taskQueue;
-  m_throttlingEnabled = false;
   set maxFps(fps) {
     this.m_maxFps = fps <= 0 ? DEFAULT_MAX_FPS : fps;
   }
@@ -17204,16 +17222,15 @@ var MapViewTaskScheduler = class extends THREE62.EventDispatcher {
     }
     this.m_taskQueue.update();
     let numItemsLeft = this.taskQueue.numItemsLeft();
-    currentFrameEvent == null ? void 0 : currentFrameEvent.setValue("TaskScheduler.numPendingTasks", numItemsLeft);
+    currentFrameEvent?.setValue("TaskScheduler.numPendingTasks", numItemsLeft);
     if (this.throttlingEnabled) {
       let availableTime = this.spaceInFrame(frameStartTime);
       availableTime = availableTime > 2 ? availableTime - 2 : availableTime;
-      currentFrameEvent == null ? void 0 : currentFrameEvent.setValue("TaskScheduler.estimatedAvailableTime", availableTime);
+      currentFrameEvent?.setValue("TaskScheduler.estimatedAvailableTime", availableTime);
       let counter = 0;
       while (availableTime > 0 && numItemsLeft > 0) {
         let shouldProcess2 = function(task) {
-          var _a;
-          availableTime -= ((_a = task.estimatedProcessTime) == null ? void 0 : _a.call(task)) ?? DEFAULT_PROCESSING_ESTIMATE_TIME;
+          availableTime -= task.estimatedProcessTime?.() ?? DEFAULT_PROCESSING_ESTIMATE_TIME;
           if (availableTime > 0 || counter === 1) {
             return true;
           }
@@ -17231,7 +17248,7 @@ var MapViewTaskScheduler = class extends THREE62.EventDispatcher {
       }
       numItemsLeft = this.m_taskQueue.numItemsLeft();
       if (numItemsLeft > 0) {
-        currentFrameEvent == null ? void 0 : currentFrameEvent.setValue("TaskScheduler.pendingTasksNotYetProcessed", numItemsLeft);
+        currentFrameEvent?.setValue("TaskScheduler.pendingTasksNotYetProcessed", numItemsLeft);
         this.requestUpdate();
       }
     } else {
@@ -17239,7 +17256,7 @@ var MapViewTaskScheduler = class extends THREE62.EventDispatcher {
       this.m_taskQueue.processNext("fetch" /* FETCH_AND_DECODE */, void 0, this.m_taskQueue.numItemsLeft("fetch" /* FETCH_AND_DECODE */));
     }
     if (stats.enabled) {
-      currentFrameEvent == null ? void 0 : currentFrameEvent.setValue("TaskScheduler.pendingTasksTime", PerformanceTimer.now() - startTime);
+      currentFrameEvent?.setValue("TaskScheduler.pendingTasksTime", PerformanceTimer.now() - startTime);
     }
   }
   clearQueuedTasks() {
@@ -17292,7 +17309,7 @@ var ThemeLoader = class {
     if (theme.url === void 0) {
       return theme;
     }
-    const childUrlResolver = composeUriResolvers(options == null ? void 0 : options.uriResolver, new RelativeUriResolver(theme.url));
+    const childUrlResolver = composeUriResolvers(options?.uriResolver, new RelativeUriResolver(theme.url));
     const resolveIncludes = options === void 0 || !(options.resolveIncludeUris === false);
     if (theme.extends && resolveIncludes) {
       theme.extends = (Array.isArray(theme.extends) ? theme.extends : [theme.extends]).map((baseTheme) => {
@@ -17548,12 +17565,12 @@ var MapViewThemeManager = class {
   constructor(m_mapView, m_uriResolver) {
     this.m_mapView = m_mapView;
     this.m_uriResolver = m_uriResolver;
+    __publicField(this, "m_imageCache");
+    __publicField(this, "m_updatePromise");
+    __publicField(this, "m_abortControllers", []);
+    __publicField(this, "m_theme", {});
     this.m_imageCache = new MapViewImageCache();
   }
-  m_imageCache;
-  m_updatePromise;
-  m_abortControllers = [];
-  m_theme = {};
   async setTheme(theme) {
     if (this.isUpdating()) {
       logger12.warn("Formerly set Theme is still updating, update will be canceled");
@@ -17738,16 +17755,15 @@ function defaultSort(lhs, rhs) {
 var PickListener = class {
   constructor(m_parameters) {
     this.m_parameters = m_parameters;
+    __publicField(this, "m_results", []);
+    __publicField(this, "m_sorted", true);
+    __publicField(this, "m_finished", true);
   }
-  m_results = [];
-  m_sorted = true;
-  m_finished = true;
   addResult(result) {
     const foundFeatureIdx = this.m_results.findIndex((otherResult) => {
-      var _a, _b, _c, _d;
       const sameType = otherResult.type === result.type;
-      const dataSource = (_b = (_a = result.intersection) == null ? void 0 : _a.object.userData) == null ? void 0 : _b.dataSource;
-      const sameDataSource = dataSource && ((_d = (_c = otherResult.intersection) == null ? void 0 : _c.object.userData) == null ? void 0 : _d.dataSource) === dataSource;
+      const dataSource = result.intersection?.object.userData?.dataSource;
+      const sameDataSource = dataSource && otherResult.intersection?.object.userData?.dataSource === dataSource;
       const sameId = result.featureId !== void 0 && otherResult.featureId === result.featureId;
       const noId = result.featureId === void 0 && otherResult.featureId === void 0;
       const sameUserData = result.userData && otherResult.userData === result.userData;
@@ -17789,8 +17805,7 @@ var PickListener = class {
     return this.m_results.length > 0 ? this.m_results[this.m_results.length - 1] : void 0;
   }
   get maxResults() {
-    var _a;
-    const maxCount = ((_a = this.m_parameters) == null ? void 0 : _a.maxResultCount) ?? 0;
+    const maxCount = this.m_parameters?.maxResultCount ?? 0;
     return maxCount > 0 ? maxCount : void 0;
   }
   sortResults() {
@@ -17836,9 +17851,9 @@ var PickHandler = class {
     this.mapView = mapView;
     this.camera = camera;
     this.enablePickTechnique = enablePickTechnique;
+    __publicField(this, "m_pickingRaycaster");
     this.m_pickingRaycaster = new PickingRaycaster(mapView.renderer.getSize(new THREE64.Vector2()));
   }
-  m_pickingRaycaster;
   intersectMapObjects(x, y, parameters) {
     const ndc = this.mapView.getNormalizedScreenCoordinates(x, y);
     const rayCaster2 = this.setupRaycaster(x, y);
@@ -17880,15 +17895,14 @@ var PickHandler = class {
     return this.m_pickingRaycaster;
   }
   createResult(intersection, tile) {
-    var _a, _b, _c;
     const pickResult = {
       type: 0 /* Unspecified */,
       point: intersection.point,
       distance: intersection.distance,
-      dataSourceName: (_a = intersection.object.userData) == null ? void 0 : _a.dataSource,
-      dataSourceOrder: (_b = tile == null ? void 0 : tile.dataSource) == null ? void 0 : _b.dataSourceOrder,
+      dataSourceName: intersection.object.userData?.dataSource,
+      dataSourceOrder: tile?.dataSource?.dataSourceOrder,
       intersection,
-      tileKey: tile == null ? void 0 : tile.tileKey
+      tileKey: tile?.tileKey
     };
     if (intersection.object.userData === void 0 || intersection.object.userData.feature === void 0) {
       return pickResult;
@@ -17896,7 +17910,7 @@ var PickHandler = class {
     if (this.enablePickTechnique) {
       pickResult.technique = intersection.object.userData.technique;
     }
-    pickResult.renderOrder = (_c = intersection.object) == null ? void 0 : _c.renderOrder;
+    pickResult.renderOrder = intersection.object?.renderOrder;
     const featureData = intersection.object.userData.feature;
     this.addObjInfo(featureData, intersection, pickResult);
     if (pickResult.userData) {
@@ -18136,6 +18150,13 @@ var GlyphData = class {
     this.texture = texture;
     this.font = font;
     this.isReplacement = isReplacement;
+    __publicField(this, "character");
+    __publicField(this, "direction");
+    __publicField(this, "positions", []);
+    __publicField(this, "sourceTextureCoordinates", []);
+    __publicField(this, "dynamicTextureCoordinates", []);
+    __publicField(this, "copyIndex", 0);
+    __publicField(this, "isInCache", false);
     this.character = String.fromCodePoint(codePoint);
     this.direction = UnicodeUtils.getDirection(codePoint, block);
     const left = this.offsetX;
@@ -18146,13 +18167,6 @@ var GlyphData = class {
     this.sourceTextureCoordinates.push(new THREE65.Vector2(u0, v0), new THREE65.Vector2(u1, v0), new THREE65.Vector2(u0, v1), new THREE65.Vector2(u1, v1));
     this.dynamicTextureCoordinates.push(new THREE65.Vector2(0, 0), new THREE65.Vector2(1, 0), new THREE65.Vector2(0, 1), new THREE65.Vector2(1, 1));
   }
-  character;
-  direction;
-  positions = [];
-  sourceTextureCoordinates = [];
-  dynamicTextureCoordinates = [];
-  copyIndex = 0;
-  isInCache = false;
   clone() {
     return new GlyphData(this.codePoint, this.block, this.width, this.height, this.advanceX, this.offsetX, this.offsetY, this.sourceTextureCoordinates[0].x, this.sourceTextureCoordinates[0].y, this.sourceTextureCoordinates[3].x, this.sourceTextureCoordinates[3].y, this.texture, this.font, this.isReplacement);
   }
@@ -18309,7 +18323,7 @@ var sdfTextFragmentSource = `
     }`;
 var RawShaderMaterial4 = class extends THREE66.RawShaderMaterial {
   constructor(params) {
-    const isWebGL2 = (params == null ? void 0 : params.rendererCapabilities.isWebGL2) === true;
+    const isWebGL2 = params?.rendererCapabilities.isWebGL2 === true;
     const shaderParams = params ? {
       ...params,
       glslVersion: isWebGL2 ? THREE66.GLSL3 : THREE66.GLSL1,
@@ -18393,6 +18407,28 @@ var GlyphTextureCache = class {
     this.capacity = capacity;
     this.entryWidth = entryWidth;
     this.entryHeight = entryHeight;
+    __publicField(this, "m_cacheWidth");
+    __publicField(this, "m_cacheHeight");
+    __publicField(this, "m_textureSize");
+    __publicField(this, "m_entryCache");
+    __publicField(this, "m_scene");
+    __publicField(this, "m_camera");
+    __publicField(this, "m_rt");
+    __publicField(this, "m_copyTextureSet");
+    __publicField(this, "m_copyTransform");
+    __publicField(this, "m_copyPositions");
+    __publicField(this, "m_copyMaterial");
+    __publicField(this, "m_copyVertexBuffer");
+    __publicField(this, "m_copyPositionAttribute");
+    __publicField(this, "m_copyUVAttribute");
+    __publicField(this, "m_copyGeometry");
+    __publicField(this, "m_copyMesh");
+    __publicField(this, "m_copyGeometryDrawCount");
+    __publicField(this, "m_clearMaterial");
+    __publicField(this, "m_clearPositionAttribute");
+    __publicField(this, "m_clearGeometry");
+    __publicField(this, "m_clearMesh");
+    __publicField(this, "m_clearGeometryDrawCount");
     const nRows = Math.floor(Math.sqrt(capacity));
     this.m_cacheHeight = nRows * nRows < capacity ? nRows + 1 : nRows;
     this.m_cacheWidth = nRows * this.m_cacheHeight < capacity ? nRows + 1 : nRows;
@@ -18441,35 +18477,12 @@ var GlyphTextureCache = class {
     this.m_clearGeometryDrawCount = 0;
     this.m_scene.add(this.m_clearMesh, this.m_copyMesh);
   }
-  m_cacheWidth;
-  m_cacheHeight;
-  m_textureSize;
-  m_entryCache;
-  m_scene;
-  m_camera;
-  m_rt;
-  m_copyTextureSet;
-  m_copyTransform;
-  m_copyPositions;
-  m_copyMaterial;
-  m_copyVertexBuffer;
-  m_copyPositionAttribute;
-  m_copyUVAttribute;
-  m_copyGeometry;
-  m_copyMesh;
-  m_copyGeometryDrawCount;
-  m_clearMaterial;
-  m_clearPositionAttribute;
-  m_clearGeometry;
-  m_clearMesh;
-  m_clearGeometryDrawCount;
   dispose() {
-    var _a, _b;
     this.m_entryCache.clear();
     this.m_scene.remove(this.m_clearMesh, this.m_copyMesh);
     this.m_rt.dispose();
-    (_a = this.m_clearMaterial) == null ? void 0 : _a.dispose();
-    (_b = this.m_copyMaterial) == null ? void 0 : _b.dispose();
+    this.m_clearMaterial?.dispose();
+    this.m_copyMaterial?.dispose();
     this.m_copyTextureSet.clear();
     this.m_clearGeometry.dispose();
     this.m_copyGeometry.dispose();
@@ -18747,8 +18760,8 @@ var DefaultTextStyle;
   DefaultTextStyle2.DEFAULT_PLACEMENTS = [];
 })(DefaultTextStyle || (DefaultTextStyle = {}));
 var TextRenderStyle = class {
-  m_params;
   constructor(params = {}) {
+    __publicField(this, "m_params");
     this.m_params = {
       fontName: params.fontName !== void 0 ? params.fontName : DefaultTextStyle.DEFAULT_FONT_NAME,
       fontSize: params.fontSize !== void 0 ? { ...params.fontSize } : {
@@ -18842,8 +18855,8 @@ var TextRenderStyle = class {
   }
 };
 var TextLayoutStyle = class {
-  m_params;
   constructor(params = {}) {
+    __publicField(this, "m_params");
     const { horizontalAlignment, verticalAlignment, placements } = resolvePlacementAndAlignment(params.horizontalAlignment, params.verticalAlignment, params.placements);
     this.m_params = {
       tracking: params.tracking !== void 0 ? params.tracking : DefaultTextStyle.DEFAULT_TRACKING,
@@ -18936,7 +18949,7 @@ var TextLayoutStyle = class {
   }
 };
 function resolvePlacementAndAlignment(hAlignment, vAlignment, placementsOpt) {
-  const placements = (placementsOpt == null ? void 0 : placementsOpt.map((v) => ({ ...v }))) ?? DefaultTextStyle.DEFAULT_PLACEMENTS.map((v) => ({ ...v }));
+  const placements = placementsOpt?.map((v) => ({ ...v })) ?? DefaultTextStyle.DEFAULT_PLACEMENTS.map((v) => ({ ...v }));
   const horizontalAlignment = placements.length > 0 ? hAlignFromPlacement(placements[0].h) : hAlignment ?? DefaultTextStyle.DEFAULT_HORIZONTAL_ALIGNMENT;
   const verticalAlignment = placements.length > 0 ? vAlignFromPlacement(placements[0].v) : vAlignment ?? DefaultTextStyle.DEFAULT_VERTICAL_ALIGNMENT;
   return { horizontalAlignment, verticalAlignment, placements };
@@ -18961,6 +18974,14 @@ var FontCatalog = class {
     this.unicodeBlocks = unicodeBlocks;
     this.maxCodePointCount = maxCodePointCount;
     this.m_replacementGlyph = m_replacementGlyph;
+    __publicField(this, "m_glyphTextureCache");
+    __publicField(this, "m_loadingJson");
+    __publicField(this, "m_loadingPages");
+    __publicField(this, "m_loadingGlyphs");
+    __publicField(this, "m_loadedJson");
+    __publicField(this, "m_loadedPages");
+    __publicField(this, "m_loadedGlyphs");
+    __publicField(this, "showReplacementGlyphs", false);
     this.m_glyphTextureCache = new GlyphTextureCache(maxCodePointCount, this.maxWidth + 1, this.maxHeight + 1);
     this.m_loadingJson = /* @__PURE__ */ new Map();
     this.m_loadingPages = /* @__PURE__ */ new Map();
@@ -18997,14 +19018,6 @@ var FontCatalog = class {
     const rawJSON = await response.text();
     return JSON.parse(rawJSON);
   }
-  m_glyphTextureCache;
-  m_loadingJson;
-  m_loadingPages;
-  m_loadingGlyphs;
-  m_loadedJson;
-  m_loadedPages;
-  m_loadedGlyphs;
-  showReplacementGlyphs = false;
   dispose() {
     this.fonts.length = 0;
     this.unicodeBlocks.length = 0;
@@ -19289,6 +19302,20 @@ var NUM_BYTES_PER_INT32 = 4;
 var TextGeometry = class {
   constructor(scene, material, backgroundMaterial, initialSize, capacity) {
     this.scene = scene;
+    __publicField(this, "capacity");
+    __publicField(this, "m_currentCapacity");
+    __publicField(this, "m_drawCount");
+    __publicField(this, "m_updateOffset");
+    __publicField(this, "m_vertexBuffer");
+    __publicField(this, "m_positionAttribute");
+    __publicField(this, "m_uvAttribute");
+    __publicField(this, "m_colorAttribute");
+    __publicField(this, "m_bgColorAttribute");
+    __publicField(this, "m_indexBuffer");
+    __publicField(this, "m_geometry");
+    __publicField(this, "m_mesh");
+    __publicField(this, "m_bgMesh");
+    __publicField(this, "m_pickingDataArray", []);
     this.capacity = Math.min(capacity, MAX_CAPACITY);
     this.m_currentCapacity = Math.min(initialSize, capacity);
     this.m_drawCount = 0;
@@ -19324,20 +19351,6 @@ var TextGeometry = class {
   get backgroundMesh() {
     return this.m_bgMesh;
   }
-  capacity;
-  m_currentCapacity;
-  m_drawCount;
-  m_updateOffset;
-  m_vertexBuffer;
-  m_positionAttribute;
-  m_uvAttribute;
-  m_colorAttribute;
-  m_bgColorAttribute;
-  m_indexBuffer;
-  m_geometry;
-  m_mesh;
-  m_bgMesh;
-  m_pickingDataArray = [];
   dispose() {
     this.scene.remove(this.m_bgMesh, this.m_mesh);
     this.m_geometry.dispose();
@@ -19614,16 +19627,16 @@ var TypesettingUtils;
 
 // src/text-canvas/typesetting/LineTypesetter.ts
 var LineTypesetter = class {
-  m_tempTransform;
-  m_tempCorners;
-  m_tempLineDirection;
-  m_tempRunDirection;
-  m_tempPixelSize;
-  m_tempPixelBgSize;
-  m_tempScale;
-  m_tempSmallCaps;
-  m_currentParams;
   constructor() {
+    __publicField(this, "m_tempTransform");
+    __publicField(this, "m_tempCorners");
+    __publicField(this, "m_tempLineDirection");
+    __publicField(this, "m_tempRunDirection");
+    __publicField(this, "m_tempPixelSize");
+    __publicField(this, "m_tempPixelBgSize");
+    __publicField(this, "m_tempScale");
+    __publicField(this, "m_tempSmallCaps");
+    __publicField(this, "m_currentParams");
     this.m_tempTransform = new THREE72.Matrix3();
     this.m_tempCorners = [
       new THREE72.Vector3(),
@@ -19865,19 +19878,19 @@ var LineTypesetter = class {
 // src/text-canvas/typesetting/PathTypesetter.ts
 import * as THREE73 from "three";
 var PathTypesetter = class {
-  m_tempTransform;
-  m_tempCorners;
-  m_tempLineDirection;
-  m_tempRunDirection;
-  m_tempPixelSize;
-  m_tempPixelBgSize;
-  m_tempScale;
-  m_tempSmallCaps;
-  m_tempPathPosition;
-  m_tempPathLength;
-  m_tempPathOffset;
-  m_currentParams;
   constructor() {
+    __publicField(this, "m_tempTransform");
+    __publicField(this, "m_tempCorners");
+    __publicField(this, "m_tempLineDirection");
+    __publicField(this, "m_tempRunDirection");
+    __publicField(this, "m_tempPixelSize");
+    __publicField(this, "m_tempPixelBgSize");
+    __publicField(this, "m_tempScale");
+    __publicField(this, "m_tempSmallCaps");
+    __publicField(this, "m_tempPathPosition");
+    __publicField(this, "m_tempPathLength");
+    __publicField(this, "m_tempPathOffset");
+    __publicField(this, "m_currentParams");
     this.m_tempTransform = new THREE73.Matrix3();
     this.m_tempCorners = [
       new THREE73.Vector3(),
@@ -20064,22 +20077,22 @@ var tempTextBounds = {
 var tempVertexBuffer = new Float32Array();
 var DEFAULT_TEXT_CANVAS_LAYER = 0;
 var _TextCanvas = class {
-  minGlyphCount;
-  maxGlyphCount;
-  name;
-  m_renderer;
-  m_fontCatalog;
-  m_currentTextRenderStyle;
-  m_currentTextLayoutStyle;
-  m_material;
-  m_bgMaterial;
-  m_ownsMaterial;
-  m_ownsBgMaterial;
-  m_defaultLayer;
-  m_layers;
-  m_lineTypesetter;
-  m_pathTypesetter;
   constructor(params) {
+    __publicField(this, "minGlyphCount");
+    __publicField(this, "maxGlyphCount");
+    __publicField(this, "name");
+    __publicField(this, "m_renderer");
+    __publicField(this, "m_fontCatalog");
+    __publicField(this, "m_currentTextRenderStyle");
+    __publicField(this, "m_currentTextLayoutStyle");
+    __publicField(this, "m_material");
+    __publicField(this, "m_bgMaterial");
+    __publicField(this, "m_ownsMaterial");
+    __publicField(this, "m_ownsBgMaterial");
+    __publicField(this, "m_defaultLayer");
+    __publicField(this, "m_layers");
+    __publicField(this, "m_lineTypesetter");
+    __publicField(this, "m_pathTypesetter");
     this.m_renderer = params.renderer;
     this.m_fontCatalog = params.fontCatalog;
     this.minGlyphCount = params.minGlyphCount;
@@ -20345,7 +20358,6 @@ var _TextCanvas = class {
     return new TextBufferObject(glyphArray, new Float32Array(tempVertexBuffer), textBounds, characterBounds, renderStyle, layoutStyle);
   }
   addTextBufferObject(textBufferObject, params) {
-    var _a;
     let targetLayer = this.m_defaultLayer;
     let position;
     let scale;
@@ -20362,7 +20374,7 @@ var _TextCanvas = class {
         }
         targetLayer = tempLayer;
       }
-      position = (_a = params.position) == null ? void 0 : _a.clone();
+      position = params.position?.clone();
       scale = params.scale;
       rotation = params.rotation;
       color = params.color;
@@ -20467,16 +20479,10 @@ __publicField(TextCanvas, "defaultTextLayoutStyle", new TextLayoutStyle());
 
 // src/text-canvas/utils/ContextualArabicConverter.ts
 var _ContextualArabicConverter = class {
-  static get instance() {
-    if (this.m_instance === void 0) {
-      this.m_instance = new _ContextualArabicConverter();
-    }
-    return this.m_instance;
-  }
-  m_singleCharactersMap = /* @__PURE__ */ new Map();
-  m_combinedCharactersMap = /* @__PURE__ */ new Map();
-  m_neutralCharacters;
   constructor() {
+    __publicField(this, "m_singleCharactersMap", /* @__PURE__ */ new Map());
+    __publicField(this, "m_combinedCharactersMap", /* @__PURE__ */ new Map());
+    __publicField(this, "m_neutralCharacters");
     this.m_singleCharactersMap.set(1569, [
       void 0,
       void 0,
@@ -20571,6 +20577,12 @@ var _ContextualArabicConverter = class {
       1773
     ];
   }
+  static get instance() {
+    if (this.m_instance === void 0) {
+      this.m_instance = new _ContextualArabicConverter();
+    }
+    return this.m_instance;
+  }
   convert(input) {
     let output = "";
     for (let i = 0; i < input.length; ++i) {
@@ -20656,10 +20668,12 @@ __publicField(ContextualArabicConverter, "m_instance");
 // src/mapview/ColorCache.ts
 import * as THREE75 from "three";
 var _ColorCache = class {
+  constructor() {
+    __publicField(this, "m_map", /* @__PURE__ */ new Map());
+  }
   static get instance() {
     return this.m_instance;
   }
-  m_map = /* @__PURE__ */ new Map();
   getColor(colorCode) {
     if (typeof colorCode === "number") {
       colorCode = "#" + colorCode.toString(16).padStart(6, "0");
@@ -20690,14 +20704,14 @@ function getImageTexture(technique, env) {
 var PoiBuilder = class {
   constructor(m_env) {
     this.m_env = m_env;
+    __publicField(this, "m_iconMinZoomLevel");
+    __publicField(this, "m_iconMaxZoomLevel");
+    __publicField(this, "m_textMinZoomLevel");
+    __publicField(this, "m_textMaxZoomLevel");
+    __publicField(this, "m_technique");
+    __publicField(this, "m_imageTextureName");
+    __publicField(this, "m_shieldGroupIndex");
   }
-  m_iconMinZoomLevel;
-  m_iconMaxZoomLevel;
-  m_textMinZoomLevel;
-  m_textMaxZoomLevel;
-  m_technique;
-  m_imageTextureName;
-  m_shieldGroupIndex;
   withTechnique(technique) {
     this.m_imageTextureName = getImageTexture(technique, this.m_env);
     this.m_iconMinZoomLevel = getPropertyValue(technique.iconMinZoomLevel ?? technique.minZoomLevel, this.m_env) ?? void 0;
@@ -20796,6 +20810,30 @@ var TextElement = class {
     this.offsetDirection = offsetDirection;
     this.dataSourceName = dataSourceName;
     this.dataSourceOrder = dataSourceOrder;
+    __publicField(this, "visible", true);
+    __publicField(this, "minZoomLevel");
+    __publicField(this, "maxZoomLevel");
+    __publicField(this, "mayOverlap");
+    __publicField(this, "reserveSpace");
+    __publicField(this, "alwaysOnTop");
+    __publicField(this, "ignoreDistance");
+    __publicField(this, "distanceScale", 0.5);
+    __publicField(this, "userData");
+    __publicField(this, "renderOrder", 0);
+    __publicField(this, "kind");
+    __publicField(this, "loadingState");
+    __publicField(this, "elevated", false);
+    __publicField(this, "glyphs");
+    __publicField(this, "glyphCaseArray");
+    __publicField(this, "bounds");
+    __publicField(this, "textBufferObject");
+    __publicField(this, "dbgPathTooSmall");
+    __publicField(this, "pathLengthSqr");
+    __publicField(this, "textFadeTime");
+    __publicField(this, "type");
+    __publicField(this, "m_poiInfo");
+    __publicField(this, "m_renderStyle");
+    __publicField(this, "m_layoutStyle");
     if (renderParams instanceof TextRenderStyle) {
       this.renderStyle = renderParams;
     }
@@ -20804,30 +20842,6 @@ var TextElement = class {
     }
     this.type = points instanceof THREE76.Vector3 ? 0 /* PoiLabel */ : 1 /* PathLabel */;
   }
-  visible = true;
-  minZoomLevel;
-  maxZoomLevel;
-  mayOverlap;
-  reserveSpace;
-  alwaysOnTop;
-  ignoreDistance;
-  distanceScale = 0.5;
-  userData;
-  renderOrder = 0;
-  kind;
-  loadingState;
-  elevated = false;
-  glyphs;
-  glyphCaseArray;
-  bounds;
-  textBufferObject;
-  dbgPathTooSmall;
-  pathLengthSqr;
-  textFadeTime;
-  type;
-  m_poiInfo;
-  m_renderStyle;
-  m_layoutStyle;
   get position() {
     if (this.points instanceof Array) {
       const p = this.points[0];
@@ -20888,8 +20902,7 @@ var TextElement = class {
     return this.featureId.length > 0;
   }
   dispose() {
-    var _a;
-    const poiBuffer = (_a = this.poiInfo) == null ? void 0 : _a.buffer;
+    const poiBuffer = this.poiInfo?.buffer;
     if (poiBuffer) {
       poiBuffer.decreaseRefCount();
     }
@@ -20916,8 +20929,8 @@ var _DebugOption = class extends THREE77.EventDispatcher {
 var DebugOption = _DebugOption;
 __publicField(DebugOption, "SET_EVENT_TYPE", "set");
 var DebugContext = class {
-  m_optionsMap;
   constructor() {
+    __publicField(this, "m_optionsMap");
     this.m_optionsMap = /* @__PURE__ */ new Map();
     if (!isNode2 && typeof window !== "undefined" && window) {
       const debugInfo = window;
@@ -21092,17 +21105,17 @@ var BoxBuffer = class {
     this.m_material = m_material;
     this.m_renderOrder = m_renderOrder;
     this.m_maxElementCount = m_maxElementCount;
+    __publicField(this, "m_positionAttribute");
+    __publicField(this, "m_colorAttribute");
+    __publicField(this, "m_uvAttribute");
+    __publicField(this, "m_indexAttribute");
+    __publicField(this, "m_pickInfos");
+    __publicField(this, "m_geometry");
+    __publicField(this, "m_mesh");
+    __publicField(this, "m_size", 0);
     this.resizeBuffer(startElementCount);
     this.m_pickInfos = new Array();
   }
-  m_positionAttribute;
-  m_colorAttribute;
-  m_uvAttribute;
-  m_indexAttribute;
-  m_pickInfos;
-  m_geometry;
-  m_mesh;
-  m_size = 0;
   clone() {
     return new BoxBuffer(this.m_material, this.m_renderOrder);
   }
@@ -21371,8 +21384,8 @@ var PoiBuffer = class {
     this.buffer = buffer;
     this.layer = layer;
     this.m_onDispose = m_onDispose;
+    __publicField(this, "m_refCount", 0);
   }
-  m_refCount = 0;
   increaseRefCount() {
     ++this.m_refCount;
     return this;
@@ -21395,6 +21408,8 @@ var _PoiBatch = class {
     this.m_rendererCapabilities = m_rendererCapabilities;
     this.imageItem = imageItem;
     this.m_onDispose = m_onDispose;
+    __publicField(this, "m_poiBuffers");
+    __publicField(this, "m_material");
     const premultipliedAlpha = true;
     const texture = new THREE79.Texture(this.imageItem.image, THREE79.UVMapping, void 0, void 0, _PoiBatch.trilinear ? THREE79.LinearFilter : THREE79.LinearFilter, _PoiBatch.trilinear ? THREE79.LinearMipMapLinearFilter : THREE79.LinearFilter, THREE79.RGBAFormat);
     if (_PoiBatch.trilinear && this.imageItem.mipMaps) {
@@ -21410,8 +21425,6 @@ var _PoiBatch = class {
     });
     this.m_poiBuffers = /* @__PURE__ */ new Map();
   }
-  m_poiBuffers;
-  m_material;
   getBuffer(layer) {
     let poiBuffer = this.m_poiBuffers.get(layer.id);
     if (poiBuffer) {
@@ -21471,15 +21484,15 @@ __publicField(PoiBatch, "trilinear", true);
 var PoiBatchRegistry = class {
   constructor(m_rendererCapabilities) {
     this.m_rendererCapabilities = m_rendererCapabilities;
+    __publicField(this, "m_batchMap", /* @__PURE__ */ new Map());
   }
-  m_batchMap = /* @__PURE__ */ new Map();
   registerPoi(poiInfo, layer) {
     const { imageItem, imageTexture } = poiInfo;
     if (!imageItem) {
       return void 0;
     }
     assert(poiInfo.imageTextureName !== void 0);
-    const batchKey = (imageTexture == null ? void 0 : imageTexture.image) ?? poiInfo.imageTextureName;
+    const batchKey = imageTexture?.image ?? poiInfo.imageTextureName;
     let batch = this.m_batchMap.get(batchKey);
     if (batch === void 0) {
       batch = new PoiBatch(this.m_rendererCapabilities, imageItem, () => {
@@ -21548,7 +21561,7 @@ function findImageItem(poiInfo, imageCaches, imageTexture) {
   missingTextureName.set(imageTextureName, missingTextureCount ? missingTextureCount + 1 : 0);
   if (missingTextureName.get(imageTextureName) === SEARCH_CACHE_ATTEMPTS) {
     logger14.error(`PoiRenderer::findImageItem: No imageItem found with name:
-            '${(imageTexture == null ? void 0 : imageTexture.image) ?? imageTextureName}'
+            '${imageTexture?.image ?? imageTextureName}'
             after ${SEARCH_CACHE_ATTEMPTS} attempts.`);
   }
   return void 0;
@@ -21558,6 +21571,9 @@ var PoiRenderer = class {
     this.m_renderer = m_renderer;
     this.m_poiManager = m_poiManager;
     this.m_imageCaches = m_imageCaches;
+    __publicField(this, "m_poiBatchRegistry");
+    __publicField(this, "m_tempScreenBox", new Math2D.Box());
+    __publicField(this, "m_layers", []);
     this.m_poiBatchRegistry = new PoiBatchRegistry(this.renderer.capabilities);
   }
   static computeIconScreenBox(poiInfo, screenPosition, scale, env, screenBox = new Math2D.Box()) {
@@ -21575,9 +21591,6 @@ var PoiRenderer = class {
     screenBox.h = height;
     return screenBox;
   }
-  m_poiBatchRegistry;
-  m_tempScreenBox = new Math2D.Box();
-  m_layers = [];
   get renderer() {
     return this.m_renderer;
   }
@@ -21675,7 +21688,7 @@ var PoiRenderer = class {
       return;
     }
     imageItem.loadImage().then((loadedImageItem) => {
-      if (loadedImageItem == null ? void 0 : loadedImageItem.image) {
+      if (loadedImageItem?.image) {
         this.setupPoiInfo(poiInfo, loadedImageItem, env, imageTexture);
       }
     }).catch((error) => {
@@ -21697,12 +21710,12 @@ var PoiRenderer = class {
     const trilinearFiltering = PoiBatch.trilinear && imageItem.mipMaps;
     const paddedImageWidth = trilinearFiltering ? paddedSize.width : imageWidth;
     const paddedImageHeight = trilinearFiltering ? paddedSize.height : imageHeight;
-    const iconWidth = (imageTexture == null ? void 0 : imageTexture.width) !== void 0 ? imageTexture.width : imageWidth;
-    const iconHeight = (imageTexture == null ? void 0 : imageTexture.height) !== void 0 ? imageTexture.height : imageHeight;
-    const width = (imageTexture == null ? void 0 : imageTexture.width) !== void 0 ? imageTexture.width : imageWidth;
-    const height = (imageTexture == null ? void 0 : imageTexture.height) !== void 0 ? imageTexture.height : imageHeight;
-    const xOffset = (imageTexture == null ? void 0 : imageTexture.xOffset) !== void 0 ? imageTexture.xOffset : 0;
-    const yOffset = (imageTexture == null ? void 0 : imageTexture.yOffset) !== void 0 ? imageTexture.yOffset : 0;
+    const iconWidth = imageTexture?.width !== void 0 ? imageTexture.width : imageWidth;
+    const iconHeight = imageTexture?.height !== void 0 ? imageTexture.height : imageHeight;
+    const width = imageTexture?.width !== void 0 ? imageTexture.width : imageWidth;
+    const height = imageTexture?.height !== void 0 ? imageTexture.height : imageHeight;
+    const xOffset = imageTexture?.xOffset !== void 0 ? imageTexture.xOffset : 0;
+    const yOffset = imageTexture?.yOffset !== void 0 ? imageTexture.yOffset : 0;
     const minS = xOffset / paddedImageWidth;
     const maxS = (xOffset + width) / paddedImageWidth;
     const minT = yOffset / paddedImageHeight;
@@ -21792,9 +21805,9 @@ function isLineWithBound(box) {
 }
 var tmpCollisionBox = new CollisionBox();
 var ScreenCollisions = class {
-  screenBounds = new Math2D.Box();
-  rtree = new RBush();
   constructor() {
+    __publicField(this, "screenBounds", new Math2D.Box());
+    __publicField(this, "rtree", new RBush());
   }
   reset() {
     this.rtree.clear();
@@ -21869,15 +21882,15 @@ var ScreenCollisions = class {
   }
 };
 var ScreenCollisionsDebug = class extends ScreenCollisions {
-  m_renderContext = null;
-  m_renderingEnabled = false;
-  m_numAllocations = 0;
-  m_numSuccessfulTests = 0;
-  m_numFailedTests = 0;
-  m_numSuccessfulVisibilityTests = 0;
-  m_numFailedVisibilityTests = 0;
   constructor(debugCanvas) {
     super();
+    __publicField(this, "m_renderContext", null);
+    __publicField(this, "m_renderingEnabled", false);
+    __publicField(this, "m_numAllocations", 0);
+    __publicField(this, "m_numSuccessfulTests", 0);
+    __publicField(this, "m_numFailedTests", 0);
+    __publicField(this, "m_numSuccessfulVisibilityTests", 0);
+    __publicField(this, "m_numFailedVisibilityTests", 0);
     if (debugCanvas !== void 0 && debugCanvas !== null) {
       this.m_renderContext = debugCanvas.getContext("2d");
     }
@@ -22246,9 +22259,8 @@ function isPathLabelTooSmall(textElement, screenProjector, outScreenPoints) {
 }
 var tmpOrientedBox = new OrientedBox3();
 function getWorldPosition(poiLabel, projection, env, outWorldPosition) {
-  var _a, _b;
-  const worldOffsetShiftValue = getPropertyValue((_b = (_a = poiLabel.poiInfo) == null ? void 0 : _a.technique) == null ? void 0 : _b.worldOffset, env);
-  outWorldPosition == null ? void 0 : outWorldPosition.copy(poiLabel.position);
+  const worldOffsetShiftValue = getPropertyValue(poiLabel.poiInfo?.technique?.worldOffset, env);
+  outWorldPosition?.copy(poiLabel.position);
   if (worldOffsetShiftValue !== null && worldOffsetShiftValue !== void 0 && poiLabel.offsetDirection !== void 0) {
     projection.localTangentSpace(poiLabel.position, tmpOrientedBox);
     const offsetDirectionVector = tmpOrientedBox.yAxis;
@@ -22263,19 +22275,19 @@ function getWorldPosition(poiLabel, projection, env, outWorldPosition) {
 var PlacementStats = class {
   constructor(m_logger) {
     this.m_logger = m_logger;
+    __publicField(this, "totalGroups", 0);
+    __publicField(this, "resortedGroups", 0);
+    __publicField(this, "total", 0);
+    __publicField(this, "uninitialized", 0);
+    __publicField(this, "tooFar", 0);
+    __publicField(this, "numNotVisible", 0);
+    __publicField(this, "numPathTooSmall", 0);
+    __publicField(this, "numCannotAdd", 0);
+    __publicField(this, "numRenderedPoiIcons", 0);
+    __publicField(this, "numRenderedPoiTexts", 0);
+    __publicField(this, "numPoiTextsInvisible", 0);
+    __publicField(this, "numRenderedTextElements", 0);
   }
-  totalGroups = 0;
-  resortedGroups = 0;
-  total = 0;
-  uninitialized = 0;
-  tooFar = 0;
-  numNotVisible = 0;
-  numPathTooSmall = 0;
-  numCannotAdd = 0;
-  numRenderedPoiIcons = 0;
-  numRenderedPoiTexts = 0;
-  numPoiTextsInvisible = 0;
-  numRenderedTextElements = 0;
   clear() {
     this.totalGroups = 0;
     this.resortedGroups = 0;
@@ -22311,9 +22323,9 @@ var PlacementStats = class {
 // src/mapview/text/SimplePath.ts
 import * as THREE82 from "three";
 var SimpleLineCurve = class extends THREE82.LineCurve {
-  m_lengths;
   constructor(v1, v2) {
     super(v1, v2);
+    __publicField(this, "m_lengths");
   }
   getLengths() {
     if (this.m_lengths === void 0) {
@@ -22327,8 +22339,8 @@ var PathParam = class {
     this.path = path;
     this.index = index;
     this.t = t;
+    __publicField(this, "m_point");
   }
-  m_point;
   get curve() {
     return this.path.curves[this.index];
   }
@@ -22340,9 +22352,9 @@ var PathParam = class {
   }
 };
 var SimplePath = class extends THREE82.Path {
-  m_cache;
   constructor() {
     super();
+    __publicField(this, "m_cache");
   }
   getLengths() {
     if (this.m_cache) {
@@ -22380,9 +22392,9 @@ var SimplePath = class extends THREE82.Path {
 var TextCanvasFactory = class {
   constructor(m_renderer) {
     this.m_renderer = m_renderer;
+    __publicField(this, "m_minGlyphCount", 0);
+    __publicField(this, "m_maxGlyphCount", 0);
   }
-  m_minGlyphCount = 0;
-  m_maxGlyphCount = 0;
   setGlyphCountLimits(min, max) {
     this.m_minGlyphCount = min;
     this.m_maxGlyphCount = max;
@@ -22441,9 +22453,9 @@ function initializeDefaultOptions(options) {
 
 // src/mapview/text/LayoutState.ts
 var LayoutState = class {
-  m_hAlign = DefaultTextStyle.DEFAULT_HORIZONTAL_ALIGNMENT;
-  m_vAlign = DefaultTextStyle.DEFAULT_VERTICAL_ALIGNMENT;
   constructor(placement) {
+    __publicField(this, "m_hAlign", DefaultTextStyle.DEFAULT_HORIZONTAL_ALIGNMENT);
+    __publicField(this, "m_vAlign", DefaultTextStyle.DEFAULT_VERTICAL_ALIGNMENT);
     this.textPlacement = placement;
   }
   set textPlacement(placement) {
@@ -22474,11 +22486,11 @@ var DEFAULT_FADE_TIME = 800;
 var RenderState = class {
   constructor(fadeTime = DEFAULT_FADE_TIME) {
     this.fadeTime = fadeTime;
+    __publicField(this, "value", 0);
+    __publicField(this, "startTime", 0);
+    __publicField(this, "opacity", 0);
+    __publicField(this, "m_state", 0 /* Undefined */);
   }
-  value = 0;
-  startTime = 0;
-  opacity = 0;
-  m_state = 0 /* Undefined */;
   reset() {
     this.m_state = 0 /* Undefined */;
     this.value = 0;
@@ -22572,13 +22584,13 @@ var RenderState = class {
 var TextElementState = class {
   constructor(element, positionIndex) {
     this.element = element;
+    __publicField(this, "m_viewDistance");
+    __publicField(this, "m_iconRenderState");
+    __publicField(this, "m_textRenderState");
+    __publicField(this, "m_textLayoutState");
+    __publicField(this, "m_lineMarkerIndex");
     this.m_lineMarkerIndex = positionIndex;
   }
-  m_viewDistance;
-  m_iconRenderState;
-  m_textRenderState;
-  m_textLayoutState;
-  m_lineMarkerIndex;
   get initialized() {
     return this.m_textRenderState !== void 0 || this.m_iconRenderState !== void 0;
   }
@@ -22687,14 +22699,13 @@ var TextElementState = class {
     }
   }
   initializeRenderStates() {
-    var _a;
     assert(this.m_textRenderState === void 0);
     assert(this.m_textLayoutState === void 0);
     assert(this.m_iconRenderState === void 0);
     const { textFadeTime } = this.element;
     this.m_textRenderState = new RenderState(textFadeTime);
     if (this.element.type === 0 /* PoiLabel */ || this.element.type === 2 /* LineMarker */) {
-      const techniqueIconFadeTime = (_a = this.element.poiInfo) == null ? void 0 : _a.technique.iconFadeTime;
+      const techniqueIconFadeTime = this.element.poiInfo?.technique.iconFadeTime;
       const iconFadeTime = techniqueIconFadeTime !== void 0 ? techniqueIconFadeTime * 1e3 : textFadeTime;
       this.m_iconRenderState = new RenderState(iconFadeTime);
     }
@@ -22709,6 +22720,8 @@ var TextElementGroupState = class {
   constructor(group, tileKey, filter) {
     this.group = group;
     this.tileKey = tileKey;
+    __publicField(this, "m_textElementStates");
+    __publicField(this, "m_visited", false);
     assert(group.elements.length > 0);
     const length = group.elements.length;
     this.m_textElementStates = [];
@@ -22731,8 +22744,6 @@ var TextElementGroupState = class {
       }
     }
   }
-  m_textElementStates;
-  m_visited = false;
   get visited() {
     return this.m_visited;
   }
@@ -22847,9 +22858,11 @@ function findDuplicateByText(elementState, candidates, zoomLevel) {
   return dupIndex;
 }
 var TextElementStateCache = class {
-  m_referenceMap = /* @__PURE__ */ new Map();
-  m_sortedGroupStates;
-  m_textMap = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "m_referenceMap", /* @__PURE__ */ new Map());
+    __publicField(this, "m_sortedGroupStates");
+    __publicField(this, "m_textMap", /* @__PURE__ */ new Map());
+  }
   getOrSet(textElementGroup, tileKey, textElementFilter) {
     let groupState = this.get(textElementGroup);
     if (groupState !== void 0) {
@@ -22984,19 +22997,19 @@ var defaultTextLayoutStyle = new TextLayoutStyle({
 });
 var DEFAULT_STYLE_NAME = "default";
 var TextStyleCache = class {
-  m_textStyles = /* @__PURE__ */ new Map();
-  m_defaultStyle = {
-    name: DEFAULT_STYLE_NAME,
-    fontCatalog: void 0,
-    renderParams: defaultTextRenderStyle.params,
-    layoutParams: defaultTextLayoutStyle.params
-  };
   constructor() {
+    __publicField(this, "m_textStyles", /* @__PURE__ */ new Map());
+    __publicField(this, "m_defaultStyle", {
+      name: DEFAULT_STYLE_NAME,
+      fontCatalog: void 0,
+      renderParams: defaultTextRenderStyle.params,
+      layoutParams: defaultTextLayoutStyle.params
+    });
     this.updateDefaultTextStyle();
   }
   updateTextStyles(textStyleDefinitions, defaultTextStyleDefinition) {
     this.m_textStyles.clear();
-    textStyleDefinitions == null ? void 0 : textStyleDefinitions.forEach((element) => {
+    textStyleDefinitions?.forEach((element) => {
       this.m_textStyles.set(element.name, this.createTextElementStyle(element, element.name));
     });
     this.updateDefaultTextStyle(defaultTextStyleDefinition, textStyleDefinitions);
@@ -23110,16 +23123,15 @@ var TextStyleCache = class {
   }
   updateDefaultTextStyle(defaultTextStyleDefinition, textStyleDefinitions) {
     this.m_defaultStyle.fontCatalog = void 0;
-    const style = (textStyleDefinitions == null ? void 0 : textStyleDefinitions.find((definition) => {
+    const style = textStyleDefinitions?.find((definition) => {
       return definition.name === DEFAULT_STYLE_NAME;
-    })) ?? defaultTextStyleDefinition ?? (textStyleDefinitions == null ? void 0 : textStyleDefinitions[0]);
+    }) ?? defaultTextStyleDefinition ?? textStyleDefinitions?.[0];
     if (style) {
       this.m_defaultStyle = this.createTextElementStyle(style, DEFAULT_STYLE_NAME);
     }
     this.m_defaultStyle.textCanvas = void 0;
   }
   initializeTextCanvas(style, textCanvases) {
-    var _a;
     if (style.textCanvas) {
       return;
     }
@@ -23149,7 +23161,7 @@ var TextStyleCache = class {
         style.textCanvas = alternativeTextCanvas;
         if (style.fontCatalog !== void 0) {
           logger18.info(`fontCatalog: '${style.fontCatalog}' not found,
-                      using default fontCatalog(${(_a = style.textCanvas) == null ? void 0 : _a.name}).`);
+                      using default fontCatalog(${style.textCanvas?.name}).`);
         }
       }
     }
@@ -23258,13 +23270,13 @@ function parseTechniquePlacementValue(p) {
 var UpdateStats = class {
   constructor(m_logger) {
     this.m_logger = m_logger;
+    __publicField(this, "tiles", 0);
+    __publicField(this, "totalGroups", 0);
+    __publicField(this, "newGroups", 0);
+    __publicField(this, "totalLabels", 0);
+    __publicField(this, "results", new Array(5 /* Count */));
     this.results.fill(0);
   }
-  tiles = 0;
-  totalGroups = 0;
-  newGroups = 0;
-  totalLabels = 0;
-  results = new Array(5 /* Count */);
   clear() {
     this.tiles = 0;
     this.totalGroups = 0;
@@ -23430,6 +23442,28 @@ var TextElementsRenderer = class {
     this.m_poiManager = m_poiManager;
     this.m_renderer = m_renderer;
     this.m_imageCaches = m_imageCaches;
+    __publicField(this, "m_loadPromisesCount", 0);
+    __publicField(this, "m_loadPromise");
+    __publicField(this, "m_options");
+    __publicField(this, "m_textCanvases", /* @__PURE__ */ new Map());
+    __publicField(this, "m_overlayTextElements");
+    __publicField(this, "m_debugGlyphTextureCacheMesh");
+    __publicField(this, "m_debugGlyphTextureCacheWireMesh");
+    __publicField(this, "m_tmpVector", new THREE84.Vector2());
+    __publicField(this, "m_tmpVector3", new THREE84.Vector3());
+    __publicField(this, "m_cameraLookAt", new THREE84.Vector3());
+    __publicField(this, "m_overloaded", false);
+    __publicField(this, "m_cacheInvalidated", false);
+    __publicField(this, "m_addNewLabels", true);
+    __publicField(this, "m_forceNewLabelsPass", false);
+    __publicField(this, "m_textElementStateCache", new TextElementStateCache());
+    __publicField(this, "m_camera", new THREE84.OrthographicCamera(-1, 1, 1, -1));
+    __publicField(this, "m_defaultFontCatalogConfig");
+    __publicField(this, "m_poiRenderer");
+    __publicField(this, "m_textStyleCache", new TextStyleCache());
+    __publicField(this, "m_screenCollisions", new ScreenCollisions());
+    __publicField(this, "m_textCanvasFactory");
+    __publicField(this, "m_isUpdatePending", false);
     this.m_options = { ...options };
     initializeDefaultOptions(this.m_options);
     if (screenCollisions) {
@@ -23444,28 +23478,6 @@ var TextElementsRenderer = class {
     this.initializeDefaultFontCatalog();
     this.m_textStyleCache.updateTextCanvases(this.m_textCanvases);
   }
-  m_loadPromisesCount = 0;
-  m_loadPromise;
-  m_options;
-  m_textCanvases = /* @__PURE__ */ new Map();
-  m_overlayTextElements;
-  m_debugGlyphTextureCacheMesh;
-  m_debugGlyphTextureCacheWireMesh;
-  m_tmpVector = new THREE84.Vector2();
-  m_tmpVector3 = new THREE84.Vector3();
-  m_cameraLookAt = new THREE84.Vector3();
-  m_overloaded = false;
-  m_cacheInvalidated = false;
-  m_addNewLabels = true;
-  m_forceNewLabelsPass = false;
-  m_textElementStateCache = new TextElementStateCache();
-  m_camera = new THREE84.OrthographicCamera(-1, 1, 1, -1);
-  m_defaultFontCatalogConfig;
-  m_poiRenderer;
-  m_textStyleCache = new TextStyleCache();
-  m_screenCollisions = new ScreenCollisions();
-  m_textCanvasFactory;
-  m_isUpdatePending = false;
   set disableFading(disable) {
     this.m_options.disableFading = disable;
   }
@@ -23487,7 +23499,7 @@ var TextElementsRenderer = class {
   set showReplacementGlyphs(value2) {
     this.m_options.showReplacementGlyphs = value2;
     this.m_textCanvases.forEach((textCanvas) => {
-      if (textCanvas == null ? void 0 : textCanvas.fontCatalog) {
+      if (textCanvas?.fontCatalog) {
         textCanvas.fontCatalog.showReplacementGlyphs = value2;
       }
     });
@@ -23540,13 +23552,13 @@ var TextElementsRenderer = class {
     this.m_poiRenderer.update();
     for (const poiLayer of this.m_poiRenderer.layers) {
       for (const [, textCanvas] of this.m_textCanvases) {
-        textCanvas == null ? void 0 : textCanvas.render(this.m_camera, previousLayer == null ? void 0 : previousLayer.id, poiLayer.id, void 0, false);
+        textCanvas?.render(this.m_camera, previousLayer?.id, poiLayer.id, void 0, false);
       }
       this.m_poiRenderer.render(this.m_camera, poiLayer);
       previousLayer = poiLayer;
     }
     for (const [, textCanvas] of this.m_textCanvases) {
-      textCanvas == null ? void 0 : textCanvas.render(this.m_camera, previousLayer == null ? void 0 : previousLayer.id, void 0, void 0, false);
+      textCanvas?.render(this.m_camera, previousLayer?.id, void 0, void 0, false);
     }
   }
   invalidateCache() {
@@ -23623,7 +23635,7 @@ var TextElementsRenderer = class {
       pickListener.addResult(pickResult);
     };
     for (const [, textCanvas] of this.m_textCanvases) {
-      textCanvas == null ? void 0 : textCanvas.pickText(screenPosition, (pickData) => {
+      textCanvas?.pickText(screenPosition, (pickData) => {
         pickHandler(pickData, 4 /* Text */);
       });
     }
@@ -23651,7 +23663,7 @@ var TextElementsRenderer = class {
       gpuSize: 0
     };
     for (const [, textCanvas] of this.m_textCanvases) {
-      textCanvas == null ? void 0 : textCanvas.getMemoryUsage(memoryUsage);
+      textCanvas?.getMemoryUsage(memoryUsage);
     }
     this.m_poiRenderer.getMemoryUsage(memoryUsage);
     return memoryUsage;
@@ -23667,7 +23679,7 @@ var TextElementsRenderer = class {
     this.m_cameraLookAt.copy(this.m_viewState.lookAtVector);
     this.m_screenCollisions.reset();
     for (const [, textCanvas] of this.m_textCanvases) {
-      textCanvas == null ? void 0 : textCanvas.clear();
+      textCanvas?.clear();
     }
     this.m_poiRenderer.reset();
   }
@@ -23708,7 +23720,7 @@ var TextElementsRenderer = class {
     const hiddenKinds = this.m_viewState.hiddenGeometryKinds;
     const projection = this.m_viewState.projection;
     const elevationProvider = this.m_viewState.elevationProvider;
-    const elevationMap = elevationProvider == null ? void 0 : elevationProvider.getDisplacementMap(groupState.tileKey);
+    const elevationMap = elevationProvider?.getDisplacementMap(groupState.tileKey);
     for (const textElementState of groupState.textElementStates) {
       if (pass === 0 /* PersistentLabels */) {
         if (placementStats) {
@@ -24204,7 +24216,6 @@ var TextElementsRenderer = class {
     return distanceFadeValue;
   }
   addPointLabel(labelState, position, screenPosition, textCanvas, renderParams) {
-    var _a;
     const pointLabel = labelState.element;
     const textRenderState = labelState.textRenderState;
     const isLineMarker = pointLabel.type === 2 /* LineMarker */;
@@ -24233,7 +24244,7 @@ var TextElementsRenderer = class {
       if (iconInvisible) {
         iconRenderState.reset();
       }
-    } else if (renderIcon && (poiInfo == null ? void 0 : poiInfo.imageItem) !== null) {
+    } else if (renderIcon && poiInfo?.imageItem !== null) {
       this.m_forceNewLabelsPass = true;
       this.m_isUpdatePending = true;
     }
@@ -24252,11 +24263,11 @@ var TextElementsRenderer = class {
         }
         textRenderState.reset();
       }
-      const iconIsOptional = (poiInfo == null ? void 0 : poiInfo.iconIsOptional) === true;
+      const iconIsOptional = poiInfo?.iconIsOptional === true;
       const requiredIconRejected = iconRejected && iconReady && !iconIsOptional;
       const textRejected = requiredIconRejected || placeResult === 1 /* Rejected */;
       if (!iconRejected && !iconInvisible) {
-        const textIsOptional = ((_a = pointLabel.poiInfo) == null ? void 0 : _a.textIsOptional) === true;
+        const textIsOptional = pointLabel.poiInfo?.textIsOptional === true;
         iconRejected = textRejected && !textIsOptional;
       }
       if (textRejected) {
@@ -24300,10 +24311,9 @@ var TextElementsRenderer = class {
     return this.addPointLabel(labelState, worldPosition, tempScreenPosition, textCanvas, renderParams);
   }
   addLineMarkerLabel(labelState, shieldGroups, textCanvas, renderParams) {
-    var _a;
     const lineMarkerLabel = labelState.element;
     const poiInfo = lineMarkerLabel.poiInfo;
-    if (!((_a = this.m_poiRenderer) == null ? void 0 : _a.prepareRender(lineMarkerLabel, this.m_viewState.env))) {
+    if (!this.m_poiRenderer?.prepareRender(lineMarkerLabel, this.m_viewState.env)) {
       return;
     }
     let shieldGroup;
@@ -24438,6 +24448,23 @@ var _TextElementBuilder = class {
     this.m_env = m_env;
     this.m_styleCache = m_styleCache;
     this.m_baseRenderOrder = m_baseRenderOrder;
+    __publicField(this, "m_priority");
+    __publicField(this, "m_fadeNear");
+    __publicField(this, "m_fadeFar");
+    __publicField(this, "m_minZoomLevel");
+    __publicField(this, "m_maxZoomLevel");
+    __publicField(this, "m_distanceScale", DEFAULT_TEXT_DISTANCE_SCALE);
+    __publicField(this, "m_mayOverlap");
+    __publicField(this, "m_reserveSpace");
+    __publicField(this, "m_renderStyle");
+    __publicField(this, "m_layoutStype");
+    __publicField(this, "m_technique");
+    __publicField(this, "m_renderOrder");
+    __publicField(this, "m_xOffset");
+    __publicField(this, "m_yOffset");
+    __publicField(this, "m_poiBuilder");
+    __publicField(this, "m_alwaysOnTop");
+    __publicField(this, "renderOrderUpBound");
     this.m_renderOrder = m_baseRenderOrder;
     if (Number.isInteger(m_baseRenderOrder)) {
       this.renderOrderUpBound = _TextElementBuilder.RENDER_ORDER_UP_BOUND;
@@ -24449,23 +24476,6 @@ var _TextElementBuilder = class {
       logger20.warn(`Large base render order (${m_baseRenderOrder}) might cause precision issues.`);
     }
   }
-  m_priority;
-  m_fadeNear;
-  m_fadeFar;
-  m_minZoomLevel;
-  m_maxZoomLevel;
-  m_distanceScale = DEFAULT_TEXT_DISTANCE_SCALE;
-  m_mayOverlap;
-  m_reserveSpace;
-  m_renderStyle;
-  m_layoutStype;
-  m_technique;
-  m_renderOrder;
-  m_xOffset;
-  m_yOffset;
-  m_poiBuilder;
-  m_alwaysOnTop;
-  renderOrderUpBound;
   static alignZoomLevelRanges(textElement) {
     if (!textElement.poiInfo) {
       return;
@@ -24509,7 +24519,6 @@ var _TextElementBuilder = class {
     return this;
   }
   build(text, points, tileOffset, dataSourceName, dataSourceOrder, attributes, pathLengthSqr, offsetDirection) {
-    var _a;
     const featureId = getFeatureId(attributes);
     assert(this.m_technique !== void 0);
     assert(this.m_renderStyle !== void 0);
@@ -24529,7 +24538,7 @@ var _TextElementBuilder = class {
     textElement.pathLengthSqr = pathLengthSqr;
     textElement.alwaysOnTop = this.m_alwaysOnTop;
     textElement.renderOrder = this.m_renderOrder;
-    textElement.poiInfo = (_a = this.m_poiBuilder) == null ? void 0 : _a.build(textElement);
+    textElement.poiInfo = this.m_poiBuilder?.build(textElement);
     _TextElementBuilder.alignZoomLevelRanges(textElement);
     return textElement;
   }
@@ -24583,6 +24592,8 @@ function getText(poiGeometry, index = 0) {
 var _PoiManager = class {
   constructor(mapView) {
     this.mapView = mapView;
+    __publicField(this, "m_imageTextures", /* @__PURE__ */ new Map());
+    __publicField(this, "m_poiShieldGroups", /* @__PURE__ */ new Map());
   }
   static notifyMissingPoiTable(poiTableName, poiTable) {
     if (poiTableName === void 0) {
@@ -24607,8 +24618,6 @@ var _PoiManager = class {
       logger21.warn(`updatePoiFromPoiTable: Cannot find POI info for '${poiName}' in table '${poiTableName}'.`);
     }
   }
-  m_imageTextures = /* @__PURE__ */ new Map();
-  m_poiShieldGroups = /* @__PURE__ */ new Map();
   addPois(tile, decodedTile) {
     const poiGeometries = assertExists(decodedTile.poiGeometries);
     const worldOffsetX = tile.computeWorldOffsetX();
@@ -24731,9 +24740,8 @@ var _PoiManager = class {
     tile.addTextElement(textElement);
   }
   addPoi(poiBuilder, tile, poiGeometry, positions, worldOffsetX) {
-    var _a;
     for (let i = 0; i < positions.count; ++i) {
-      const offsetDirection = ((_a = poiGeometry.offsetDirections) == null ? void 0 : _a[i]) ?? 0;
+      const offsetDirection = poiGeometry.offsetDirections?.[i] ?? 0;
       const textElement = poiBuilder.withIcon(getImageTexture2(poiGeometry, i)).build(getText(poiGeometry, i), getPosition(positions, worldOffsetX, i), tile.offset, tile.dataSource.name, tile.dataSource.dataSourceOrder, getAttributes(poiGeometry, i), void 0, offsetDirection);
       tile.addTextElement(textElement);
     }
@@ -24746,6 +24754,18 @@ __publicField(PoiManager, "m_missingPoiName", /* @__PURE__ */ new Map());
 // src/mapview/poi/PoiTableManager.ts
 var logger22 = LoggerManager.instance.create("PoiTable");
 var PoiTableEntry = class {
+  constructor() {
+    __publicField(this, "name");
+    __publicField(this, "altNames");
+    __publicField(this, "visible");
+    __publicField(this, "iconName");
+    __publicField(this, "stackMode");
+    __publicField(this, "priority");
+    __publicField(this, "iconMinLevel");
+    __publicField(this, "iconMaxLevel");
+    __publicField(this, "textMinLevel");
+    __publicField(this, "textMaxLevel");
+  }
   static verifyJSON(jsonEntry) {
     let isOK = typeof jsonEntry.name === "string" && jsonEntry.name.length > 0 && (jsonEntry.altNames === void 0 || Array.isArray(jsonEntry.altNames)) && (jsonEntry.stackMode === void 0 || jsonEntry.stackMode === "yes" || jsonEntry.stackMode === "no" || jsonEntry.stackMode === "parent") && (jsonEntry.visible === void 0 || typeof jsonEntry.visible === "boolean") && (jsonEntry.priority === void 0 || typeof jsonEntry.priority === "number") && (jsonEntry.iconMinLevel === void 0 || typeof jsonEntry.iconMinLevel === "number") && (jsonEntry.iconMaxLevel === void 0 || typeof jsonEntry.iconMaxLevel === "number") && (jsonEntry.textMinLevel === void 0 || typeof jsonEntry.textMinLevel === "number") && (jsonEntry.textMaxLevel === void 0 || typeof jsonEntry.textMaxLevel === "number");
     if (isOK && jsonEntry.altNames !== void 0) {
@@ -24759,16 +24779,6 @@ var PoiTableEntry = class {
     }
     return isOK;
   }
-  name;
-  altNames;
-  visible;
-  iconName;
-  stackMode;
-  priority;
-  iconMinLevel;
-  iconMaxLevel;
-  textMinLevel;
-  textMaxLevel;
   setup(jsonEntry) {
     this.name = jsonEntry.name;
     this.altNames = jsonEntry.altNames;
@@ -24797,11 +24807,11 @@ var PoiTable = class {
   constructor(name2, useAltNamesForKey) {
     this.name = name2;
     this.useAltNamesForKey = useAltNamesForKey;
+    __publicField(this, "poiList", new Array());
+    __publicField(this, "poiDict", /* @__PURE__ */ new Map());
+    __publicField(this, "m_isLoading", false);
+    __publicField(this, "m_loadedOk");
   }
-  poiList = new Array();
-  poiDict = /* @__PURE__ */ new Map();
-  m_isLoading = false;
-  m_loadedOk = void 0;
   get isLoading() {
     return this.m_isLoading;
   }
@@ -24882,10 +24892,10 @@ var PoiTable = class {
 var PoiTableManager = class {
   constructor(mapView) {
     this.mapView = mapView;
+    __publicField(this, "m_isLoading", false);
+    __publicField(this, "m_poiTables", /* @__PURE__ */ new Map());
+    __publicField(this, "m_abortControllers", /* @__PURE__ */ new Map());
   }
-  m_isLoading = false;
-  m_poiTables = /* @__PURE__ */ new Map();
-  m_abortControllers = /* @__PURE__ */ new Map();
   async loadPoiTables(poiTables) {
     const finished = new Promise((resolve) => {
       this.clear();
@@ -24893,13 +24903,12 @@ var PoiTableManager = class {
         this.startLoading();
         const loadPromises = new Array();
         poiTables.forEach((poiTableRef) => {
-          var _a;
           if (poiTableRef !== void 0 && poiTableRef.name !== void 0 && typeof poiTableRef.name === "string") {
             const poiTable = new PoiTable(poiTableRef.name, poiTableRef.useAltNamesForKey !== false);
             if (poiTableRef.url !== void 0 && typeof poiTableRef.url === "string") {
               this.addTable(poiTable);
               this.m_abortControllers.set(poiTableRef.name, new AbortController());
-              loadPromises.push(poiTable.load(poiTableRef.url, (_a = this.m_abortControllers.get(poiTableRef.name)) == null ? void 0 : _a.signal));
+              loadPromises.push(poiTable.load(poiTableRef.url, this.m_abortControllers.get(poiTableRef.name)?.signal));
             } else {
               logger22.error(`POI table definition has no valid url: ${poiTableRef}`);
             }
@@ -24957,16 +24966,17 @@ import * as THREE87 from "three";
 var logger23 = LoggerManager.instance.create("StyleSetEvaluator");
 var DEFAULT_TECHNIQUE_ATTR_SCOPE = 1 /* TechniqueGeometry */;
 function getStyleAttributeScope(style, attrName) {
-  var _a;
   if (style.technique === "extruded-polygon") {
     if (attrName === "color" && style.vertexColors !== false) {
       return DEFAULT_TECHNIQUE_ATTR_SCOPE;
     }
   }
-  return ((_a = getTechniqueAttributeDescriptor(style.technique, attrName)) == null ? void 0 : _a.scope) ?? DEFAULT_TECHNIQUE_ATTR_SCOPE;
+  return getTechniqueAttributeDescriptor(style.technique, attrName)?.scope ?? DEFAULT_TECHNIQUE_ATTR_SCOPE;
 }
 var StyleConditionClassifier = class {
-  _style;
+  constructor() {
+    __publicField(this, "_style");
+  }
   classify(style) {
     if (style._whenExpr) {
       const savedStyle = this.switchStyle(style);
@@ -25048,11 +25058,11 @@ var StyleConditionClassifier = class {
   }
 };
 var OptimizedSubSetKey = class {
-  key;
-  layer;
-  geometryType;
-  cachedStyleSet;
   constructor(layer, geometryType) {
+    __publicField(this, "key");
+    __publicField(this, "layer");
+    __publicField(this, "geometryType");
+    __publicField(this, "cachedStyleSet");
     this.key = "";
     this.set(layer, geometryType);
   }
@@ -25099,33 +25109,30 @@ var OptimizedSubSetKey = class {
 var StyleSetEvaluator = class {
   constructor(m_options) {
     this.m_options = m_options;
+    __publicField(this, "styleSet");
+    __publicField(this, "m_techniques", []);
+    __publicField(this, "m_exprPool", new ExprPool());
+    __publicField(this, "m_cachedResults", /* @__PURE__ */ new Map());
+    __publicField(this, "m_styleConditionClassifier", new StyleConditionClassifier());
+    __publicField(this, "m_subStyleSetCache", /* @__PURE__ */ new Map());
+    __publicField(this, "m_definitions");
+    __publicField(this, "m_definitionExprCache", /* @__PURE__ */ new Map());
+    __publicField(this, "m_tmpOptimizedSubSetKey", new OptimizedSubSetKey());
+    __publicField(this, "m_emptyEnv", new Env());
+    __publicField(this, "m_featureDependencies", []);
+    __publicField(this, "m_layer");
+    __publicField(this, "m_geometryType");
+    __publicField(this, "m_zoomLevel");
+    __publicField(this, "m_previousResult");
+    __publicField(this, "m_previousEnv");
+    __publicField(this, "m_nextArrayBufferId", 0);
     this.m_definitions = this.m_options.definitions;
     this.styleSet = resolveReferences(this.m_options.styleSet, this.m_definitions);
     computeDefaultRenderOrder(this.styleSet);
     this.compileStyleSet();
   }
-  styleSet;
-  m_techniques = [];
-  m_exprPool = new ExprPool();
-  m_cachedResults = /* @__PURE__ */ new Map();
-  m_styleConditionClassifier = new StyleConditionClassifier();
-  m_subStyleSetCache = /* @__PURE__ */ new Map();
-  m_definitions;
-  m_definitionExprCache = /* @__PURE__ */ new Map();
-  m_tmpOptimizedSubSetKey = new OptimizedSubSetKey();
-  m_emptyEnv = new Env();
-  m_featureDependencies = [];
-  m_layer;
-  m_geometryType;
-  m_zoomLevel;
-  m_previousResult;
-  m_previousEnv;
-  m_nextArrayBufferId = 0;
   getMatchingTechniques(env, layer, geometryType) {
-    if (this.m_previousResult && this.m_previousEnv && this.m_featureDependencies.every((p) => {
-      var _a;
-      return ((_a = this.m_previousEnv) == null ? void 0 : _a.lookup(p)) === env.lookup(p);
-    })) {
+    if (this.m_previousResult && this.m_previousEnv && this.m_featureDependencies.every((p) => this.m_previousEnv?.lookup(p) === env.lookup(p))) {
       return this.m_previousResult;
     }
     const result = [];
@@ -25208,7 +25215,7 @@ var StyleSetEvaluator = class {
           style._whenExpr = style._whenExpr.intern(this.m_exprPool);
         }
         const deps = style._whenExpr.dependencies();
-        deps == null ? void 0 : deps.properties.forEach((prop) => {
+        deps?.properties.forEach((prop) => {
           if (!this.m_featureDependencies.includes(prop)) {
             this.m_featureDependencies.push(prop);
           }
@@ -25253,7 +25260,6 @@ var StyleSetEvaluator = class {
     return style.final === true;
   }
   checkZoomLevel(env, style) {
-    var _a, _b;
     if (style.minZoomLevel === void 0 && style.maxZoomLevel === void 0) {
       return true;
     }
@@ -25263,7 +25269,7 @@ var StyleSetEvaluator = class {
     }
     if (style.minZoomLevel !== void 0) {
       let minZoomLevel = style.minZoomLevel;
-      if (((_a = style._minZoomLevelExpr) == null ? void 0 : _a.isDynamic()) === false) {
+      if (style._minZoomLevelExpr?.isDynamic() === false) {
         try {
           minZoomLevel = style._minZoomLevelExpr.evaluate(env, 1 /* Condition */, this.m_cachedResults);
         } catch (error) {
@@ -25276,7 +25282,7 @@ var StyleSetEvaluator = class {
     }
     if (style.maxZoomLevel !== void 0) {
       let maxZoomLevel = style.maxZoomLevel;
-      if (((_b = style._maxZoomLevelExpr) == null ? void 0 : _b.isDynamic()) === false) {
+      if (style._maxZoomLevelExpr?.isDynamic() === false) {
         try {
           maxZoomLevel = style._maxZoomLevelExpr.evaluate(env, 1 /* Condition */, this.m_cachedResults);
         } catch (error) {
@@ -25585,13 +25591,6 @@ var ThreeBufferUtils;
 
 // src/mapview/PolarTileDataSource.ts
 var PolarTileDataSource = class extends DataSource {
-  m_tilingScheme = polarTilingScheme;
-  m_maxLatitude = THREE87.MathUtils.radToDeg(MercatorConstants.MAXIMUM_LATITUDE);
-  m_geometryLevelOffset;
-  m_debugTiles;
-  m_styleSetEvaluator;
-  m_northPoleEntry;
-  m_southPoleEntry;
   constructor({
     name: name2 = "polar",
     styleSetName = "polar",
@@ -25612,6 +25611,13 @@ var PolarTileDataSource = class extends DataSource {
       maxDisplayLevel,
       storageLevelOffset
     });
+    __publicField(this, "m_tilingScheme", polarTilingScheme);
+    __publicField(this, "m_maxLatitude", THREE87.MathUtils.radToDeg(MercatorConstants.MAXIMUM_LATITUDE));
+    __publicField(this, "m_geometryLevelOffset");
+    __publicField(this, "m_debugTiles");
+    __publicField(this, "m_styleSetEvaluator");
+    __publicField(this, "m_northPoleEntry");
+    __publicField(this, "m_southPoleEntry");
     this.m_geometryLevelOffset = geometryLevelOffset;
     this.m_debugTiles = debugTiles;
     this.cacheable = false;
@@ -25834,9 +25840,9 @@ function isInRange(ndc) {
 var _ScreenProjector = class {
   constructor(m_camera) {
     this.m_camera = m_camera;
+    __publicField(this, "m_width", 0);
+    __publicField(this, "m_height", 0);
   }
-  m_width = 0;
-  m_height = 0;
   get width() {
     return this.m_width;
   }
@@ -25898,8 +25904,8 @@ var MapViewState = class {
   constructor(m_mapView, m_renderedTilesChangeCheck) {
     this.m_mapView = m_mapView;
     this.m_renderedTilesChangeCheck = m_renderedTilesChangeCheck;
+    __publicField(this, "m_lookAtVector", new THREE89.Vector3());
   }
-  m_lookAtVector = new THREE89.Vector3();
   get worldCenter() {
     return this.m_mapView.worldCenter;
   }
@@ -25947,9 +25953,9 @@ var TileObjectRenderer = class {
   constructor(m_env, m_renderer) {
     this.m_env = m_env;
     this.m_renderer = m_renderer;
+    __publicField(this, "m_renderOrderStencilValues", /* @__PURE__ */ new Map());
+    __publicField(this, "m_stencilValue", DEFAULT_STENCIL_VALUE);
   }
-  m_renderOrderStencilValues = /* @__PURE__ */ new Map();
-  m_stencilValue = DEFAULT_STENCIL_VALUE;
   render(tile, storageLevel, zoomLevel, cameraPosition, rootNode) {
     const worldOffsetX = tile.computeWorldOffsetX();
     if (tile.willRender(storageLevel)) {
@@ -25997,19 +26003,18 @@ var TileObjectRenderer = class {
       }
     };
     const painterSortStable = (a, b) => {
-      var _a, _b, _c, _d;
       const mapObjectAdapterA = MapObjectAdapter.get(a.object);
       const mapObjectAdapterB = MapObjectAdapter.get(b.object);
-      const dataSourceOrder = (_a = mapObjectAdapterA == null ? void 0 : mapObjectAdapterA.dataSource) == null ? void 0 : _a.dataSourceOrder;
-      const otherDataSourceOrder = (_b = mapObjectAdapterB == null ? void 0 : mapObjectAdapterB.dataSource) == null ? void 0 : _b.dataSourceOrder;
+      const dataSourceOrder = mapObjectAdapterA?.dataSource?.dataSourceOrder;
+      const otherDataSourceOrder = mapObjectAdapterB?.dataSource?.dataSourceOrder;
       if (dataSourceOrder !== void 0 && otherDataSourceOrder !== void 0 && dataSourceOrder !== otherDataSourceOrder) {
         return dataSourceOrder - otherDataSourceOrder;
       }
       if (a.renderOrder === BackgroundDataSource.GROUND_RENDER_ORDER || b.renderOrder === BackgroundDataSource.GROUND_RENDER_ORDER) {
         return stableSort(a, b);
       }
-      if ((mapObjectAdapterA == null ? void 0 : mapObjectAdapterA.level) !== void 0 && (mapObjectAdapterB == null ? void 0 : mapObjectAdapterB.level) !== void 0) {
-        const eitherIsBuilding = ((_c = mapObjectAdapterA.kind) == null ? void 0 : _c.find((s) => s === "building")) !== void 0 || ((_d = mapObjectAdapterB.kind) == null ? void 0 : _d.find((s) => s === "building")) !== void 0;
+      if (mapObjectAdapterA?.level !== void 0 && mapObjectAdapterB?.level !== void 0) {
+        const eitherIsBuilding = mapObjectAdapterA.kind?.find((s) => s === "building") !== void 0 || mapObjectAdapterB.kind?.find((s) => s === "building") !== void 0;
         const sameLevel = mapObjectAdapterA.level === mapObjectAdapterB.level;
         if (sameLevel || eitherIsBuilding) {
           return stableSort(a, b);
@@ -26054,17 +26059,16 @@ var TileObjectRenderer = class {
     return true;
   }
   processTileObjectFeatures(tile, storageLevel, zoomLevel, object) {
-    var _a;
     const technique = object.userData.technique;
-    const minZoomLevel = getPropertyValue(technique == null ? void 0 : technique.minZoomLevel, this.m_env);
-    const maxZoomLevel = getPropertyValue(technique == null ? void 0 : technique.maxZoomLevel, this.m_env);
+    const minZoomLevel = getPropertyValue(technique?.minZoomLevel, this.m_env);
+    const maxZoomLevel = getPropertyValue(technique?.maxZoomLevel, this.m_env);
     if (typeof minZoomLevel === "number" && zoomLevel < minZoomLevel) {
       return false;
     }
     if (typeof maxZoomLevel === "number" && zoomLevel >= maxZoomLevel) {
       return false;
     }
-    if ((technique == null ? void 0 : technique.enabled) === void 0) {
+    if (technique?.enabled === void 0) {
       return true;
     }
     const feature = object.userData.feature;
@@ -26079,7 +26083,7 @@ var TileObjectRenderer = class {
     if (!geometry || !geometry.isBufferGeometry) {
       return true;
     }
-    const finalIndex = ((_a = geometry.getIndex()) == null ? void 0 : _a.count) ?? geometry.attributes.position.count;
+    const finalIndex = geometry.getIndex()?.count ?? geometry.attributes.position.count;
     geometry.clearGroups();
     let endOfLastGroup;
     objInfos.forEach((properties, featureIndex) => {
@@ -26118,16 +26122,10 @@ var ResourceComputationType = /* @__PURE__ */ ((ResourceComputationType2) => {
 })(ResourceComputationType || {});
 var MB_FACTOR = 1 / (1024 * 1024);
 var DataSourceCache = class {
-  static getKey(mortonCode, offset, dataSource) {
-    return `${dataSource.name}_${mortonCode}_${offset}`;
-  }
-  static getKeyForTile(tile) {
-    return DataSourceCache.getKey(tile.tileKey.mortonCode(), tile.offset, tile.dataSource);
-  }
-  m_tileCache;
-  m_disposedTiles = [];
-  m_resourceComputationType;
   constructor(cacheSize, rct = 0 /* EstimationInMb */) {
+    __publicField(this, "m_tileCache");
+    __publicField(this, "m_disposedTiles", []);
+    __publicField(this, "m_resourceComputationType");
     this.m_resourceComputationType = rct;
     this.m_tileCache = new LRUCache(cacheSize, (tile) => {
       if (this.m_resourceComputationType === 0 /* EstimationInMb */) {
@@ -26145,6 +26143,12 @@ var DataSourceCache = class {
     this.m_tileCache.canEvict = (_, tile) => {
       return !tile.isVisible;
     };
+  }
+  static getKey(mortonCode, offset, dataSource) {
+    return `${dataSource.name}_${mortonCode}_${offset}`;
+  }
+  static getKeyForTile(tile) {
+    return DataSourceCache.getKey(tile.tileKey.mortonCode(), tile.offset, tile.dataSource);
   }
   get resourceComputationType() {
     return this.m_resourceComputationType;
@@ -26212,23 +26216,23 @@ var VisibleTileSet = class {
     this.m_tileGeometryManager = m_tileGeometryManager;
     this.options = options;
     this.m_taskQueue = m_taskQueue;
+    __publicField(this, "dataSourceTileList", []);
+    __publicField(this, "allVisibleTilesLoaded", false);
+    __publicField(this, "m_cameraOverride", new THREE90.PerspectiveCamera());
+    __publicField(this, "m_dataSourceCache");
+    __publicField(this, "m_viewRange", {
+      near: 0.1,
+      far: Infinity,
+      minimum: 0.1,
+      maximum: Infinity
+    });
+    __publicField(this, "m_coveringMap", /* @__PURE__ */ new Map());
+    __publicField(this, "m_resourceComputationType", 0 /* EstimationInMb */);
     this.options = options;
     this.options.maxTilesPerFrame = Math.floor(this.options.maxTilesPerFrame ?? 0);
     this.m_resourceComputationType = options.resourceComputationType === void 0 ? 0 /* EstimationInMb */ : options.resourceComputationType;
     this.m_dataSourceCache = new DataSourceCache(this.options.tileCacheSize, this.m_resourceComputationType);
   }
-  dataSourceTileList = [];
-  allVisibleTilesLoaded = false;
-  m_cameraOverride = new THREE90.PerspectiveCamera();
-  m_dataSourceCache;
-  m_viewRange = {
-    near: 0.1,
-    far: Infinity,
-    minimum: 0.1,
-    maximum: Infinity
-  };
-  m_coveringMap = /* @__PURE__ */ new Map();
-  m_resourceComputationType = 0 /* EstimationInMb */;
   getDataSourceCacheSize() {
     return this.options.tileCacheSize;
   }
@@ -26625,11 +26629,10 @@ var VisibleTileSet = class {
       execute: tile.load.bind(tile),
       group: "fetch" /* FETCH_AND_DECODE */,
       getPriority: () => {
-        var _a;
-        return ((_a = tile == null ? void 0 : tile.tileLoader) == null ? void 0 : _a.priority) ?? 0;
+        return tile?.tileLoader?.priority ?? 0;
       },
       isExpired: () => {
-        return !(tile == null ? void 0 : tile.isVisible);
+        return !tile?.isVisible;
       },
       estimatedProcessTime: () => {
         return 1;
@@ -26640,11 +26643,10 @@ var VisibleTileSet = class {
     const dataSourceCache = this.m_dataSourceCache;
     const retainedTiles = /* @__PURE__ */ new Set();
     const markTileDirty = (tile) => {
-      var _a;
       const tileKey = DataSourceCache.getKeyForTile(tile);
       if (!retainedTiles.has(tileKey)) {
         retainedTiles.add(tileKey);
-        (_a = tile.tileLoader) == null ? void 0 : _a.cancel();
+        tile.tileLoader?.cancel();
         this.addToTaskQueue(tile);
       }
     };
@@ -26744,138 +26746,153 @@ var MapViewDefaults = {
   maxTilesPerFrame: 0
 };
 var MapView3 = class extends EventDispatcher {
-  handleRequestAnimationFrame;
-  m_animatedExtrusionHandler;
-  m_animationCount = 0;
-  m_animationFrameHandle;
-  m_camera;
-  m_canvas;
-  m_collisionDebugCanvas;
-  m_connectedDataSources = /* @__PURE__ */ new Set();
-  m_context;
-  m_copyrightInfo = [];
-  m_disposed = false;
-  m_drawing = false;
-  m_elevationProvider;
-  m_elevationRangeSource;
-  m_elevationSource;
-  m_enableMixedLod;
-  m_enablePolarDataSource = true;
-  m_env = new MapEnv({});
-  m_failedDataSources = /* @__PURE__ */ new Set();
-  m_firstFrameComplete = false;
-  m_firstFrameRendered = false;
-  m_forceCameraAspect = void 0;
-  m_frameNumber = 0;
-  m_geoMaxBounds;
-  m_languages;
-  m_lastTileIds = "";
-  m_lodMinTilePixelSize;
-  m_mapAnchors = new MapAnchors();
-  mapRenderingManager;
-  m_maxZoomLevel = DEFAULT_MAX_ZOOM_LEVEL;
-  m_minCameraHeight = DEFAULT_MIN_CAMERA_HEIGHT;
-  m_minZoomLevel = DEFAULT_MIN_ZOOM_LEVEL2;
-  m_movementDetector;
-  m_movementFinishedUpdateTimerId;
-  m_options;
-  m_overlayScene = new THREE91.Scene();
-  m_overlaySceneRoot = new THREE91.Object3D();
-  m_pickHandler;
-  m_pitch = 0;
-  m_pixelRatio;
-  m_pixelToWorld;
-  m_plane = new THREE91.Plane(new THREE91.Vector3(0, 0, 1));
-  m_poiManager = new PoiManager(this);
-  m_pointOfView;
-  m_poiTableManager = new PoiTableManager(this);
-  m_polarDataSource;
-  m_politicalView;
-  m_postEffects;
-  m_previousFrameTimeStamp;
-  m_raycaster = new THREE91.Raycaster();
-  m_renderer;
-  m_renderLabels = true;
-  m_roll = 0;
-  m_rteCamera = new THREE91.PerspectiveCamera();
-  m_scene = new THREE91.Scene();
-  m_sceneEntity;
-  m_sceneEnvironment;
-  m_sceneRoot = new THREE91.Object3D();
-  m_screenProjector;
-  m_sphere = new THREE91.Sphere(void 0, EarthConstants.EQUATORIAL_RADIUS);
-  m_targetGeoPos = GeoCoordinates.fromObject(MapViewDefaults.target);
-  m_targetDistance = 0;
-  m_targetWorldPos = new THREE91.Vector3();
-  m_taskScheduler;
-  m_taskSchedulerTimeout = void 0;
-  m_textElementsRenderer;
-  m_themeManager;
-  m_thisFrameTilesChanged;
-  m_tileDataSources = [];
-  m_tileGeometryManager;
-  m_tileObjectRenderer;
-  m_tileWrappingEnabled = true;
-  m_updatePending = false;
-  m_uriResolver;
-  m_userImageCache = new MapViewImageCache();
-  m_viewRanges = {
-    near: DEFAULT_CAM_NEAR_PLANE,
-    far: DEFAULT_CAM_FAR_PLANE,
-    minimum: DEFAULT_CAM_NEAR_PLANE,
-    maximum: DEFAULT_CAM_FAR_PLANE
-  };
-  m_visibleTiles;
-  m_visibleTileSetLock = false;
-  m_visibleTileSetOptions;
-  m_world;
-  m_worldMaxBounds;
-  m_yaw = 0;
-  m_zoomLevel = DEFAULT_MIN_ZOOM_LEVEL2;
-  UPDATE_EVENT = {
-    type: MapViewEventNames.Update
-  };
-  RENDER_EVENT = {
-    type: MapViewEventNames.Render
-  };
-  DID_RENDER_EVENT = {
-    type: MapViewEventNames.AfterRender
-  };
-  FIRST_FRAME_EVENT = {
-    type: MapViewEventNames.FirstFrame
-  };
-  FRAME_COMPLETE_EVENT = {
-    type: MapViewEventNames.FrameComplete
-  };
-  THEME_LOADED_EVENT = {
-    type: MapViewEventNames.ThemeLoaded
-  };
-  ANIMATION_STARTED_EVENT = {
-    type: MapViewEventNames.AnimationStarted
-  };
-  ANIMATION_FINISHED_EVENT = {
-    type: MapViewEventNames.AnimationFinished
-  };
-  MOVEMENT_STARTED_EVENT = {
-    type: MapViewEventNames.MovementStarted
-  };
-  MOVEMENT_FINISHED_EVENT = {
-    type: MapViewEventNames.MovementFinished
-  };
-  CONTEXT_LOST_EVENT = {
-    type: MapViewEventNames.ContextLost
-  };
-  CONTEXT_RESTORED_EVENT = {
-    type: MapViewEventNames.ContextRestored
-  };
-  COPYRIGHT_CHANGED_EVENT = {
-    type: MapViewEventNames.CopyrightChanged
-  };
-  DISPOSE_EVENT = {
-    type: MapViewEventNames.Dispose
-  };
   constructor(options) {
     super();
+    __publicField(this, "handleRequestAnimationFrame");
+    __publicField(this, "m_animatedExtrusionHandler");
+    __publicField(this, "m_animationCount", 0);
+    __publicField(this, "m_animationFrameHandle");
+    __publicField(this, "m_camera");
+    __publicField(this, "m_canvas");
+    __publicField(this, "m_collisionDebugCanvas");
+    __publicField(this, "m_connectedDataSources", /* @__PURE__ */ new Set());
+    __publicField(this, "m_context");
+    __publicField(this, "m_copyrightInfo", []);
+    __publicField(this, "m_disposed", false);
+    __publicField(this, "m_drawing", false);
+    __publicField(this, "m_elevationProvider");
+    __publicField(this, "m_elevationRangeSource");
+    __publicField(this, "m_elevationSource");
+    __publicField(this, "m_enableMixedLod");
+    __publicField(this, "m_enablePolarDataSource", true);
+    __publicField(this, "m_env", new MapEnv({}));
+    __publicField(this, "m_failedDataSources", /* @__PURE__ */ new Set());
+    __publicField(this, "m_firstFrameComplete", false);
+    __publicField(this, "m_firstFrameRendered", false);
+    __publicField(this, "m_forceCameraAspect");
+    __publicField(this, "m_frameNumber", 0);
+    __publicField(this, "m_geoMaxBounds");
+    __publicField(this, "m_languages");
+    __publicField(this, "m_lastTileIds", "");
+    __publicField(this, "m_lodMinTilePixelSize");
+    __publicField(this, "m_mapAnchors", new MapAnchors());
+    __publicField(this, "mapRenderingManager");
+    __publicField(this, "m_maxZoomLevel", DEFAULT_MAX_ZOOM_LEVEL);
+    __publicField(this, "m_minCameraHeight", DEFAULT_MIN_CAMERA_HEIGHT);
+    __publicField(this, "m_minZoomLevel", DEFAULT_MIN_ZOOM_LEVEL2);
+    __publicField(this, "m_movementDetector");
+    __publicField(this, "m_movementFinishedUpdateTimerId");
+    __publicField(this, "m_options");
+    __publicField(this, "m_overlayScene", new THREE91.Scene());
+    __publicField(this, "m_overlaySceneRoot", new THREE91.Object3D());
+    __publicField(this, "m_pickHandler");
+    __publicField(this, "m_pitch", 0);
+    __publicField(this, "m_pixelRatio");
+    __publicField(this, "m_pixelToWorld");
+    __publicField(this, "m_plane", new THREE91.Plane(new THREE91.Vector3(0, 0, 1)));
+    __publicField(this, "m_poiManager", new PoiManager(this));
+    __publicField(this, "m_pointOfView");
+    __publicField(this, "m_poiTableManager", new PoiTableManager(this));
+    __publicField(this, "m_polarDataSource");
+    __publicField(this, "m_politicalView");
+    __publicField(this, "m_postEffects");
+    __publicField(this, "m_previousFrameTimeStamp");
+    __publicField(this, "m_raycaster", new THREE91.Raycaster());
+    __publicField(this, "m_renderer");
+    __publicField(this, "m_renderLabels", true);
+    __publicField(this, "m_roll", 0);
+    __publicField(this, "m_rteCamera", new THREE91.PerspectiveCamera());
+    __publicField(this, "m_scene", new THREE91.Scene());
+    __publicField(this, "m_sceneEntity");
+    __publicField(this, "m_sceneEnvironment");
+    __publicField(this, "m_sceneRoot", new THREE91.Object3D());
+    __publicField(this, "m_screenProjector");
+    __publicField(this, "m_sphere", new THREE91.Sphere(void 0, EarthConstants.EQUATORIAL_RADIUS));
+    __publicField(this, "m_targetGeoPos", GeoCoordinates.fromObject(MapViewDefaults.target));
+    __publicField(this, "m_targetDistance", 0);
+    __publicField(this, "m_targetWorldPos", new THREE91.Vector3());
+    __publicField(this, "m_taskScheduler");
+    __publicField(this, "m_taskSchedulerTimeout");
+    __publicField(this, "m_textElementsRenderer");
+    __publicField(this, "m_themeManager");
+    __publicField(this, "m_thisFrameTilesChanged");
+    __publicField(this, "m_tileDataSources", []);
+    __publicField(this, "m_tileGeometryManager");
+    __publicField(this, "m_tileObjectRenderer");
+    __publicField(this, "m_tileWrappingEnabled", true);
+    __publicField(this, "m_updatePending", false);
+    __publicField(this, "m_uriResolver");
+    __publicField(this, "m_userImageCache", new MapViewImageCache());
+    __publicField(this, "m_viewRanges", {
+      near: DEFAULT_CAM_NEAR_PLANE,
+      far: DEFAULT_CAM_FAR_PLANE,
+      minimum: DEFAULT_CAM_NEAR_PLANE,
+      maximum: DEFAULT_CAM_FAR_PLANE
+    });
+    __publicField(this, "m_visibleTiles");
+    __publicField(this, "m_visibleTileSetLock", false);
+    __publicField(this, "m_visibleTileSetOptions");
+    __publicField(this, "m_world");
+    __publicField(this, "m_worldMaxBounds");
+    __publicField(this, "m_yaw", 0);
+    __publicField(this, "m_zoomLevel", DEFAULT_MIN_ZOOM_LEVEL2);
+    __publicField(this, "UPDATE_EVENT", {
+      type: MapViewEventNames.Update
+    });
+    __publicField(this, "RENDER_EVENT", {
+      type: MapViewEventNames.Render
+    });
+    __publicField(this, "DID_RENDER_EVENT", {
+      type: MapViewEventNames.AfterRender
+    });
+    __publicField(this, "FIRST_FRAME_EVENT", {
+      type: MapViewEventNames.FirstFrame
+    });
+    __publicField(this, "FRAME_COMPLETE_EVENT", {
+      type: MapViewEventNames.FrameComplete
+    });
+    __publicField(this, "THEME_LOADED_EVENT", {
+      type: MapViewEventNames.ThemeLoaded
+    });
+    __publicField(this, "ANIMATION_STARTED_EVENT", {
+      type: MapViewEventNames.AnimationStarted
+    });
+    __publicField(this, "ANIMATION_FINISHED_EVENT", {
+      type: MapViewEventNames.AnimationFinished
+    });
+    __publicField(this, "MOVEMENT_STARTED_EVENT", {
+      type: MapViewEventNames.MovementStarted
+    });
+    __publicField(this, "MOVEMENT_FINISHED_EVENT", {
+      type: MapViewEventNames.MovementFinished
+    });
+    __publicField(this, "CONTEXT_LOST_EVENT", {
+      type: MapViewEventNames.ContextLost
+    });
+    __publicField(this, "CONTEXT_RESTORED_EVENT", {
+      type: MapViewEventNames.ContextRestored
+    });
+    __publicField(this, "COPYRIGHT_CHANGED_EVENT", {
+      type: MapViewEventNames.CopyrightChanged
+    });
+    __publicField(this, "DISPOSE_EVENT", {
+      type: MapViewEventNames.Dispose
+    });
+    __publicField(this, "onWebGLContextLost", (event) => {
+      this.dispatchEvent(this.CONTEXT_LOST_EVENT);
+      logger24.warn("WebGL context lost", event);
+    });
+    __publicField(this, "onWebGLContextRestored", (event) => {
+      this.dispatchEvent(this.CONTEXT_RESTORED_EVENT);
+      if (this.m_renderer !== void 0) {
+        this.textElementsRenderer.restoreRenderers(this.m_renderer);
+        this.getTheme().then((theme) => {
+          this.m_sceneEnvironment.updateClearColor(theme.clearColor, theme.clearAlpha);
+          this.update();
+        });
+      }
+      logger24.warn("WebGL context restored", event);
+    });
     this.m_options = { ...options };
     this.m_uriResolver = this.m_options.uriResolver;
     if (this.m_options.minZoomLevel !== void 0) {
@@ -27003,7 +27020,6 @@ var MapView3 = class extends EventDispatcher {
     this.update();
   }
   async addDataSource(dataSource) {
-    var _a;
     const twinDataSource = this.getDataSourceByName(dataSource.name);
     if (twinDataSource !== void 0) {
       throw new Error(`A DataSource with the name "${dataSource.name}" already exists in this MapView.`);
@@ -27015,7 +27031,7 @@ var MapView3 = class extends EventDispatcher {
       console.warn(`The DataSources ${dataSource.name} and ${conflictingDataSource.name} both have a ground plane added, this will cause problems with the fallback logic, see HARP-14728 & HARP-15488.`);
     }
     this.m_tileDataSources.push(dataSource);
-    (_a = this.m_sceneEnvironment) == null ? void 0 : _a.updateBackgroundDataSource();
+    this.m_sceneEnvironment?.updateBackgroundDataSource();
     try {
       await dataSource.connect();
       const alreadyRemoved = !this.m_tileDataSources.includes(dataSource);
@@ -27500,21 +27516,6 @@ var MapView3 = class extends EventDispatcher {
     result.set(vector.x, vector.y, vector.z).applyMatrix4(this.camera.projectionMatrixInverse).applyMatrix4(this.m_rteCamera.matrixWorld);
     return result;
   }
-  onWebGLContextLost = (event) => {
-    this.dispatchEvent(this.CONTEXT_LOST_EVENT);
-    logger24.warn("WebGL context lost", event);
-  };
-  onWebGLContextRestored = (event) => {
-    this.dispatchEvent(this.CONTEXT_RESTORED_EVENT);
-    if (this.m_renderer !== void 0) {
-      this.textElementsRenderer.restoreRenderers(this.m_renderer);
-      this.getTheme().then((theme) => {
-        this.m_sceneEnvironment.updateClearColor(theme.clearColor, theme.clearAlpha);
-        this.update();
-      });
-    }
-    logger24.warn("WebGL context restored", event);
-  };
   get overlayScene() {
     return this.m_overlayScene;
   }
@@ -27923,7 +27924,6 @@ var MapView3 = class extends EventDispatcher {
     this.startRenderLoop();
   }
   updateCameras(viewRanges) {
-    var _a;
     this.m_camera.updateMatrixWorld(false);
     this.updateLookAtSettings();
     const { width, height } = this.m_renderer.getSize(cache3.vector2[0]);
@@ -27939,7 +27939,7 @@ var MapView3 = class extends EventDispatcher {
     this.m_rteCamera.copy(this.m_camera);
     this.m_rteCamera.position.setScalar(0);
     this.m_rteCamera.updateMatrixWorld(true);
-    (_a = this.m_textElementsRenderer) == null ? void 0 : _a.updateCamera();
+    this.m_textElementsRenderer?.updateCamera();
     this.m_screenProjector.update(this.camera, width, height);
     this.m_pixelToWorld = void 0;
     this.m_sceneEnvironment.update();
@@ -28167,12 +28167,12 @@ import * as THREE93 from "three";
 var PathBlockingElement = class {
   constructor(points) {
     this.points = points;
+    __publicField(this, "screenSpaceLines");
     this.screenSpaceLines = new Array(points.length >= 2 ? points.length - 1 : 0);
     for (let i = 0; i < this.screenSpaceLines.length; i++) {
       this.screenSpaceLines[i] = new THREE93.Line3(new THREE93.Vector3(), new THREE93.Vector3());
     }
   }
-  screenSpaceLines;
 };
 
 // src/mapview/geometry/TileGeometryCreator.ts
@@ -28180,15 +28180,17 @@ var logger25 = LoggerManager.instance.create("TileGeometryCreator");
 var tmpVector3 = new THREE94.Vector3();
 var tmpVector2 = new THREE94.Vector2();
 var AttachmentCache = class {
-  bufferAttributes = /* @__PURE__ */ new Map();
-  interleavedAttributes = /* @__PURE__ */ new Map();
+  constructor() {
+    __publicField(this, "bufferAttributes", /* @__PURE__ */ new Map());
+    __publicField(this, "interleavedAttributes", /* @__PURE__ */ new Map());
+  }
 };
 var MemoCallExpr = class extends CallExpr7 {
-  m_deps;
-  m_cachedProperties = [];
-  m_cachedValue;
   constructor(expr) {
     super("memo", [expr]);
+    __publicField(this, "m_deps");
+    __publicField(this, "m_cachedProperties", []);
+    __publicField(this, "m_cachedValue");
     this.m_deps = Array.from(expr.dependencies().properties);
     this.descriptor = this;
   }
@@ -28361,7 +28363,6 @@ var _TileGeometryCreator = class {
     return processedPaths;
   }
   createTextElements(tile, decodedTile, textFilter) {
-    var _a;
     const mapView = tile.mapView;
     const worldOffsetX = tile.computeWorldOffsetX();
     const discreteZoomLevel = Math.floor(mapView.zoomLevel);
@@ -28405,7 +28406,7 @@ var _TileGeometryCreator = class {
           if (label === void 0) {
             continue;
           }
-          const attributes = (_a = text.objInfos) == null ? void 0 : _a[i];
+          const attributes = text.objInfos?.[i];
           const point = new THREE94.Vector3(x, y, z);
           const textElement = textElementBuilder.build(label, point, tile.offset, tile.dataSource.name, tile.dataSource.dataSourceOrder, attributes);
           tile.addTextElement(textElement);
@@ -28414,7 +28415,6 @@ var _TileGeometryCreator = class {
     }
   }
   createObjects(tile, decodedTile, onTextureCreated, techniqueFilter) {
-    var _a, _b;
     const mapView = tile.mapView;
     const materials = [];
     const extrudedMaterials = [];
@@ -28451,7 +28451,7 @@ var _TileGeometryCreator = class {
         if (!usesObject3D(technique)) {
           continue;
         }
-        const extrusionAnimationEnabled = (animatedExtrusionHandler == null ? void 0 : animatedExtrusionHandler.setAnimationProperties(technique, discreteZoomEnv)) ?? false;
+        const extrusionAnimationEnabled = animatedExtrusionHandler?.setAnimationProperties(technique, discreteZoomEnv) ?? false;
         let material = materials[techniqueIndex];
         if (material === void 0) {
           material = createMaterial(mapView.renderer.capabilities, {
@@ -28473,11 +28473,11 @@ var _TileGeometryCreator = class {
           this.setupTerrainMaterial(technique, material, tile.mapView.clearColor);
         }
         const bufferGeometry = new THREE94.BufferGeometry();
-        (_a = srcGeometry.vertexAttributes) == null ? void 0 : _a.forEach((vertexAttribute) => {
+        srcGeometry.vertexAttributes?.forEach((vertexAttribute) => {
           const buffer = attachment.getBufferAttribute(vertexAttribute);
           bufferGeometry.setAttribute(vertexAttribute.name, buffer);
         });
-        (_b = srcGeometry.interleavedVertexAttributes) == null ? void 0 : _b.forEach((attr) => {
+        srcGeometry.interleavedVertexAttributes?.forEach((attr) => {
           attachment.getInterleavedBufferAttributes(attr).forEach(({ name: name2, attribute }) => bufferGeometry.setAttribute(name2, attribute));
         });
         const index = attachment.info.index ?? srcGeometry.index;
@@ -28830,6 +28830,15 @@ var TileGeometryLoader = class {
   constructor(m_tile, m_taskQueue) {
     this.m_tile = m_tile;
     this.m_taskQueue = m_taskQueue;
+    __publicField(this, "m_decodedTile");
+    __publicField(this, "m_availableGeometryKinds");
+    __publicField(this, "m_enabledKinds");
+    __publicField(this, "m_disabledKinds");
+    __publicField(this, "m_priority", 0);
+    __publicField(this, "m_state", 0 /* Initialized */);
+    __publicField(this, "m_finishedPromise");
+    __publicField(this, "m_resolveFinishedPromise");
+    __publicField(this, "m_rejectFinishedPromise");
     this.m_finishedPromise = new Promise((resolve, reject) => {
       this.m_resolveFinishedPromise = resolve;
       this.m_rejectFinishedPromise = reject;
@@ -28869,15 +28878,6 @@ var TileGeometryLoader = class {
     }
     return geometryKind;
   }
-  m_decodedTile;
-  m_availableGeometryKinds;
-  m_enabledKinds;
-  m_disabledKinds;
-  m_priority = 0;
-  m_state = 0 /* Initialized */;
-  m_finishedPromise;
-  m_resolveFinishedPromise;
-  m_rejectFinishedPromise;
   set priority(value2) {
     this.m_priority = value2;
   }
@@ -28924,17 +28924,15 @@ var TileGeometryLoader = class {
     }
   }
   cancel() {
-    var _a;
     addDiscardedTileToStats(this.tile);
     this.m_state = 4 /* Canceled */;
-    (_a = this.m_rejectFinishedPromise) == null ? void 0 : _a.call(this);
+    this.m_rejectFinishedPromise?.();
   }
   dispose() {
-    var _a;
     addDiscardedTileToStats(this.tile);
     this.clear();
     this.m_state = 5 /* Disposed */;
-    (_a = this.m_rejectFinishedPromise) == null ? void 0 : _a.call(this);
+    this.m_rejectFinishedPromise?.();
   }
   reset() {
     this.clear();
@@ -28947,16 +28945,14 @@ var TileGeometryLoader = class {
     this.m_state = 0 /* Initialized */;
   }
   finish() {
-    var _a;
     this.m_decodedTile = void 0;
     this.m_state = 3 /* Finished */;
-    (_a = this.m_resolveFinishedPromise) == null ? void 0 : _a.call(this);
+    this.m_resolveFinishedPromise?.();
   }
   clear() {
-    var _a, _b, _c;
-    (_a = this.m_availableGeometryKinds) == null ? void 0 : _a.clear();
-    (_b = this.m_enabledKinds) == null ? void 0 : _b.clear();
-    (_c = this.m_disabledKinds) == null ? void 0 : _c.clear();
+    this.m_availableGeometryKinds?.clear();
+    this.m_enabledKinds?.clear();
+    this.m_disabledKinds?.clear();
     this.m_decodedTile = void 0;
   }
   queueGeometryCreation(enabledKinds, disabledKinds) {
@@ -28971,8 +28967,7 @@ var TileGeometryLoader = class {
         return this.m_state !== 1 /* CreationQueued */;
       },
       estimatedProcessTime: () => {
-        var _a;
-        return (((_a = this.tile.decodedTile) == null ? void 0 : _a.decodeTime) ?? 30) / 6;
+        return (this.tile.decodedTile?.decodeTime ?? 30) / 6;
       }
     });
     this.m_state = 1 /* CreationQueued */;
@@ -29075,10 +29070,10 @@ var TextElementGroupPriorityList = class extends GroupedPriorityList {
 
 // src/mapview/text/TileTextStyleCache.ts
 var TileTextStyleCache = class {
-  textRenderStyles = [];
-  textLayoutStyles = [];
-  tile;
   constructor(tile) {
+    __publicField(this, "textRenderStyles", []);
+    __publicField(this, "textLayoutStyles", []);
+    __publicField(this, "tile");
     this.tile = tile;
   }
   clear() {
@@ -29119,6 +29114,43 @@ var Tile = class {
   constructor(dataSource, tileKey, offset = 0, localTangentSpace) {
     this.dataSource = dataSource;
     this.tileKey = tileKey;
+    __publicField(this, "objects", []);
+    __publicField(this, "dependencies", []);
+    __publicField(this, "geoBox");
+    __publicField(this, "copyrightInfo");
+    __publicField(this, "frameNumLastRequested", -1);
+    __publicField(this, "frameNumVisible", -1);
+    __publicField(this, "frameNumLastVisible", -1);
+    __publicField(this, "numFramesVisible", 0);
+    __publicField(this, "visibilityCounter", -1);
+    __publicField(this, "levelOffset", 0);
+    __publicField(this, "skipRendering", false);
+    __publicField(this, "delayRendering", false);
+    __publicField(this, "preparedTextPaths");
+    __publicField(this, "m_tileGeometryLoader");
+    __publicField(this, "m_boundingBox", new OrientedBox3());
+    __publicField(this, "m_disposed", false);
+    __publicField(this, "m_disposeCallback");
+    __publicField(this, "m_localTangentSpace");
+    __publicField(this, "m_forceHasGeometry");
+    __publicField(this, "m_tileLoader");
+    __publicField(this, "m_decodedTile");
+    __publicField(this, "m_textElementGroups", new TextElementGroupPriorityList());
+    __publicField(this, "m_pathBlockingElements", []);
+    __publicField(this, "m_textElementsChanged");
+    __publicField(this, "m_worldCenter", new THREE95.Vector3());
+    __publicField(this, "m_visibleArea", 0);
+    __publicField(this, "m_elevationRange", {
+      minElevation: 0,
+      maxElevation: 0
+    });
+    __publicField(this, "m_maxGeometryHeight");
+    __publicField(this, "m_minGeometryHeight");
+    __publicField(this, "m_resourceInfo");
+    __publicField(this, "m_ownedTextures", /* @__PURE__ */ new WeakSet());
+    __publicField(this, "m_textStyleCache");
+    __publicField(this, "m_uniqueKey");
+    __publicField(this, "m_offset");
     this.geoBox = this.dataSource.getTilingScheme().getGeoBox(this.tileKey);
     this.updateBoundingBox();
     this.m_worldCenter.copy(this.boundingBox.position);
@@ -29131,43 +29163,6 @@ var Tile = class {
       this.attachGeometryLoadedCallback();
     }
   }
-  objects = [];
-  dependencies = [];
-  geoBox;
-  copyrightInfo;
-  frameNumLastRequested = -1;
-  frameNumVisible = -1;
-  frameNumLastVisible = -1;
-  numFramesVisible = 0;
-  visibilityCounter = -1;
-  levelOffset = 0;
-  skipRendering = false;
-  delayRendering = false;
-  preparedTextPaths;
-  m_tileGeometryLoader;
-  m_boundingBox = new OrientedBox3();
-  m_disposed = false;
-  m_disposeCallback;
-  m_localTangentSpace;
-  m_forceHasGeometry = void 0;
-  m_tileLoader;
-  m_decodedTile;
-  m_textElementGroups = new TextElementGroupPriorityList();
-  m_pathBlockingElements = [];
-  m_textElementsChanged;
-  m_worldCenter = new THREE95.Vector3();
-  m_visibleArea = 0;
-  m_elevationRange = {
-    minElevation: 0,
-    maxElevation: 0
-  };
-  m_maxGeometryHeight;
-  m_minGeometryHeight;
-  m_resourceInfo;
-  m_ownedTextures = /* @__PURE__ */ new WeakSet();
-  m_textStyleCache;
-  m_uniqueKey;
-  m_offset;
   get isVisible() {
     try {
       return this.frameNumLastRequested >= this.dataSource.mapView.frameNumber - 1;
@@ -29294,7 +29289,6 @@ var Tile = class {
     return this.m_elevationRange;
   }
   set elevationRange(elevationRange) {
-    var _a;
     if (elevationRange.minElevation === this.m_elevationRange.minElevation && elevationRange.maxElevation === this.m_elevationRange.maxElevation && elevationRange.calculationStatus === this.m_elevationRange.calculationStatus) {
       return;
     }
@@ -29303,7 +29297,7 @@ var Tile = class {
     this.m_elevationRange.calculationStatus = elevationRange.calculationStatus;
     this.elevateGeoBox();
     if (this.m_maxGeometryHeight !== void 0 || this.m_minGeometryHeight !== void 0) {
-      assert(((_a = this.decodedTile) == null ? void 0 : _a.boundingBox) === void 0);
+      assert(this.decodedTile?.boundingBox === void 0);
       this.updateBoundingBox();
     }
   }
@@ -29348,8 +29342,7 @@ var Tile = class {
     return this.m_disposed;
   }
   get allGeometryLoaded() {
-    var _a;
-    return ((_a = this.m_tileGeometryLoader) == null ? void 0 : _a.isFinished) ?? this.hasGeometry;
+    return this.m_tileGeometryLoader?.isFinished ?? this.hasGeometry;
   }
   get hasGeometry() {
     if (this.m_forceHasGeometry === void 0) {
@@ -29383,11 +29376,10 @@ var Tile = class {
       }
     }
     return await tileLoader.loadAndDecode().then((tileLoaderState) => {
-      var _a;
       assert(tileLoaderState === 4 /* Ready */);
       const decodedTile = tileLoader.decodedTile;
       this.decodedTile = decodedTile;
-      (_a = decodedTile == null ? void 0 : decodedTile.dependencies) == null ? void 0 : _a.forEach((mortonCode) => {
+      decodedTile?.dependencies?.forEach((mortonCode) => {
         this.dependencies.push(TileKey.fromMortonCode(mortonCode));
       });
     }).catch((tileLoaderState) => {
@@ -29466,7 +29458,6 @@ var Tile = class {
     this.m_disposeCallback = chainCallbacks(this.m_disposeCallback, callback);
   }
   dispose() {
-    var _a;
     if (this.m_disposed) {
       return;
     }
@@ -29477,7 +29468,7 @@ var Tile = class {
     this.clear();
     this.frameNumLastRequested = 0;
     this.m_disposed = true;
-    (_a = this.m_tileGeometryLoader) == null ? void 0 : _a.dispose();
+    this.m_tileGeometryLoader?.dispose();
     if (this.m_disposeCallback) {
       this.m_disposeCallback(this);
     }
@@ -29521,8 +29512,7 @@ var Tile = class {
     return true;
   }
   get loadedGeometryKinds() {
-    var _a;
-    return (_a = this.m_tileGeometryLoader) == null ? void 0 : _a.availableGeometryKinds;
+    return this.m_tileGeometryLoader?.availableGeometryKinds;
   }
   loadingFinished() {
   }
@@ -30448,10 +30438,10 @@ var PlaneViewBounds = class {
     this.camera = camera;
     this.projection = projection;
     this.m_options = m_options;
+    __publicField(this, "m_groundPlaneNormal", new Vector351(0, 0, 1));
+    __publicField(this, "m_groundPlane", new Plane6(this.m_groundPlaneNormal.clone()));
     assert(projection.type === 0 /* Planar */);
   }
-  m_groundPlaneNormal = new Vector351(0, 0, 1);
-  m_groundPlane = new Plane6(this.m_groundPlaneNormal.clone());
   generate() {
     const coordinates = [];
     this.addCanvasCornerIntersection(coordinates);
@@ -30599,6 +30589,13 @@ var SphereHorizon = class {
   constructor(m_camera, m_cornerIntersects) {
     this.m_camera = m_camera;
     this.m_cornerIntersects = m_cornerIntersects;
+    __publicField(this, "m_matrix");
+    __publicField(this, "m_radius");
+    __publicField(this, "m_normalToTangentAngle");
+    __publicField(this, "m_distanceToHorizonCenter");
+    __publicField(this, "m_intersections", []);
+    __publicField(this, "m_isFullyVisible", true);
+    __publicField(this, "m_cameraPitch");
     const earthRadiusSq = EarthConstants.EQUATORIAL_RADIUS * EarthConstants.EQUATORIAL_RADIUS;
     const xAxis = new THREE98.Vector3().setFromMatrixColumn(m_camera.matrixWorld, 0).normalize();
     const zAxis = m_camera.position.clone().normalize();
@@ -30614,13 +30611,6 @@ var SphereHorizon = class {
     this.m_matrix = new THREE98.Matrix4().makeBasis(xAxis, yAxis, zAxis).setPosition(horizonCenter);
     this.computeIntersections();
   }
-  m_matrix;
-  m_radius;
-  m_normalToTangentAngle;
-  m_distanceToHorizonCenter;
-  m_intersections = [];
-  m_isFullyVisible = true;
-  m_cameraPitch;
   getPoint(t, arcStart = 0, arcEnd = 1, target = new THREE98.Vector3()) {
     const startAngle = arcStart * twoPi;
     const endAngle = arcEnd >= arcStart ? arcEnd * twoPi : (arcEnd + 1) * twoPi;
@@ -30916,9 +30906,9 @@ var SphereViewBounds = class {
 var BoundsGenerator = class {
   constructor(m_view) {
     this.m_view = m_view;
+    __publicField(this, "m_viewBounds");
     this.createViewBounds();
   }
-  m_viewBounds;
   generate() {
     if (this.m_view.projection !== this.m_viewBounds.projection) {
       this.createViewBounds();
@@ -30936,11 +30926,11 @@ var WorkerBasedTiler = class {
   constructor(workerSet, tilerServiceType) {
     this.workerSet = workerSet;
     this.tilerServiceType = tilerServiceType;
+    __publicField(this, "serviceId");
+    __publicField(this, "m_serviceCreated", false);
     this.workerSet.addReference();
     this.serviceId = `${this.tilerServiceType}-${nextUniqueServiceId2++}`;
   }
-  serviceId;
-  m_serviceCreated = false;
   dispose() {
     if (this.m_serviceCreated) {
       this.workerSet.broadcastRequest(WorkerServiceProtocol.WORKER_SERVICE_MANAGER_SERVICE_ID, {
@@ -31043,14 +31033,32 @@ __publicField(ConcurrentTilerFacade, "workerSets", {});
 
 // src/mapview/copyrights/CopyrightElementHandler.ts
 var CopyrightElementHandler = class {
-  static install(element, mapView) {
-    return new CopyrightElementHandler(element, mapView);
-  }
-  staticInfo;
-  m_defaults = /* @__PURE__ */ new Map();
-  m_element;
-  m_mapViews = [];
   constructor(element, mapView) {
+    __publicField(this, "staticInfo");
+    __publicField(this, "m_defaults", /* @__PURE__ */ new Map());
+    __publicField(this, "m_element");
+    __publicField(this, "m_mapViews", []);
+    __publicField(this, "update", () => {
+      const mergedCopyrightInfo = this.m_mapViews.map((mapView) => mapView.copyrightInfo).reduce(CopyrightInfo.mergeArrays, this.staticInfo ?? []);
+      if (mergedCopyrightInfo.length === 0) {
+        this.m_element.style.display = "none";
+        return;
+      } else {
+        this.m_element.style.display = "block";
+      }
+      if (this.m_defaults.size !== 0) {
+        for (const sourceInfo of mergedCopyrightInfo) {
+          const defaults = this.m_defaults.get(sourceInfo.id);
+          if (defaults !== void 0) {
+            sourceInfo.year = getOptionValue(sourceInfo.year, defaults.year);
+            sourceInfo.label = getOptionValue(sourceInfo.label, defaults.label);
+            sourceInfo.link = getOptionValue(sourceInfo.link, defaults.link);
+          }
+        }
+      }
+      const deduped = CopyrightInfo.mergeArrays(mergedCopyrightInfo);
+      this.m_element.innerHTML = CopyrightInfo.formatAsHtml(deduped);
+    });
     if (typeof element === "string") {
       const htmlElement = document.getElementById(element);
       if (!htmlElement) {
@@ -31063,6 +31071,9 @@ var CopyrightElementHandler = class {
     if (mapView !== void 0) {
       this.attach(mapView);
     }
+  }
+  static install(element, mapView) {
+    return new CopyrightElementHandler(element, mapView);
   }
   destroy() {
     for (const mapView of this.m_mapViews) {
@@ -31094,34 +31105,15 @@ var CopyrightElementHandler = class {
     this.staticInfo = staticInfo;
     return this;
   }
-  update = () => {
-    const mergedCopyrightInfo = this.m_mapViews.map((mapView) => mapView.copyrightInfo).reduce(CopyrightInfo.mergeArrays, this.staticInfo ?? []);
-    if (mergedCopyrightInfo.length === 0) {
-      this.m_element.style.display = "none";
-      return;
-    } else {
-      this.m_element.style.display = "block";
-    }
-    if (this.m_defaults.size !== 0) {
-      for (const sourceInfo of mergedCopyrightInfo) {
-        const defaults = this.m_defaults.get(sourceInfo.id);
-        if (defaults !== void 0) {
-          sourceInfo.year = getOptionValue(sourceInfo.year, defaults.year);
-          sourceInfo.label = getOptionValue(sourceInfo.label, defaults.label);
-          sourceInfo.link = getOptionValue(sourceInfo.link, defaults.link);
-        }
-      }
-    }
-    const deduped = CopyrightInfo.mergeArrays(mergedCopyrightInfo);
-    this.m_element.innerHTML = CopyrightInfo.formatAsHtml(deduped);
-  };
 };
 
 // src/mapview/copyrights/CopyrightCoverageProvider.ts
 var RBush2 = __require("rbush");
 var CopyrightCoverageProvider = class {
-  logger = LoggerManager.instance.create("CopyrightCoverageProvider");
-  m_cachedTreePromise;
+  constructor() {
+    __publicField(this, "logger", LoggerManager.instance.create("CopyrightCoverageProvider"));
+    __publicField(this, "m_cachedTreePromise");
+  }
   getTree() {
     if (this.m_cachedTreePromise !== void 0) {
       return this.m_cachedTreePromise;
@@ -31195,14 +31187,14 @@ var CopyrightCoverageProvider = class {
 var DeferredPromise = class {
   constructor(executor) {
     this.executor = executor;
+    __publicField(this, "promise");
+    __publicField(this, "resolveFunc");
+    __publicField(this, "rejectFunc");
     this.promise = new Promise((resolve, reject) => {
       this.resolveFunc = resolve;
       this.rejectFunc = reject;
     });
   }
-  promise;
-  resolveFunc;
-  rejectFunc;
   exec() {
     this.executor().then((result) => this.resolveFunc(result)).catch((error) => this.rejectFunc(error));
   }
@@ -31213,6 +31205,9 @@ var _TransferManager = class {
   constructor(fetchFunction = fetch, maxRetries = 5) {
     this.fetchFunction = fetchFunction;
     this.maxRetries = maxRetries;
+    __publicField(this, "activeDownloadCount", 0);
+    __publicField(this, "downloadQueue", new Array());
+    __publicField(this, "activeDownloads", /* @__PURE__ */ new Map());
   }
   static instance() {
     return _TransferManager.defaultInstance;
@@ -31241,9 +31236,6 @@ var _TransferManager = class {
   static waitFor(milliseconds) {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
-  activeDownloadCount = 0;
-  downloadQueue = new Array();
-  activeDownloads = /* @__PURE__ */ new Map();
   downloadJson(url, init) {
     return this.downloadAs((response) => response.json(), url, init);
   }
@@ -31313,8 +31305,8 @@ var UrlCopyrightProvider = class extends CopyrightCoverageProvider {
     this.m_baseScheme = m_baseScheme;
     this.m_requestHeaders = m_requestHeaders;
     this.m_transferManager = m_transferManager;
+    __publicField(this, "m_cachedCopyrightResponse");
   }
-  m_cachedCopyrightResponse;
   setRequestHeaders(headers) {
     this.m_requestHeaders = headers;
   }
@@ -31338,13 +31330,13 @@ var FixedClipPlanesEvaluator = class {
   constructor(minNear = 1, minFarOffset = 10) {
     this.minNear = minNear;
     this.minFarOffset = minFarOffset;
+    __publicField(this, "minFar");
+    __publicField(this, "m_nearPlane");
+    __publicField(this, "m_farPlane");
     this.minFar = minNear + minFarOffset;
     this.m_nearPlane = minNear;
     this.m_farPlane = this.minFar;
   }
-  minFar;
-  m_nearPlane;
-  m_farPlane;
   get nearPlane() {
     return this.m_nearPlane;
   }
@@ -31405,6 +31397,15 @@ var _MapViewAtmosphere = class {
     this.m_updateCallback = m_updateCallback;
     this.m_atmosphereVariant = m_atmosphereVariant;
     this.m_materialVariant = m_materialVariant;
+    __publicField(this, "m_enabled", true);
+    __publicField(this, "m_skyGeometry");
+    __publicField(this, "m_skyMaterial");
+    __publicField(this, "m_skyMesh");
+    __publicField(this, "m_groundGeometry");
+    __publicField(this, "m_groundMaterial");
+    __publicField(this, "m_groundMesh");
+    __publicField(this, "m_clipPlanesEvaluator", new TiltViewClipPlanesEvaluator(EarthConstants.EQUATORIAL_RADIUS * SKY_ATMOSPHERE_ALTITUDE_FACTOR, 0, 1, 0.05, 1e7));
+    __publicField(this, "m_lightDirection", new THREE99.Vector3(0, 1, 0));
     if (this.m_atmosphereVariant & 2 /* Sky */) {
       this.createSkyGeometry();
     }
@@ -31421,15 +31422,6 @@ var _MapViewAtmosphere = class {
     }
     return false;
   }
-  m_enabled = true;
-  m_skyGeometry;
-  m_skyMaterial;
-  m_skyMesh;
-  m_groundGeometry;
-  m_groundMaterial;
-  m_groundMesh;
-  m_clipPlanesEvaluator = new TiltViewClipPlanesEvaluator(EarthConstants.EQUATORIAL_RADIUS * SKY_ATMOSPHERE_ALTITUDE_FACTOR, 0, 1, 0.05, 1e7);
-  m_lightDirection = new THREE99.Vector3(0, 1, 0);
   get skyMesh() {
     return this.m_skyMesh;
   }
@@ -31469,14 +31461,13 @@ var _MapViewAtmosphere = class {
     }
   }
   dispose() {
-    var _a, _b, _c, _d;
     if (this.enabled) {
       this.enabled = false;
     }
-    (_a = this.m_skyMaterial) == null ? void 0 : _a.dispose();
-    (_b = this.m_groundMaterial) == null ? void 0 : _b.dispose();
-    (_c = this.m_skyGeometry) == null ? void 0 : _c.dispose();
-    (_d = this.m_groundGeometry) == null ? void 0 : _d.dispose();
+    this.m_skyMaterial?.dispose();
+    this.m_groundMaterial?.dispose();
+    this.m_skyGeometry?.dispose();
+    this.m_groundGeometry?.dispose();
     this.m_skyGeometry = void 0;
     this.m_groundGeometry = void 0;
     this.m_skyMaterial = void 0;
@@ -31669,7 +31660,9 @@ function createMapAnchor(mesh, renderOrder) {
 // src/mapview/TextureLoader.ts
 import * as THREE100 from "three";
 var TextureLoader5 = class {
-  m_textureLoader = new THREE100.TextureLoader();
+  constructor() {
+    __publicField(this, "m_textureLoader", new THREE100.TextureLoader());
+  }
   async load(url, requestHeaders, abortSignal, crossOrigin = true) {
     if (requestHeaders === void 0) {
       return await this.loadWithThreeLoader(url);
@@ -31710,8 +31703,6 @@ import {
 // src/lines/HighPrecisionPoints.ts
 import * as THREE101 from "three";
 var HighPrecisionPoints = class extends THREE101.Points {
-  matrixWorldInverse;
-  dimensionality;
   constructor(geometry, material, positions, color, opacity) {
     if (material === void 0) {
       material = new HighPrecisionPointMaterial({
@@ -31720,6 +31711,8 @@ var HighPrecisionPoints = class extends THREE101.Points {
       });
     }
     super(geometry === void 0 ? new THREE101.BufferGeometry() : geometry, material);
+    __publicField(this, "matrixWorldInverse");
+    __publicField(this, "dimensionality");
     this.matrixWorldInverse = new THREE101.Matrix4();
     if (positions) {
       this.setPositions(positions);
@@ -32021,9 +32014,9 @@ var HighPrecisionUtils;
 
 // src/lines/HighPrecisionLines.ts
 var HighPrecisionWireFrameLine = class extends THREE103.Line {
-  matrixWorldInverse;
   constructor(geometry, material, positions) {
     super(geometry, material);
+    __publicField(this, "matrixWorldInverse");
     this.matrixWorldInverse = new THREE103.Matrix4();
     if (positions) {
       this.setPositions(positions);
@@ -32052,9 +32045,9 @@ var HighPrecisionWireFrameLine = class extends THREE103.Line {
   }
 };
 var HighPrecisionLine = class extends THREE103.Mesh {
-  matrixWorldInverse;
   constructor(geometry, material, positions) {
     super(geometry, material);
+    __publicField(this, "matrixWorldInverse");
     this.matrixWorldInverse = new THREE103.Matrix4();
     if (positions) {
       this.setPositions(positions);
@@ -32142,6 +32135,12 @@ var BufferedGeometryAccessorBase = class {
     this.object = object;
     this.geometryType = geometryType;
     this.bufferGeometry = bufferGeometry;
+    __publicField(this, "start", -1);
+    __publicField(this, "end", -1);
+    __publicField(this, "startCapSize", 0);
+    __publicField(this, "endCapSize", 0);
+    __publicField(this, "position");
+    __publicField(this, "itemSize");
     assert(!!object);
     if (bufferGeometry.type !== "BufferGeometry") {
       logger29.error("IndexedBufferedGeometryAccessor#constructor: BufferGeometry has wrong type");
@@ -32156,12 +32155,6 @@ var BufferedGeometryAccessorBase = class {
       logger29.warn("BufferedGeometryAccessor#constructor: BufferGeometry.position: unsupported ArrayBuffer");
     }
   }
-  start = -1;
-  end = -1;
-  startCapSize = 0;
-  endCapSize = 0;
-  position;
-  itemSize;
   getCount() {
     return this.position.count;
   }
@@ -32268,6 +32261,7 @@ var IndexedBufferedGeometryAccessor = class extends BufferedGeometryAccessorBase
     this.object = object;
     this.geometryType = geometryType;
     this.bufferGeometry = bufferGeometry;
+    __publicField(this, "indices");
     this.indices = this.bufferGeometry.index !== null ? this.bufferGeometry.index.array : void 0;
     if (!this.indices) {
       logger29.warn("IndexedBufferedGeometryAccessor#constructor: BufferGeometry has no index");
@@ -32279,7 +32273,6 @@ var IndexedBufferedGeometryAccessor = class extends BufferedGeometryAccessorBase
       }
     }
   }
-  indices;
   getCount() {
     return this.indices.length;
   }
@@ -32356,16 +32349,16 @@ var TileDataAccessor = class {
   constructor(tile, visitor, options) {
     this.tile = tile;
     this.visitor = visitor;
+    __publicField(this, "m_wantsPoints");
+    __publicField(this, "m_wantsLines");
+    __publicField(this, "m_wantsAreas");
+    __publicField(this, "m_wantsObject3D");
     const wantsAll = options.wantsAll === true;
     this.m_wantsPoints = wantsAll || !(options.wantsPoints === false);
     this.m_wantsLines = wantsAll || !(options.wantsLines === false);
     this.m_wantsAreas = wantsAll || !(options.wantsAreas === false);
     this.m_wantsObject3D = wantsAll || !(options.wantsObject3D === false);
   }
-  m_wantsPoints;
-  m_wantsLines;
-  m_wantsAreas;
-  m_wantsObject3D;
   visitAll() {
     const objects = this.tile.objects;
     for (const object of objects) {
