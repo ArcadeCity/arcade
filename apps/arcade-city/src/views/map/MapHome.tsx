@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text } from '@arcadecity/ui'
+import { ArcadeMap } from '@arcadecity/arcade-map'
+
+// import { Text } from '@arcadecity/ui'
 
 export const MapHome = () => {
-  return <Text preset='description' text='test' />
+  return <ArcadeMap />
   // return <WebView style={styles.container} source={{ uri: 'https://blitzmap.vercel.app' }} />
 }
 
