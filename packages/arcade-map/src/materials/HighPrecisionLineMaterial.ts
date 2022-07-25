@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as THREE from "three";
-
-import { RawShaderMaterial, RawShaderMaterialParameters } from "./RawShaderMaterial";
-import linesShaderChunk from "./ShaderChunks/LinesChunks";
+import * as THREE from 'three'
+import {
+  RawShaderMaterial, RawShaderMaterialParameters
+} from './RawShaderMaterial'
+import linesShaderChunk from './ShaderChunks/LinesChunks'
 
 const vertexSource: string = `
 #ifdef USE_COLOR
@@ -33,7 +34,7 @@ void main() {
 
     vec3 pos = subtractDblEyePos(position);
     gl_Position = u_mvp * vec4(pos, 1.0);
-}`;
+}`
 
 const fragmentSource: string = `
 precision highp float;
@@ -52,99 +53,99 @@ void main() {
     #else
     gl_FragColor = vec4( diffuseColor, opacity );
     #endif
-}`;
+}`
 
 /**
  * Parameters used when constructing a new {@link HighPrecisionLineMaterial}.
  */
 export interface HighPrecisionLineMaterialParameters extends RawShaderMaterialParameters {
-    /**
-     * Line color.
-     */
-    color?: number | string | THREE.Color;
-    /**
-     * Line opacity.
-     */
-    opacity?: number;
+  /**
+   * Line color.
+   */
+  color?: number | string | THREE.Color
+  /**
+   * Line opacity.
+   */
+  opacity?: number
 }
 
 /**
  * Material designed to render high precision lines (ideal for position-sensible data).
  */
 export class HighPrecisionLineMaterial extends RawShaderMaterial {
-    static DEFAULT_COLOR: number = 0x000050;
-    static DEFAULT_OPACITY: number = 1.0;
+  static DEFAULT_COLOR: number = 0x000050
+  static DEFAULT_OPACITY: number = 1.0
 
-    isHighPrecisionLineMaterial: boolean;
+  isHighPrecisionLineMaterial: boolean
 
-    /**
-     * Constructs a new `HighPrecisionLineMaterial`.
-     *
-     * @param params - `HighPrecisionLineMaterial` parameters.  Always required except when cloning
-     * another material.
-     */
-    constructor(params?: HighPrecisionLineMaterialParameters) {
-        Object.assign(THREE.ShaderChunk, linesShaderChunk);
+  /**
+   * Constructs a new `HighPrecisionLineMaterial`.
+   *
+   * @param params - `HighPrecisionLineMaterial` parameters.  Always required except when cloning
+   * another material.
+   */
+  constructor(params?: HighPrecisionLineMaterialParameters) {
+    Object.assign(THREE.ShaderChunk, linesShaderChunk)
 
-        const shaderParams: RawShaderMaterialParameters | undefined = params
-            ? {
-                  name: "HighPrecisionLineMaterial",
-                  vertexShader: vertexSource,
-                  fragmentShader: fragmentSource,
-                  uniforms: {
-                      // HARP-17373: Original uniform name 'diffuse' due to shader compilation
-                      // errors with Metal in Safari 15 on MacOS Monterrey and iPadOS 15.
-                      diffuseColor: new THREE.Uniform(
-                          new THREE.Color(HighPrecisionLineMaterial.DEFAULT_COLOR)
-                      ),
-                      opacity: new THREE.Uniform(HighPrecisionLineMaterial.DEFAULT_OPACITY),
-                      u_mvp: new THREE.Uniform(new THREE.Matrix4()),
-                      u_eyepos: new THREE.Uniform(new THREE.Vector3()),
-                      u_eyepos_lowpart: new THREE.Uniform(new THREE.Vector3())
-                  },
-                  rendererCapabilities: params.rendererCapabilities
-              }
-            : undefined;
-        Object.assign(shaderParams, params);
-        super(shaderParams);
-
-        this.type = "HighPrecisionLineMaterial";
-        this.isHighPrecisionLineMaterial = true;
-
-        // Apply initial parameter values.
-        if (params) {
-            if (params.color !== undefined) {
-                this.color.set(params.color as any);
-            }
-            if (params.opacity !== undefined) {
-                this.opacity = params.opacity;
-            }
+    const shaderParams: RawShaderMaterialParameters | undefined = params
+      ? {
+          name: 'HighPrecisionLineMaterial',
+          vertexShader: vertexSource,
+          fragmentShader: fragmentSource,
+          uniforms: {
+            // HARP-17373: Original uniform name 'diffuse' due to shader compilation
+            // errors with Metal in Safari 15 on MacOS Monterrey and iPadOS 15.
+            diffuseColor: new THREE.Uniform(
+              new THREE.Color(HighPrecisionLineMaterial.DEFAULT_COLOR)
+            ),
+            opacity: new THREE.Uniform(HighPrecisionLineMaterial.DEFAULT_OPACITY),
+            u_mvp: new THREE.Uniform(new THREE.Matrix4()),
+            u_eyepos: new THREE.Uniform(new THREE.Vector3()),
+            u_eyepos_lowpart: new THREE.Uniform(new THREE.Vector3()),
+          },
+          rendererCapabilities: params.rendererCapabilities,
         }
+      : undefined
+    Object.assign(shaderParams as RawShaderMaterialParameters, params)
+    super(shaderParams)
 
-        this.updateTransparencyFeature();
+    this.type = 'HighPrecisionLineMaterial'
+    this.isHighPrecisionLineMaterial = true
+
+    // Apply initial parameter values.
+    if (params) {
+      if (params.color !== undefined) {
+        this.color.set(params.color as any)
+      }
+      if (params.opacity !== undefined) {
+        this.opacity = params.opacity
+      }
     }
 
-    /**
-     * Line color.
-     */
-    get color(): THREE.Color {
-        return this.uniforms.diffuseColor.value as THREE.Color;
-    }
+    this.updateTransparencyFeature()
+  }
 
-    set color(value: THREE.Color) {
-        this.uniforms.diffuseColor.value.copy(value);
-    }
+  /**
+   * Line color.
+   */
+  get color(): THREE.Color {
+    return this.uniforms.diffuseColor.value as THREE.Color
+  }
 
-    private updateTransparencyFeature() {
-        this.transparent = this.opacity < 1.0 ? true : false;
-    }
+  set color(value: THREE.Color) {
+    this.uniforms.diffuseColor.value.copy(value)
+  }
+
+  private updateTransparencyFeature() {
+    this.transparent = this.opacity < 1.0 ? true : false
+  }
 }
 
 export function isHighPrecisionLineMaterial(
-    material: object | undefined
+  material: object | undefined
 ): material is HighPrecisionLineMaterial {
-    return (
-        material !== undefined &&
-        (material as HighPrecisionLineMaterial).isHighPrecisionLineMaterial === true
-    );
+  return (
+    material !== undefined &&
+    (material as HighPrecisionLineMaterial).isHighPrecisionLineMaterial === true
+  )
 }

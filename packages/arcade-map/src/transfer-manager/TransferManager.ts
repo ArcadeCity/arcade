@@ -98,7 +98,7 @@ export class TransferManager implements ITransferManager {
       } else {
         throw new Error('Max number of retries reached')
       }
-    } catch (err) {
+    } catch (err: any) {
       if (
         err.hasOwnProperty('isCancelled') ||
         err.name === 'AbortError' ||
