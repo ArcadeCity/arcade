@@ -2,9 +2,16 @@ import { Buffer } from 'buffer'
 import { display } from 'lib'
 import { delay } from 'lib/delay'
 import {
-  generateSeedWords, getEventHash, getPublicKey, NostrEvent,
-  NostrEventToSerialize, NostrEventToSign, NostrKind, privateKeyFromSeed,
-  seedFromWords, signEvent
+  generateSeedWords,
+  getEventHash,
+  getPublicKey,
+  NostrEvent,
+  NostrEventToSerialize,
+  NostrEventToSign,
+  NostrKind,
+  privateKeyFromSeed,
+  seedFromWords,
+  signEvent,
 } from 'lib/nostr'
 import { Relay } from './Relay'
 

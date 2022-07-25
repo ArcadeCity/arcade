@@ -6,9 +6,7 @@ import { mst } from 'reactotron-mst'
 import Tron from 'reactotron-react-js'
 import { RootStore } from 'stores/root-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {
-  DEFAULT_REACTOTRON_CONFIG, ReactotronConfig
-} from './reactotron-config'
+import { DEFAULT_REACTOTRON_CONFIG, ReactotronConfig } from './reactotron-config'
 
 // Teach TypeScript about the bad things we want to do.
 declare global {

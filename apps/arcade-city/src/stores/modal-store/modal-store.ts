@@ -63,5 +63,4 @@ type ModalStoreType = Instance<typeof ModalStoreModel>
 export interface ModalStore extends ModalStoreType {}
 type ModalStoreSnapshotType = SnapshotOut<typeof ModalStoreModel>
 export interface ModalStoreSnapshot extends ModalStoreSnapshotType {}
-export const createModalStoreDefaultModel = () =>
-  types.optional(ModalStoreModel, {})
+export const createModalStoreDefaultModel = () => types.optional(ModalStoreModel, {})
