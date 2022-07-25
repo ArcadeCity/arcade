@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Generated with generator-harp.gl 0.28.0",
   "scripts": {
+    "dev": "yarn start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "start": "webpack serve"
