@@ -1,9 +1,7 @@
 import { ExpoWebGLRenderingContext } from 'expo-gl'
-// import { DeviceOrientationControls, MetaMap, Stars, Tile } from 'lib/arcangel'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Canvas, RootState } from '@react-three/fiber/native'
-
-// import { HUD } from './HUD'
+import { MetaMap } from './MetaMap'
 
 export const ArcadeMap = () => {
   const [cv, setCv] = useState<HTMLCanvasElement | null>()
@@ -23,7 +21,7 @@ export const ArcadeMap = () => {
       <pointLight position={[10, 10, 10]} />
       <ambientLight intensity={0.8} />
       {/* <Tile position={[0, 1, -16]} rotation={[Math.PI / 2, 0, 0]} /> */}
-      {/* <MetaMap canvas={cv} context={context} /> */}
+      <MetaMap canvas={cv} context={context} />
       {/* <Stars /> */}
       {/* <DeviceOrientationControls /> */}
     </Canvas>

@@ -14,9 +14,15 @@ var __publicField = (obj, key, value2) => {
 
 // src/ArcadeMap/ArcadeMap.tsx
 import React, { useEffect } from "react";
+var ArcadeMap = () => {
+  console.log("Hello from ArcadeMap");
+  useEffect(() => {
+  }, []);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null);
+};
 
-// src/geoutils/projection/SphereProjection.ts
-import * as THREE5 from "three";
+// src/geoutils/coordinates/GeoBox.ts
+import * as THREE2 from "three";
 
 // src/geoutils/coordinates/GeoCoordinates.ts
 import * as THREE from "three";
@@ -44,6 +50,7 @@ function isLatLngLike(object) {
 var MAX_LATITUDE = 90;
 var MIN_LATITUDE = -90;
 var MAX_LONGITUDE = 180;
+var MIN_LONGITUDE = -180;
 var tmpV0 = new THREE.Vector3();
 var tmpV1 = new THREE.Vector3();
 function mod(dividend, divisor) {
@@ -155,100 +162,7 @@ var GeoCoordinates = class {
   }
 };
 
-// src/geoutils/math/Box3Like.ts
-function isBox3Like(object) {
-  const box3 = object;
-  return box3.min !== void 0 && box3.max !== void 0;
-}
-
-// src/geoutils/math/MathUtils.ts
-import * as THREE2 from "three";
-var MathUtils3;
-((MathUtils38) => {
-  function newEmptyBox3() {
-    return {
-      min: { x: Infinity, y: Infinity, z: Infinity },
-      max: { x: -Infinity, y: -Infinity, z: -Infinity }
-    };
-  }
-  MathUtils38.newEmptyBox3 = newEmptyBox3;
-  function newVector3(x, y, z, v) {
-    if (v === void 0) {
-      return { x, y, z };
-    }
-    v.x = x;
-    v.y = y;
-    v.z = z;
-    return v;
-  }
-  MathUtils38.newVector3 = newVector3;
-  function copyVector3(from, to) {
-    to.x = from.x;
-    to.y = from.y;
-    to.z = from.z;
-    return to;
-  }
-  MathUtils38.copyVector3 = copyVector3;
-  MathUtils38.degToRad = THREE2.MathUtils.degToRad;
-  MathUtils38.radToDeg = THREE2.MathUtils.radToDeg;
-  MathUtils38.clamp = THREE2.MathUtils.clamp;
-  function normalizeAngleDeg(a) {
-    a = a % 360;
-    if (a < 0) {
-      a = a + 360;
-    }
-    return a;
-  }
-  MathUtils38.normalizeAngleDeg = normalizeAngleDeg;
-  function normalizeLongitudeDeg(a) {
-    a = normalizeAngleDeg(a);
-    if (a > 180) {
-      a = a - 360;
-    }
-    return a;
-  }
-  MathUtils38.normalizeLongitudeDeg = normalizeLongitudeDeg;
-  function angleDistanceDeg(a, b) {
-    a = normalizeAngleDeg(a);
-    b = normalizeAngleDeg(b);
-    const d = a - b;
-    if (d > 180) {
-      return d - 360;
-    } else if (d <= -180) {
-      return d + 360;
-    } else {
-      return d;
-    }
-  }
-  MathUtils38.angleDistanceDeg = angleDistanceDeg;
-  function interpolateAnglesDeg(p0, p1, t) {
-    const d = angleDistanceDeg(p1, p0);
-    const r = (p0 + d * t) % 360;
-    return r;
-  }
-  MathUtils38.interpolateAnglesDeg = interpolateAnglesDeg;
-})(MathUtils3 || (MathUtils3 = {}));
-
-// src/geoutils/math/OrientedBox3Like.ts
-function isOrientedBox3Like(object) {
-  const obb = object;
-  return obb.position !== void 0 && obb.xAxis !== void 0 && obb.yAxis !== void 0 && obb.zAxis !== void 0 && obb.extents !== void 0;
-}
-
-// src/geoutils/projection/EarthConstants.ts
-var EarthConstants = class {
-};
-__publicField(EarthConstants, "EQUATORIAL_CIRCUMFERENCE", 4007501668557849e-8);
-__publicField(EarthConstants, "EQUATORIAL_RADIUS", 6378137);
-__publicField(EarthConstants, "MIN_ELEVATION", -433);
-__publicField(EarthConstants, "MAX_ELEVATION", 8848);
-__publicField(EarthConstants, "MAX_BUILDING_HEIGHT", 828);
-
-// src/geoutils/projection/MercatorProjection.ts
-import * as THREE4 from "three";
-
 // src/geoutils/coordinates/GeoBox.ts
-import * as THREE3 from "three";
 var GeoBox = class {
   constructor(southWest, northEast) {
     this.southWest = southWest;
@@ -305,10 +219,10 @@ var GeoBox = class {
     return new GeoCoordinates(latitude, longitude, altitude);
   }
   get latitudeSpanInRadians() {
-    return THREE3.MathUtils.degToRad(this.latitudeSpan);
+    return THREE2.MathUtils.degToRad(this.latitudeSpan);
   }
   get longitudeSpanInRadians() {
-    return THREE3.MathUtils.degToRad(this.longitudeSpan);
+    return THREE2.MathUtils.degToRad(this.longitudeSpan);
   }
   get latitudeSpan() {
     return this.north - this.south;
@@ -375,7 +289,416 @@ var GeoBox = class {
   }
 };
 
+// src/geoutils/coordinates/GeoBoxExtentLike.ts
+function isGeoBoxExtentLike(obj) {
+  return obj && typeof obj === "object" && typeof obj.latitudeSpan === "number" && typeof obj.longitudeSpan === "number";
+}
+
+// src/geoutils/coordinates/GeoCoordLike.ts
+function geoCoordLikeToGeoCoordinatesLike(coord) {
+  return isGeoCoordinatesLike(coord) ? coord : isLatLngLike(coord) ? { latitude: coord.lat, longitude: coord.lng } : { latitude: coord[1], longitude: coord[0] };
+}
+function geoCoordLikeToGeoPointLike(coord) {
+  return isGeoPointLike(coord) ? coord : isLatLngLike(coord) ? [coord.lng, coord.lat] : [coord.longitude, coord.latitude];
+}
+function isGeoCoordLike(object) {
+  return isGeoCoordinatesLike(object) || isLatLngLike(object) || !isGeoPointLike(object);
+}
+
+// src/geoutils/coordinates/GeoPolygon.ts
+import { Vector2 } from "three";
+function computeLonSpanAcrossGreewich(lonA, lonB) {
+  return Math.max(lonA, lonB) - Math.min(lonA, lonB);
+}
+function isLeftToRightAntimeridianCrossing(lonStart, lonEnd) {
+  return lonStart > 0 && lonEnd < 0 && computeLonSpanAcrossGreewich(lonStart, lonEnd) > 180;
+}
+function isRightToLeftAntimeridianCrossing(lonStart, lonEnd) {
+  return isLeftToRightAntimeridianCrossing(lonEnd, lonStart);
+}
+function isAntimeridianCrossing(lonStart, lonEnd) {
+  return Math.sign(lonStart) === -Math.sign(lonEnd) && computeLonSpanAcrossGreewich(lonStart, lonEnd) > 180;
+}
+var GeoPolygon = class {
+  m_coordinates;
+  constructor(coordinates, needsSort = false, needsWrapping = false) {
+    this.m_coordinates = coordinates.map((coord) => {
+      return geoCoordLikeToGeoCoordinatesLike(coord);
+    });
+    if (needsSort) {
+      this.sortCCW();
+    }
+    if (needsWrapping) {
+      this.wrapCoordinatesAround();
+    }
+  }
+  get coordinates() {
+    return this.m_coordinates;
+  }
+  getGeoBoundingBox() {
+    const centroid = this.getCentroid();
+    if (centroid === void 0) {
+      return GeoBox.fromCoordinates(this.coordinates[0], this.coordinates[0]);
+    }
+    const { east, west } = this.getEastAndWest(centroid);
+    const { north, south } = this.getNorthAndSouth();
+    return GeoBox.fromCoordinates(new GeoCoordinates(south, west), new GeoCoordinates(north, east));
+  }
+  getCentroid() {
+    const area = this.getArea();
+    if (area === 0) {
+      return void 0;
+    }
+    let latitude = 0;
+    let longitude = 0;
+    let f;
+    let previousIndex = this.m_coordinates.length - 1;
+    this.m_coordinates.forEach((coordinate, index) => {
+      const previousCoordinate = this.m_coordinates[previousIndex];
+      f = coordinate.latitude * previousCoordinate.longitude - previousCoordinate.latitude * coordinate.longitude;
+      latitude += (coordinate.latitude + previousCoordinate.latitude) * f;
+      longitude += (coordinate.longitude + previousCoordinate.longitude) * f;
+      previousIndex = index;
+    });
+    f = area * 6;
+    return new GeoCoordinates(latitude / f, area < 0 ? -180 + longitude / f : longitude / f);
+  }
+  sortCCW() {
+    const polyCenter = this.getPolyAverageCenter();
+    if (!polyCenter) {
+      return;
+    }
+    this.m_coordinates.sort((a, b) => {
+      const veca = new Vector2(a.latitude - polyCenter.latitude, a.longitude - polyCenter.longitude).normalize();
+      const vecb = new Vector2(b.latitude - polyCenter.latitude, b.longitude - polyCenter.longitude).normalize();
+      return vecb.angle() - veca.angle();
+    });
+  }
+  wrapCoordinatesAround() {
+    const firstAntimerCrossIndex = this.m_coordinates.findIndex((val, index) => {
+      const prevLonIndex = index === 0 ? this.m_coordinates.length - 1 : index - 1;
+      const prevLon = this.m_coordinates[prevLonIndex].longitude;
+      const lon = val.longitude;
+      return isLeftToRightAntimeridianCrossing(prevLon, lon);
+    });
+    if (firstAntimerCrossIndex < 0) {
+      return;
+    }
+    let wrapAround = true;
+    for (let i = 0; i < this.m_coordinates.length; i++) {
+      const index = (firstAntimerCrossIndex + i) % this.m_coordinates.length;
+      const currentLon = this.m_coordinates[index].longitude;
+      const nextLon = this.m_coordinates[(index + 1) % this.m_coordinates.length].longitude;
+      if (wrapAround) {
+        this.m_coordinates[index].longitude += 360;
+      }
+      if (isRightToLeftAntimeridianCrossing(currentLon, nextLon)) {
+        wrapAround = false;
+      } else if (isLeftToRightAntimeridianCrossing(currentLon, nextLon)) {
+        wrapAround = true;
+      }
+    }
+  }
+  getPolyAverageCenter() {
+    const polySum = this.m_coordinates.reduce((prev, curr) => {
+      return new GeoCoordinates(prev.latitude + curr.latitude, prev.longitude + curr.longitude);
+    });
+    return new GeoCoordinates(polySum.latitude / this.m_coordinates.length, polySum.longitude / this.m_coordinates.length);
+  }
+  getArea() {
+    let area = 0;
+    let previousIndex = this.m_coordinates.length - 1;
+    this.m_coordinates.forEach((coordinate, index) => {
+      const previousCoordinate = this.m_coordinates[previousIndex];
+      area += coordinate.latitude * previousCoordinate.longitude;
+      area -= coordinate.longitude * previousCoordinate.latitude;
+      previousIndex = index;
+    });
+    return area /= 2;
+  }
+  getEastAndWest(center) {
+    let west = center.longitude;
+    let east = center.longitude;
+    let previousIndex = this.m_coordinates.length - 1;
+    this.m_coordinates.forEach((coordinate, index) => {
+      const previousCoordinate = this.m_coordinates[previousIndex];
+      previousIndex = index;
+      const veca = new Vector2(coordinate.latitude - center.latitude, coordinate.longitude - center.longitude).normalize();
+      const vecb = new Vector2(previousCoordinate.latitude - center.latitude, previousCoordinate.longitude - center.longitude).normalize();
+      let ccw = Math.sign(vecb.angle() - veca.angle()) === 1;
+      if (vecb.y >= 0 && veca.y < 0) {
+        ccw = true;
+      }
+      const long = coordinate.longitude;
+      if (long < center.longitude) {
+        if (ccw) {
+          west = Math.min(west, long);
+        } else {
+          east = Math.min(east, long);
+        }
+      } else {
+        if (ccw) {
+          east = Math.max(east, long);
+        } else {
+          west = Math.max(west, long);
+        }
+      }
+    });
+    return { east, west };
+  }
+  getNorthAndSouth() {
+    let north = MIN_LATITUDE;
+    let south = MAX_LATITUDE;
+    this.m_coordinates.forEach((coordinate, index) => {
+      north = Math.max(north, coordinate.latitude);
+      south = Math.min(south, coordinate.latitude);
+    });
+    return { north, south };
+  }
+};
+
+// src/geoutils/math/Box3Like.ts
+function isBox3Like(object) {
+  const box3 = object;
+  return box3.min !== void 0 && box3.max !== void 0;
+}
+
+// src/geoutils/math/MathUtils.ts
+import * as THREE3 from "three";
+var MathUtils4;
+((MathUtils38) => {
+  function newEmptyBox3() {
+    return {
+      min: { x: Infinity, y: Infinity, z: Infinity },
+      max: { x: -Infinity, y: -Infinity, z: -Infinity }
+    };
+  }
+  MathUtils38.newEmptyBox3 = newEmptyBox3;
+  function newVector3(x, y, z, v) {
+    if (v === void 0) {
+      return { x, y, z };
+    }
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+  }
+  MathUtils38.newVector3 = newVector3;
+  function copyVector3(from, to) {
+    to.x = from.x;
+    to.y = from.y;
+    to.z = from.z;
+    return to;
+  }
+  MathUtils38.copyVector3 = copyVector3;
+  MathUtils38.degToRad = THREE3.MathUtils.degToRad;
+  MathUtils38.radToDeg = THREE3.MathUtils.radToDeg;
+  MathUtils38.clamp = THREE3.MathUtils.clamp;
+  function normalizeAngleDeg(a) {
+    a = a % 360;
+    if (a < 0) {
+      a = a + 360;
+    }
+    return a;
+  }
+  MathUtils38.normalizeAngleDeg = normalizeAngleDeg;
+  function normalizeLongitudeDeg(a) {
+    a = normalizeAngleDeg(a);
+    if (a > 180) {
+      a = a - 360;
+    }
+    return a;
+  }
+  MathUtils38.normalizeLongitudeDeg = normalizeLongitudeDeg;
+  function angleDistanceDeg(a, b) {
+    a = normalizeAngleDeg(a);
+    b = normalizeAngleDeg(b);
+    const d = a - b;
+    if (d > 180) {
+      return d - 360;
+    } else if (d <= -180) {
+      return d + 360;
+    } else {
+      return d;
+    }
+  }
+  MathUtils38.angleDistanceDeg = angleDistanceDeg;
+  function interpolateAnglesDeg(p0, p1, t) {
+    const d = angleDistanceDeg(p1, p0);
+    const r = (p0 + d * t) % 360;
+    return r;
+  }
+  MathUtils38.interpolateAnglesDeg = interpolateAnglesDeg;
+})(MathUtils4 || (MathUtils4 = {}));
+
+// src/geoutils/math/OrientedBox3.ts
+import { Matrix4, Vector3 as Vector32 } from "three";
+function intersectsSlab(rayDir, p, axis, extent, t) {
+  const epsilon3 = 1e-20;
+  const e = axis.dot(p);
+  const f = axis.dot(rayDir);
+  if (Math.abs(f) < epsilon3) {
+    return Math.abs(e) <= extent;
+  }
+  const finv = 1 / f;
+  const t1 = (e + extent) * finv;
+  const t2 = (e - extent) * finv;
+  if (t1 > t2) {
+    if (t2 > t.min) {
+      t.min = t2;
+    }
+    if (t1 < t.max) {
+      t.max = t1;
+    }
+  } else {
+    if (t1 > t.min) {
+      t.min = t1;
+    }
+    if (t2 < t.max) {
+      t.max = t2;
+    }
+  }
+  return t.min <= t.max && t.max >= 0;
+}
+var tmpVec = new Vector32();
+var tmpT = { min: -Infinity, max: Infinity };
+var OrientedBox3 = class {
+  position = new Vector32();
+  xAxis = new Vector32(1, 0, 0);
+  yAxis = new Vector32(0, 1, 0);
+  zAxis = new Vector32(0, 0, 1);
+  extents = new Vector32();
+  constructor(position, rotationMatrix, extents) {
+    if (position !== void 0) {
+      this.position.copy(position);
+    }
+    if (rotationMatrix !== void 0) {
+      rotationMatrix.extractBasis(this.xAxis, this.yAxis, this.zAxis);
+    }
+    if (extents !== void 0) {
+      this.extents.copy(extents);
+    }
+  }
+  clone() {
+    const newBox = new OrientedBox3();
+    newBox.copy(this);
+    return newBox;
+  }
+  copy(other) {
+    this.position.copy(other.position);
+    this.xAxis.copy(other.xAxis);
+    this.yAxis.copy(other.yAxis);
+    this.zAxis.copy(other.zAxis);
+    this.extents.copy(other.extents);
+  }
+  getCenter(center = new Vector32()) {
+    return center.copy(this.position);
+  }
+  getSize(size = new Vector32()) {
+    return size.copy(this.extents).multiplyScalar(2);
+  }
+  getRotationMatrix(matrix = new Matrix4()) {
+    return matrix.makeBasis(this.xAxis, this.yAxis, this.zAxis);
+  }
+  intersects(frustumOrPlanes) {
+    const planes = Array.isArray(frustumOrPlanes) ? frustumOrPlanes : frustumOrPlanes.planes;
+    for (const plane of planes) {
+      const r = Math.abs(plane.normal.dot(this.xAxis) * this.extents.x) + Math.abs(plane.normal.dot(this.yAxis) * this.extents.y) + Math.abs(plane.normal.dot(this.zAxis) * this.extents.z);
+      const d = plane.distanceToPoint(this.position);
+      if (d + r < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+  intersectsRay(ray) {
+    tmpT.min = -Infinity;
+    tmpT.max = Infinity;
+    tmpVec.copy(this.position).sub(ray.origin);
+    if (!intersectsSlab(ray.direction, tmpVec, this.xAxis, this.extents.x, tmpT)) {
+      return void 0;
+    }
+    if (!intersectsSlab(ray.direction, tmpVec, this.yAxis, this.extents.y, tmpT)) {
+      return void 0;
+    }
+    if (!intersectsSlab(ray.direction, tmpVec, this.zAxis, this.extents.z, tmpT)) {
+      return void 0;
+    }
+    return tmpT.min > 0 ? tmpT.min : tmpT.max;
+  }
+  contains(point) {
+    const dx = point.x - this.position.x;
+    const dy = point.y - this.position.y;
+    const dz = point.z - this.position.z;
+    const x = Math.abs(dx * this.xAxis.x + dy * this.xAxis.y + dz * this.xAxis.z);
+    const y = Math.abs(dx * this.yAxis.x + dy * this.yAxis.y + dz * this.yAxis.z);
+    const z = Math.abs(dx * this.zAxis.x + dy * this.zAxis.y + dz * this.zAxis.z);
+    if (x > this.extents.x || y > this.extents.y || z > this.extents.z) {
+      return false;
+    }
+    return true;
+  }
+  distanceToPoint(point) {
+    return Math.sqrt(this.distanceToPointSquared(point));
+  }
+  distanceToPointSquared(point) {
+    const d = new Vector32();
+    d.subVectors(point, this.position);
+    const lengths = [
+      d.dot(this.xAxis),
+      d.dot(this.yAxis),
+      d.dot(this.zAxis)
+    ];
+    let result = 0;
+    for (let i = 0; i < 3; ++i) {
+      const length = lengths[i];
+      const extent = this.extents.getComponent(i);
+      if (length < -extent) {
+        const dd = extent + length;
+        result += dd * dd;
+      } else if (length > extent) {
+        const dd = length - extent;
+        result += dd * dd;
+      }
+    }
+    return result;
+  }
+};
+
+// src/geoutils/math/Vector2Like.ts
+function isVector2Like(v) {
+  return v && typeof v.x === "number" && typeof v.y === "number";
+}
+
+// src/geoutils/math/Vector3Like.ts
+function isVector3Like(v) {
+  return v && typeof v.x === "number" && typeof v.y === "number" && typeof v.z === "number";
+}
+
+// src/geoutils/projection/EarthConstants.ts
+var EarthConstants = class {
+};
+__publicField(EarthConstants, "EQUATORIAL_CIRCUMFERENCE", 4007501668557849e-8);
+__publicField(EarthConstants, "EQUATORIAL_RADIUS", 6378137);
+__publicField(EarthConstants, "MIN_ELEVATION", -433);
+__publicField(EarthConstants, "MAX_ELEVATION", 8848);
+__publicField(EarthConstants, "MAX_BUILDING_HEIGHT", 828);
+
+// src/geoutils/projection/EquirectangularProjection.ts
+import * as THREE4 from "three";
+
+// src/geoutils/math/OrientedBox3Like.ts
+function isOrientedBox3Like(object) {
+  const obb = object;
+  return obb.position !== void 0 && obb.xAxis !== void 0 && obb.yAxis !== void 0 && obb.zAxis !== void 0 && obb.extents !== void 0;
+}
+
 // src/geoutils/projection/Projection.ts
+var ProjectionType = /* @__PURE__ */ ((ProjectionType2) => {
+  ProjectionType2[ProjectionType2["Planar"] = 0] = "Planar";
+  ProjectionType2[ProjectionType2["Spherical"] = 1] = "Spherical";
+  return ProjectionType2;
+})(ProjectionType || {});
 var Projection = class {
   constructor(unitScale) {
     this.unitScale = unitScale;
@@ -384,11 +707,11 @@ var Projection = class {
     if (isGeoCoordinatesLike(point)) {
       this.projectPoint(point, result.position);
     } else {
-      MathUtils3.copyVector3(point, result.position);
+      MathUtils4.copyVector3(point, result.position);
     }
-    MathUtils3.newVector3(1, 0, 0, result.xAxis);
-    MathUtils3.newVector3(0, 1, 0, result.yAxis);
-    MathUtils3.newVector3(0, 0, 1, result.zAxis);
+    MathUtils4.newVector3(1, 0, 0, result.xAxis);
+    MathUtils4.newVector3(0, 1, 0, result.yAxis);
+    MathUtils4.newVector3(0, 0, 1, result.zAxis);
     return result;
   }
   reprojectPoint(sourceProjection, worldPos, result) {
@@ -405,7 +728,104 @@ var Projection = class {
   }
 };
 
+// src/geoutils/projection/EquirectangularProjection.ts
+var _EquirectangularProjection = class extends Projection {
+  type = 0 /* Planar */;
+  getScaleFactor(_worldPoint) {
+    return 1;
+  }
+  worldExtent(minAltitude, maxAltitude, result) {
+    if (!result) {
+      result = new THREE4.Box3();
+    }
+    result.min.x = 0;
+    result.min.y = 0;
+    result.min.z = minAltitude;
+    result.max.x = this.unitScale;
+    result.max.y = this.unitScale / 2;
+    result.max.z = maxAltitude;
+    return result;
+  }
+  projectPoint(geoPoint, result) {
+    if (result === void 0) {
+      result = { x: 0, y: 0, z: 0 };
+    }
+    result.x = (THREE4.MathUtils.degToRad(geoPoint.longitude) + Math.PI) * _EquirectangularProjection.geoToWorldScale * this.unitScale;
+    result.y = (THREE4.MathUtils.degToRad(geoPoint.latitude) + Math.PI * 0.5) * _EquirectangularProjection.geoToWorldScale * this.unitScale;
+    result.z = geoPoint.altitude ?? 0;
+    return result;
+  }
+  unprojectPoint(worldPoint) {
+    const geoPoint = GeoCoordinates.fromRadians(worldPoint.y * _EquirectangularProjection.worldToGeoScale / this.unitScale - Math.PI * 0.5, worldPoint.x * _EquirectangularProjection.worldToGeoScale / this.unitScale - Math.PI, worldPoint.z);
+    return geoPoint;
+  }
+  unprojectAltitude(worldPoint) {
+    return worldPoint.z;
+  }
+  projectBox(geoBox, result) {
+    const worldCenter = this.projectPoint(new GeoCoordinates(geoBox.center.latitude, geoBox.center.longitude, 0));
+    const { latitudeSpanInRadians, longitudeSpanInRadians, altitudeSpan } = geoBox;
+    const sizeX = longitudeSpanInRadians * _EquirectangularProjection.geoToWorldScale;
+    const sizeY = latitudeSpanInRadians * _EquirectangularProjection.geoToWorldScale;
+    if (!result) {
+      result = new THREE4.Box3();
+    }
+    if (isBox3Like(result)) {
+      result.min.x = worldCenter.x - sizeX * 0.5 * this.unitScale;
+      result.min.y = worldCenter.y - sizeY * 0.5 * this.unitScale;
+      result.max.x = worldCenter.x + sizeX * 0.5 * this.unitScale;
+      result.max.y = worldCenter.y + sizeY * 0.5 * this.unitScale;
+      if (altitudeSpan !== void 0) {
+        result.min.z = worldCenter.z - altitudeSpan * 0.5;
+        result.max.z = worldCenter.z + altitudeSpan * 0.5;
+      } else {
+        result.min.z = 0;
+        result.max.z = 0;
+      }
+    } else if (isOrientedBox3Like(result)) {
+      MathUtils4.newVector3(1, 0, 0, result.xAxis);
+      MathUtils4.newVector3(0, 1, 0, result.yAxis);
+      MathUtils4.newVector3(0, 0, 1, result.zAxis);
+      result.position.x = worldCenter.x;
+      result.position.y = worldCenter.y;
+      result.position.z = worldCenter.z;
+      result.extents.x = sizeX * 0.5 * this.unitScale;
+      result.extents.y = sizeY * 0.5 * this.unitScale;
+      result.extents.z = Math.max(Number.EPSILON, (altitudeSpan ?? 0) * 0.5);
+    }
+    return result;
+  }
+  unprojectBox(worldBox) {
+    const minGeo = this.unprojectPoint(worldBox.min);
+    const maxGeo = this.unprojectPoint(worldBox.max);
+    return GeoBox.fromCoordinates(minGeo, maxGeo);
+  }
+  groundDistance(worldPoint) {
+    return worldPoint.z;
+  }
+  scalePointToSurface(worldPoint) {
+    worldPoint.z = 0;
+    return worldPoint;
+  }
+  surfaceNormal(_worldPoint, normal) {
+    if (normal === void 0) {
+      normal = { x: 0, y: 0, z: 1 };
+    } else {
+      normal.x = 0;
+      normal.y = 0;
+      normal.z = 1;
+    }
+    return normal;
+  }
+};
+var EquirectangularProjection = _EquirectangularProjection;
+__publicField(EquirectangularProjection, "geoToWorldScale", 1 / (2 * Math.PI));
+__publicField(EquirectangularProjection, "worldToGeoScale", 2 * Math.PI / 1);
+var normalizedEquirectangularProjection = new EquirectangularProjection(1);
+var equirectangularProjection = new EquirectangularProjection(EarthConstants.EQUATORIAL_CIRCUMFERENCE);
+
 // src/geoutils/projection/MercatorProjection.ts
+import * as THREE5 from "three";
 var MercatorProjection = class extends Projection {
   static clamp(val, min, max) {
     return Math.min(Math.max(min, val), max);
@@ -428,7 +848,7 @@ var MercatorProjection = class extends Projection {
   }
   worldExtent(minAltitude, maxAltitude, result) {
     if (!result) {
-      result = new THREE4.Box3();
+      result = new THREE5.Box3();
     }
     result.min.x = 0;
     result.min.y = 0;
@@ -469,7 +889,7 @@ var MercatorProjection = class extends Projection {
     const latitudeSpan = worldNorth - worldSouth;
     const longitudeSpan = geoBox.longitudeSpan / 360 * this.unitScale;
     if (!result) {
-      result = new THREE4.Box3();
+      result = new THREE5.Box3();
     }
     if (isBox3Like(result)) {
       result.min.x = worldCenter.x - longitudeSpan * 0.5;
@@ -485,9 +905,9 @@ var MercatorProjection = class extends Projection {
         result.max.z = 0;
       }
     } else if (isOrientedBox3Like(result)) {
-      MathUtils3.newVector3(1, 0, 0, result.xAxis);
-      MathUtils3.newVector3(0, 1, 0, result.yAxis);
-      MathUtils3.newVector3(0, 0, 1, result.zAxis);
+      MathUtils4.newVector3(1, 0, 0, result.xAxis);
+      MathUtils4.newVector3(0, 1, 0, result.yAxis);
+      MathUtils4.newVector3(0, 0, 1, result.zAxis);
       result.position.x = worldCenter.x;
       result.position.y = worldCenter.y;
       result.position.z = worldCenter.z;
@@ -566,9 +986,9 @@ var WebMercatorProjection = class extends MercatorProjection {
       r.max.y = this.unitScale - r.min.y;
       r.min.y = this.unitScale - maxY;
     } else if (isOrientedBox3Like(r)) {
-      MathUtils3.newVector3(1, 0, 0, r.xAxis);
-      MathUtils3.newVector3(0, -1, 0, r.yAxis);
-      MathUtils3.newVector3(0, 0, -1, r.zAxis);
+      MathUtils4.newVector3(1, 0, 0, r.xAxis);
+      MathUtils4.newVector3(0, -1, 0, r.yAxis);
+      MathUtils4.newVector3(0, 0, -1, r.zAxis);
       r.position.y = this.unitScale - r.position.y;
     }
     return r;
@@ -593,11 +1013,11 @@ var WebMercatorProjection = class extends MercatorProjection {
     if (isGeoCoordinatesLike(point)) {
       this.projectPoint(point, result.position);
     } else {
-      MathUtils3.copyVector3(point, result.position);
+      MathUtils4.copyVector3(point, result.position);
     }
-    MathUtils3.newVector3(1, 0, 0, result.xAxis);
-    MathUtils3.newVector3(0, -1, 0, result.yAxis);
-    MathUtils3.newVector3(0, 0, -1, result.zAxis);
+    MathUtils4.newVector3(1, 0, 0, result.xAxis);
+    MathUtils4.newVector3(0, -1, 0, result.yAxis);
+    MathUtils4.newVector3(0, 0, -1, result.zAxis);
     return result;
   }
 };
@@ -608,6 +1028,7 @@ var mercatorProjection = new MercatorProjection(EarthConstants.EQUATORIAL_CIRCUM
 var webMercatorProjection = new WebMercatorProjection(EarthConstants.EQUATORIAL_CIRCUMFERENCE);
 
 // src/geoutils/projection/SphereProjection.ts
+import * as THREE6 from "three";
 function apply(xAxis, yAxis, zAxis, v) {
   const x = xAxis.x * v.x + yAxis.x * v.y + zAxis.x * v.z;
   const y = xAxis.y * v.x + yAxis.y * v.y + zAxis.y * v.z;
@@ -620,7 +1041,7 @@ function apply(xAxis, yAxis, zAxis, v) {
 function getLongitudeQuadrant(longitude) {
   const oneOverPI = 1 / Math.PI;
   const quadrantIndex = Math.floor(2 * (longitude * oneOverPI + 1));
-  return THREE5.MathUtils.clamp(quadrantIndex, 0, 4);
+  return THREE6.MathUtils.clamp(quadrantIndex, 0, 4);
 }
 function lengthOfVector3(worldPoint) {
   const d = Math.sqrt(worldPoint.x * worldPoint.x + worldPoint.y * worldPoint.y + worldPoint.z * worldPoint.z);
@@ -628,8 +1049,8 @@ function lengthOfVector3(worldPoint) {
 }
 function makeBox3(geoBox, worldBox, unitScale) {
   const halfEquatorialRadius = (unitScale + (geoBox.maxAltitude ?? 0)) * 0.5;
-  const minLongitude = THREE5.MathUtils.degToRad(geoBox.west);
-  const maxLongitude = THREE5.MathUtils.degToRad(geoBox.east);
+  const minLongitude = THREE6.MathUtils.degToRad(geoBox.west);
+  const maxLongitude = THREE6.MathUtils.degToRad(geoBox.east);
   const minLongitudeQuadrant = getLongitudeQuadrant(minLongitude);
   const maxLongitudeQuadrant = getLongitudeQuadrant(maxLongitude);
   let xMin = Math.cos(minLongitude);
@@ -654,8 +1075,8 @@ function makeBox3(geoBox, worldBox, unitScale) {
   const xExtent = (xMax - xMin) * halfEquatorialRadius;
   const yCenter = (yMax + yMin) * halfEquatorialRadius;
   const yExtent = (yMax - yMin) * halfEquatorialRadius;
-  const minLatitude = THREE5.MathUtils.degToRad(geoBox.south);
-  const maxLatutide = THREE5.MathUtils.degToRad(geoBox.north);
+  const minLatitude = THREE6.MathUtils.degToRad(geoBox.south);
+  const maxLatutide = THREE6.MathUtils.degToRad(geoBox.north);
   const zMax = Math.sin(maxLatutide);
   const zMin = Math.sin(minLatitude);
   const zCenter = (zMax + zMin) * halfEquatorialRadius;
@@ -670,8 +1091,8 @@ function makeBox3(geoBox, worldBox, unitScale) {
 }
 function project(geoPoint, worldpoint, unitScale) {
   const radius = unitScale + (geoPoint.altitude ?? 0);
-  const latitude = THREE5.MathUtils.degToRad(geoPoint.latitude);
-  const longitude = THREE5.MathUtils.degToRad(geoPoint.longitude);
+  const latitude = THREE6.MathUtils.degToRad(geoPoint.latitude);
+  const longitude = THREE6.MathUtils.degToRad(geoPoint.longitude);
   const cosLatitude = Math.cos(latitude);
   worldpoint.x = radius * cosLatitude * Math.cos(longitude);
   worldpoint.y = radius * cosLatitude * Math.sin(longitude);
@@ -680,7 +1101,7 @@ function project(geoPoint, worldpoint, unitScale) {
 }
 var SphereProjection = class extends Projection {
   type = 1 /* Spherical */;
-  worldExtent(_minElevation, maxElevation, result = new THREE5.Box3()) {
+  worldExtent(_minElevation, maxElevation, result = new THREE6.Box3()) {
     const radius = this.unitScale + maxElevation;
     result.min.x = -radius;
     result.min.y = -radius;
@@ -690,7 +1111,7 @@ var SphereProjection = class extends Projection {
     result.max.z = radius;
     return result;
   }
-  projectPoint(geoPoint, result = MathUtils3.newVector3(0, 0, 0)) {
+  projectPoint(geoPoint, result = MathUtils4.newVector3(0, 0, 0)) {
     return project(geoPoint, result, this.unitScale);
   }
   unprojectPoint(point) {
@@ -707,15 +1128,15 @@ var SphereProjection = class extends Projection {
     const parallelRadiusSq = point.x * point.x + point.y * point.y + point.z * point.z;
     return Math.sqrt(parallelRadiusSq) - EarthConstants.EQUATORIAL_RADIUS;
   }
-  projectBox(geoBox, result = new THREE5.Box3()) {
+  projectBox(geoBox, result = new THREE6.Box3()) {
     if (isBox3Like(result)) {
       return makeBox3(geoBox, result, this.unitScale);
     } else if (isOrientedBox3Like(result)) {
       if (geoBox.longitudeSpan >= 90) {
-        const bounds = makeBox3(geoBox, new THREE5.Box3(), this.unitScale);
-        MathUtils3.newVector3(1, 0, 0, result.xAxis);
-        MathUtils3.newVector3(0, 1, 0, result.yAxis);
-        MathUtils3.newVector3(0, 0, 1, result.zAxis);
+        const bounds = makeBox3(geoBox, new THREE6.Box3(), this.unitScale);
+        MathUtils4.newVector3(1, 0, 0, result.xAxis);
+        MathUtils4.newVector3(0, 1, 0, result.yAxis);
+        MathUtils4.newVector3(0, 0, 1, result.zAxis);
         result.position.x = (bounds.max.x + bounds.min.x) * 0.5;
         result.position.y = (bounds.max.y + bounds.min.y) * 0.5;
         result.position.z = (bounds.max.z + bounds.min.z) * 0.5;
@@ -727,21 +1148,21 @@ var SphereProjection = class extends Projection {
       const { south, west, north, east, center: mid } = geoBox;
       const midX = mid.longitude;
       const midY = mid.latitude;
-      const cosSouth = Math.cos(THREE5.MathUtils.degToRad(south));
-      const sinSouth = Math.sin(THREE5.MathUtils.degToRad(south));
-      const cosWest = Math.cos(THREE5.MathUtils.degToRad(west));
-      const sinWest = Math.sin(THREE5.MathUtils.degToRad(west));
-      const cosNorth = Math.cos(THREE5.MathUtils.degToRad(north));
-      const sinNorth = Math.sin(THREE5.MathUtils.degToRad(north));
-      const cosEast = Math.cos(THREE5.MathUtils.degToRad(east));
-      const sinEast = Math.sin(THREE5.MathUtils.degToRad(east));
-      const cosMidX = Math.cos(THREE5.MathUtils.degToRad(midX));
-      const sinMidX = Math.sin(THREE5.MathUtils.degToRad(midX));
-      const cosMidY = Math.cos(THREE5.MathUtils.degToRad(midY));
-      const sinMidY = Math.sin(THREE5.MathUtils.degToRad(midY));
-      MathUtils3.newVector3(cosMidX * cosMidY, sinMidX * cosMidY, sinMidY, result.zAxis);
-      MathUtils3.newVector3(-sinMidX, cosMidX, 0, result.xAxis);
-      MathUtils3.newVector3(-cosMidX * sinMidY, -sinMidX * sinMidY, cosMidY, result.yAxis);
+      const cosSouth = Math.cos(THREE6.MathUtils.degToRad(south));
+      const sinSouth = Math.sin(THREE6.MathUtils.degToRad(south));
+      const cosWest = Math.cos(THREE6.MathUtils.degToRad(west));
+      const sinWest = Math.sin(THREE6.MathUtils.degToRad(west));
+      const cosNorth = Math.cos(THREE6.MathUtils.degToRad(north));
+      const sinNorth = Math.sin(THREE6.MathUtils.degToRad(north));
+      const cosEast = Math.cos(THREE6.MathUtils.degToRad(east));
+      const sinEast = Math.sin(THREE6.MathUtils.degToRad(east));
+      const cosMidX = Math.cos(THREE6.MathUtils.degToRad(midX));
+      const sinMidX = Math.sin(THREE6.MathUtils.degToRad(midX));
+      const cosMidY = Math.cos(THREE6.MathUtils.degToRad(midY));
+      const sinMidY = Math.sin(THREE6.MathUtils.degToRad(midY));
+      MathUtils4.newVector3(cosMidX * cosMidY, sinMidX * cosMidY, sinMidY, result.zAxis);
+      MathUtils4.newVector3(-sinMidX, cosMidX, 0, result.xAxis);
+      MathUtils4.newVector3(-cosMidX * sinMidY, -sinMidX * sinMidY, cosMidY, result.yAxis);
       let width;
       let minY;
       let maxY;
@@ -763,8 +1184,8 @@ var SphereProjection = class extends Projection {
       const rMin = (this.unitScale + (geoBox.minAltitude ?? 0)) * 0.5;
       const d = cosMidY * (cosMidX * cosEast + sinMidX * sinEast);
       const minZ = Math.min(cosNorth * d + sinNorth * sinMidY, cosSouth * d + sinSouth * sinMidY);
-      MathUtils3.newVector3(width * rMax, (maxY - minY) * rMax, rMax - minZ * rMin, result.extents);
-      MathUtils3.newVector3(0, (minY + maxY) * rMax, rMax + rMax, result.position);
+      MathUtils4.newVector3(width * rMax, (maxY - minY) * rMax, rMax - minZ * rMin, result.extents);
+      MathUtils4.newVector3(0, (minY + maxY) * rMax, rMax + rMax, result.position);
       apply(result.xAxis, result.yAxis, result.zAxis, result.position);
       result.position.x = result.position.x - result.zAxis.x * result.extents.z;
       result.position.y = result.position.y - result.zAxis.y * result.extents.z;
@@ -829,40 +1250,737 @@ var SphereProjection = class extends Projection {
       this.projectPoint(point, result.position);
       geoPoint = point;
     } else {
-      MathUtils3.copyVector3(point, result.position);
+      MathUtils4.copyVector3(point, result.position);
       geoPoint = this.unprojectPoint(point);
     }
-    const latitude = THREE5.MathUtils.degToRad(geoPoint.latitude);
-    const longitude = THREE5.MathUtils.degToRad(geoPoint.longitude);
+    const latitude = THREE6.MathUtils.degToRad(geoPoint.latitude);
+    const longitude = THREE6.MathUtils.degToRad(geoPoint.longitude);
     const cosLongitude = Math.cos(longitude);
     const sinLongitude = Math.sin(longitude);
     const cosLatitude = Math.cos(latitude);
     const sinLatitude = Math.sin(latitude);
-    MathUtils3.newVector3(cosLongitude * cosLatitude, sinLongitude * cosLatitude, sinLatitude, result.zAxis);
-    MathUtils3.newVector3(-sinLongitude, cosLongitude, 0, result.xAxis);
-    MathUtils3.newVector3(-cosLongitude * sinLatitude, -sinLongitude * sinLatitude, cosLatitude, result.yAxis);
+    MathUtils4.newVector3(cosLongitude * cosLatitude, sinLongitude * cosLatitude, sinLatitude, result.zAxis);
+    MathUtils4.newVector3(-sinLongitude, cosLongitude, 0, result.xAxis);
+    MathUtils4.newVector3(-cosLongitude * sinLatitude, -sinLongitude * sinLatitude, cosLatitude, result.yAxis);
     return result;
   }
 };
 var sphereProjection = new SphereProjection(EarthConstants.EQUATORIAL_RADIUS);
 
-// src/ArcadeMap/ArcadeMap.tsx
-var ArcadeMap = () => {
-  console.log("Hello from ArcadeMap");
-  useEffect(() => {
-    const mapView = new MapView({
-      canvas,
-      context,
-      projection: sphereProjection,
-      theme: "resources/berlin_tilezen_base_globe.json"
-    });
-    mapView.resize(window.innerWidth, window.innerHeight);
-  }, []);
-  return /* @__PURE__ */ React.createElement(React.Fragment, null);
+// src/geoutils/projection/TransverseMercatorProjection.ts
+import * as THREE7 from "three";
+var TransverseMercatorProjection = class extends Projection {
+  constructor(unitScale) {
+    super(unitScale);
+    this.unitScale = unitScale;
+  }
+  static clampGeoPoint(geoPoint, _unitScale) {
+    const lat = geoPoint.latitude;
+    const lon = geoPoint.longitude;
+    const r = TransverseMercatorUtils.POLE_RADIUS;
+    const rsq = TransverseMercatorUtils.POLE_RADIUS_SQ;
+    const nearestQuarter = Math.round(lon / 90);
+    const deltaLon = nearestQuarter * 90 - lon;
+    if (nearestQuarter % 2 === 0 || Math.abs(deltaLon) > r) {
+      return geoPoint;
+    }
+    const deltaLat = lat - 0;
+    const distanceToPoleSq = deltaLon * deltaLon + deltaLat * deltaLat;
+    if (distanceToPoleSq < rsq) {
+      const distanceToPole = Math.sqrt(distanceToPoleSq);
+      const scale = (r - distanceToPole) / distanceToPole;
+      const dir = 1;
+      const offsetLon = deltaLon === 0 && deltaLat === 0 ? r * dir : deltaLon;
+      return new GeoCoordinates(lat + deltaLat * scale, lon + offsetLon * scale);
+    }
+    return geoPoint;
+  }
+  type = 0 /* Planar */;
+  m_phi0 = 0;
+  m_lambda0 = 0;
+  getScaleFactor(worldPoint) {
+    return Math.cosh((worldPoint.x / this.unitScale - 0.5) * 2 * Math.PI);
+  }
+  worldExtent(minAltitude, maxAltitude, result) {
+    if (!result) {
+      result = new THREE7.Box3();
+    }
+    result.min.x = 0;
+    result.min.y = 0;
+    result.min.z = minAltitude;
+    result.max.x = this.unitScale;
+    result.max.y = this.unitScale;
+    result.max.z = maxAltitude;
+    return result;
+  }
+  projectPoint(geoPoint, result) {
+    if (!result) {
+      result = { x: 0, y: 0, z: 0 };
+    }
+    const clamped = TransverseMercatorProjection.clampGeoPoint(geoPoint, this.unitScale);
+    const normalLon = clamped.longitude / 360 + 0.5;
+    const offset = normalLon === 1 ? 0 : Math.floor(normalLon);
+    const phi = THREE7.MathUtils.degToRad(clamped.latitude);
+    const lambda = THREE7.MathUtils.degToRad(clamped.longitude - offset * 360) - this.m_lambda0;
+    const B = Math.cos(phi) * Math.sin(lambda);
+    result.x = Math.atanh(B);
+    result.y = Math.atan2(Math.tan(phi), Math.cos(lambda)) - this.m_phi0;
+    const outScale = 0.5 / Math.PI;
+    result.x = this.unitScale * (THREE7.MathUtils.clamp(result.x * outScale + 0.5, 0, 1) + offset);
+    result.y = this.unitScale * THREE7.MathUtils.clamp(result.y * outScale + 0.5, 0, 1);
+    result.z = geoPoint.altitude ?? 0;
+    return result;
+  }
+  unprojectPoint(worldPoint) {
+    const tau = Math.PI * 2;
+    const nx = worldPoint.x / this.unitScale;
+    const ny = worldPoint.y / this.unitScale;
+    const offset = nx === 1 ? 0 : Math.floor(nx);
+    const x = tau * (nx - 0.5 - offset);
+    const y = tau * (ny - 0.5);
+    const z = worldPoint.z || 0;
+    const D = y + this.m_phi0;
+    const phi = Math.asin(Math.sin(D) / Math.cosh(x));
+    const lambda = this.m_lambda0 + Math.atan2(Math.sinh(x), Math.cos(D)) + offset * tau;
+    const geoPoint = GeoCoordinates.fromRadians(phi, lambda, z);
+    return geoPoint;
+  }
+  projectBox(geoBox, result) {
+    const { north, south, east, west } = geoBox;
+    const pointsToCheck = [
+      geoBox.center,
+      geoBox.northEast,
+      geoBox.southWest,
+      new GeoCoordinates(south, east),
+      new GeoCoordinates(north, west)
+    ];
+    const E = TransverseMercatorUtils.POLE_EDGE_DEG;
+    const containsWestCut = west < -90 && east > -90;
+    const containsEastCut = west < 90 && east > 90;
+    const containsCenterX = west < 0 && east > 0;
+    const containsCenterY = west < E && east > -E && north > 0 && south < 0;
+    if (containsWestCut) {
+      pointsToCheck.push(new GeoCoordinates(north, -90));
+      pointsToCheck.push(new GeoCoordinates(south, -90));
+    }
+    if (containsEastCut) {
+      pointsToCheck.push(new GeoCoordinates(north, 90));
+      pointsToCheck.push(new GeoCoordinates(south, 90));
+    }
+    if (containsCenterX) {
+      pointsToCheck.push(new GeoCoordinates(north, 0));
+      pointsToCheck.push(new GeoCoordinates(south, 0));
+    }
+    if (containsCenterY) {
+      pointsToCheck.push(new GeoCoordinates(0, west));
+      pointsToCheck.push(new GeoCoordinates(0, east));
+    }
+    TransverseMercatorUtils.alignLatitude(pointsToCheck, pointsToCheck[0]);
+    const projected = pointsToCheck.map((p) => this.projectPoint(p));
+    const vx = projected.map((p) => p.x);
+    const vy = projected.map((p) => p.y);
+    const vz = projected.map((p) => p.z);
+    const minX = Math.min(...vx);
+    const minY = Math.min(...vy);
+    const minZ = Math.min(...vz);
+    const maxX = Math.max(...vx);
+    const maxY = Math.max(...vy);
+    const maxZ = Math.max(...vz);
+    if (!result) {
+      result = new THREE7.Box3();
+    }
+    if (isBox3Like(result)) {
+      result.min.x = minX;
+      result.min.y = minY;
+      result.min.z = minZ;
+      result.max.x = maxX;
+      result.max.y = maxY;
+      result.max.z = maxZ;
+    } else if (isOrientedBox3Like(result)) {
+      MathUtils4.newVector3(1, 0, 0, result.xAxis);
+      MathUtils4.newVector3(0, 1, 0, result.yAxis);
+      MathUtils4.newVector3(0, 0, 1, result.zAxis);
+      result.position.x = (minX + maxX) / 2;
+      result.position.y = (minY + maxY) / 2;
+      result.position.z = (minZ + maxZ) / 2;
+      result.extents.x = (maxX - minX) / 2;
+      result.extents.y = (maxY - minY) / 2;
+      result.extents.z = (maxZ - minZ) / 2;
+    } else {
+      throw new Error("invalid bounding box");
+    }
+    return result;
+  }
+  unprojectBox(worldBox) {
+    const s = this.unitScale;
+    const min = worldBox.min;
+    const max = worldBox.max;
+    const pointsToCheck = [
+      { x: (min.x + max.x) / 2, y: (min.y + max.y) / 2, z: 0 },
+      min,
+      max,
+      { x: min.x, y: max.y, z: 0 },
+      { x: max.x, y: min.y, z: 0 }
+    ];
+    const center = 0.5 * s;
+    const lowerQ = 0.25 * s;
+    const upperQ = 0.75 * s;
+    const containsCenterX = min.x < center && max.x > center;
+    const containsCenterY = min.y < center && max.y > center;
+    const containsLowerQY = min.y < lowerQ && max.y > lowerQ;
+    const containsUpperQY = min.y < upperQ && max.y > upperQ;
+    if (containsCenterY) {
+      pointsToCheck.push({ x: min.x, y: center, z: 0 });
+      pointsToCheck.push({ x: max.x, y: center, z: 0 });
+      if (containsCenterX) {
+        pointsToCheck.push({ x: center, y: center, z: 0 });
+      }
+    }
+    if (containsLowerQY) {
+      pointsToCheck.push({ x: min.x, y: lowerQ, z: 0 });
+      pointsToCheck.push({ x: max.x, y: lowerQ, z: 0 });
+      if (containsCenterX) {
+        pointsToCheck.push({ x: center, y: lowerQ, z: 0 });
+      }
+    }
+    if (containsUpperQY) {
+      pointsToCheck.push({ x: min.x, y: upperQ, z: 0 });
+      pointsToCheck.push({ x: max.x, y: upperQ, z: 0 });
+      if (containsCenterX) {
+        pointsToCheck.push({ x: center, y: upperQ, z: 0 });
+      }
+    }
+    const geoPoints = pointsToCheck.map((p) => this.unprojectPoint(p));
+    TransverseMercatorUtils.alignLongitude(geoPoints, geoPoints[0]);
+    const latitudes = geoPoints.map((g) => g.latitude);
+    const longitudes = geoPoints.filter((g) => Math.abs(g.latitude) < 90).map((g) => g.longitude);
+    const altitudes = geoPoints.map((g) => g.altitude ?? 0);
+    const minGeo = new GeoCoordinates(Math.min(...latitudes), Math.min(...longitudes), Math.min(...altitudes));
+    const maxGeo = new GeoCoordinates(Math.max(...latitudes), Math.max(...longitudes), Math.max(...altitudes));
+    const geoBox = GeoBox.fromCoordinates(minGeo, maxGeo);
+    return geoBox;
+  }
+  unprojectAltitude(worldPoint) {
+    return worldPoint.z;
+  }
+  groundDistance(worldPoint) {
+    return worldPoint.z;
+  }
+  scalePointToSurface(worldPoint) {
+    worldPoint.z = 0;
+    return worldPoint;
+  }
+  surfaceNormal(_worldPoint, normal) {
+    if (normal === void 0) {
+      normal = { x: 0, y: 0, z: -1 };
+    } else {
+      normal.x = 0;
+      normal.y = 0;
+      normal.z = -1;
+    }
+    return normal;
+  }
+};
+var _TransverseMercatorUtils = class {
+  static alignLatitude(points, referencePoint) {
+    const EPSILON = 1e-9;
+    for (const point of points) {
+      if (point.latitude === 0) {
+        point.latitude = referencePoint.latitude * EPSILON;
+      }
+    }
+  }
+  static alignLongitude(points, referencePoint) {
+    const bad = referencePoint.longitude < 0 ? 180 : -180;
+    const good = referencePoint.longitude < 0 ? -180 : 180;
+    for (const point of points) {
+      if (point.longitude === bad) {
+        point.longitude = good;
+      }
+    }
+  }
+};
+var TransverseMercatorUtils = _TransverseMercatorUtils;
+__publicField(TransverseMercatorUtils, "POLE_EDGE", 1.4844222297453322);
+__publicField(TransverseMercatorUtils, "POLE_EDGE_DEG", THREE7.MathUtils.radToDeg(_TransverseMercatorUtils.POLE_EDGE));
+__publicField(TransverseMercatorUtils, "POLE_RADIUS", 90 - _TransverseMercatorUtils.POLE_EDGE_DEG);
+__publicField(TransverseMercatorUtils, "POLE_RADIUS_SQ", Math.pow(_TransverseMercatorUtils.POLE_RADIUS, 2));
+var transverseMercatorProjection = new TransverseMercatorProjection(EarthConstants.EQUATORIAL_CIRCUMFERENCE);
+
+// src/geoutils/tiling/QuadTreeSubdivisionScheme.ts
+var QuadTreeSubdivisionScheme = class {
+  getSubdivisionX() {
+    return 2;
+  }
+  getSubdivisionY() {
+    return 2;
+  }
+  getLevelDimensionX(level) {
+    return 1 << level;
+  }
+  getLevelDimensionY(level) {
+    return 1 << level;
+  }
+};
+var quadTreeSubdivisionScheme = new QuadTreeSubdivisionScheme();
+
+// src/geoutils/tiling/FlatTileBoundingBoxGenerator.ts
+import * as THREE8 from "three";
+var FlatTileBoundingBoxGenerator = class {
+  constructor(tilingScheme, minElevation = 0, maxElevation = 0) {
+    this.tilingScheme = tilingScheme;
+    this.minElevation = minElevation;
+    this.maxElevation = maxElevation;
+    this.m_tilingScheme = tilingScheme;
+    this.m_worldBox = tilingScheme.projection.worldExtent(minElevation, maxElevation);
+    const { min, max } = this.m_worldBox;
+    this.m_worldDimensions = {
+      x: max.x - min.x,
+      y: max.y - min.y,
+      z: max.z - min.z
+    };
+  }
+  m_tilingScheme;
+  m_worldDimensions;
+  m_worldBox;
+  get projection() {
+    return this.m_tilingScheme.projection;
+  }
+  get subdivisionScheme() {
+    return this.m_tilingScheme.subdivisionScheme;
+  }
+  getWorldBox(tileKey, result) {
+    const level = tileKey.level;
+    const levelDimensionX = this.subdivisionScheme.getLevelDimensionX(level);
+    const levelDimensionY = this.subdivisionScheme.getLevelDimensionY(level);
+    const sizeX = this.m_worldDimensions.x / levelDimensionX;
+    const sizeY = this.m_worldDimensions.y / levelDimensionY;
+    const originX = this.m_worldBox.min.x + sizeX * tileKey.column;
+    const originY = this.m_worldBox.min.y + sizeY * tileKey.row;
+    if (!result) {
+      result = new THREE8.Box3();
+    }
+    result.min.x = originX;
+    result.min.y = originY;
+    result.min.z = this.m_worldBox.min.z;
+    result.max.x = originX + sizeX;
+    result.max.y = originY + sizeY;
+    result.max.z = this.m_worldBox.max.z;
+    return result;
+  }
+  getGeoBox(tileKey) {
+    const worldBox = this.getWorldBox(tileKey);
+    return this.projection.unprojectBox(worldBox);
+  }
 };
 
+// src/geoutils/tiling/TileKey.ts
+var powerOfTwo = [
+  1,
+  2,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  512,
+  1024,
+  2048,
+  4096,
+  8192,
+  16384,
+  32768,
+  65536,
+  131072,
+  262144,
+  524288,
+  1048576,
+  2097152,
+  4194304,
+  8388608,
+  16777216,
+  33554432,
+  67108864,
+  134217728,
+  268435456,
+  536870912,
+  1073741824,
+  2147483648,
+  4294967296,
+  8589934592,
+  17179869184,
+  34359738368,
+  68719476736,
+  137438953472,
+  274877906944,
+  549755813888,
+  1099511627776,
+  2199023255552,
+  4398046511104,
+  8796093022208,
+  17592186044416,
+  35184372088832,
+  70368744177664,
+  140737488355328,
+  281474976710656,
+  562949953421312,
+  1125899906842624,
+  2251799813685248,
+  4503599627370496
+];
+var TileKey = class {
+  constructor(row, column, level) {
+    this.row = row;
+    this.column = column;
+    this.level = level;
+  }
+  static fromRowColumnLevel(row, column, level) {
+    return new TileKey(row, column, level);
+  }
+  static fromQuadKey(quadkey) {
+    const level = quadkey.length;
+    let row = 0;
+    let column = 0;
+    for (let i = 0; i < quadkey.length; ++i) {
+      const mask = 1 << i;
+      const d = parseInt(quadkey.charAt(level - i - 1), 10);
+      if (d & 1) {
+        column |= mask;
+      }
+      if (d & 2) {
+        row |= mask;
+      }
+    }
+    return TileKey.fromRowColumnLevel(row, column, level);
+  }
+  static fromMortonCode(quadKey64) {
+    let level = 0;
+    let row = 0;
+    let column = 0;
+    let quadKey = quadKey64;
+    while (quadKey > 1) {
+      const mask = 1 << level;
+      if (quadKey & 1) {
+        column |= mask;
+      }
+      if (quadKey & 2) {
+        row |= mask;
+      }
+      level++;
+      quadKey = (quadKey - (quadKey & 3)) / 4;
+    }
+    const result = TileKey.fromRowColumnLevel(row, column, level);
+    result.m_mortonCode = quadKey64;
+    return result;
+  }
+  static fromHereTile(quadkey64) {
+    const result = TileKey.fromMortonCode(parseInt(quadkey64, 10));
+    result.m_hereTile = quadkey64;
+    return result;
+  }
+  static columnsAtLevel(level) {
+    return Math.pow(2, level);
+  }
+  static rowsAtLevel(level) {
+    return Math.pow(2, level);
+  }
+  static atCoords(level, coordX, coordY, totalWidth, totalHeight) {
+    return TileKey.fromRowColumnLevel(Math.floor(coordY / (totalHeight / TileKey.rowsAtLevel(level))), Math.floor(coordX / (totalWidth / TileKey.columnsAtLevel(level))), level);
+  }
+  static parentMortonCode(mortonCode) {
+    return Math.floor(mortonCode / 4);
+  }
+  m_mortonCode;
+  m_hereTile;
+  parent() {
+    if (this.level === 0) {
+      throw new Error("Cannot get the parent of the root tile key");
+    }
+    return TileKey.fromRowColumnLevel(this.row >>> 1, this.column >>> 1, this.level - 1);
+  }
+  changedLevelBy(delta) {
+    const level = Math.max(0, this.level + delta);
+    let row = this.row;
+    let column = this.column;
+    if (delta >= 0) {
+      row <<= delta;
+      column <<= delta;
+    } else {
+      row >>>= -delta;
+      column >>>= -delta;
+    }
+    return TileKey.fromRowColumnLevel(row, column, level);
+  }
+  changedLevelTo(level) {
+    return this.changedLevelBy(level - this.level);
+  }
+  mortonCode() {
+    if (this.m_mortonCode === void 0) {
+      let column = this.column;
+      let row = this.row;
+      let result = powerOfTwo[this.level << 1];
+      for (let i = 0; i < this.level; ++i) {
+        if (column & 1) {
+          result += powerOfTwo[2 * i];
+        }
+        if (row & 1) {
+          result += powerOfTwo[2 * i + 1];
+        }
+        column >>>= 1;
+        row >>>= 1;
+      }
+      this.m_mortonCode = result;
+    }
+    return this.m_mortonCode;
+  }
+  toHereTile() {
+    if (this.m_hereTile === void 0) {
+      this.m_hereTile = this.mortonCode().toString();
+    }
+    return this.m_hereTile;
+  }
+  toQuadKey() {
+    let result = "";
+    for (let i = this.level; i > 0; --i) {
+      const mask = 1 << i - 1;
+      const col = (this.column & mask) !== 0;
+      const row = (this.row & mask) !== 0;
+      if (col && row) {
+        result += "3";
+      } else if (row) {
+        result += "2";
+      } else if (col) {
+        result += "1";
+      } else {
+        result += "0";
+      }
+    }
+    return result;
+  }
+  equals(qnr) {
+    return this.row === qnr.row && this.column === qnr.column && this.level === qnr.level;
+  }
+  addedSubKey(sub) {
+    const subQuad = TileKey.fromQuadKey(sub.length === 0 ? "-" : sub);
+    const child = this.changedLevelBy(subQuad.level);
+    return TileKey.fromRowColumnLevel(child.row + subQuad.row, child.column + subQuad.column, child.level);
+  }
+  addedSubHereTile(sub) {
+    const subQuad = TileKey.fromHereTile(sub);
+    const child = this.changedLevelBy(subQuad.level);
+    return TileKey.fromRowColumnLevel(child.row + subQuad.row, child.column + subQuad.column, child.level);
+  }
+  getSubHereTile(delta) {
+    const key = this.mortonCode();
+    const msb = 1 << delta * 2;
+    const mask = msb - 1;
+    const result = key & mask | msb;
+    return result.toString();
+  }
+  rowCount() {
+    return TileKey.rowsAtLevel(this.level);
+  }
+  columnCount() {
+    return TileKey.columnsAtLevel(this.level);
+  }
+};
+
+// src/geoutils/tiling/TileKeyUtils.ts
+var powerOfTwo2 = (() => {
+  let val = 0.5;
+  return new Array(53).fill(0).map(() => val *= 2);
+})();
+var TileKeyUtils;
+((TileKeyUtils2) => {
+  function geoCoordinatesToTileKey(tilingScheme, geoPoint, level) {
+    const projection = tilingScheme.projection;
+    const worldPoint = projection.projectPoint(geoPoint);
+    return worldCoordinatesToTileKey(tilingScheme, worldPoint, level);
+  }
+  TileKeyUtils2.geoCoordinatesToTileKey = geoCoordinatesToTileKey;
+  function worldCoordinatesToTileKey(tilingScheme, worldPoint, level) {
+    const projection = tilingScheme.projection;
+    const subdivisionScheme = tilingScheme.subdivisionScheme;
+    const cx = subdivisionScheme.getLevelDimensionX(level);
+    const cy = subdivisionScheme.getLevelDimensionY(level);
+    const { min, max } = projection.worldExtent(0, 0);
+    const worldSizeX = max.x - min.x;
+    const worldSizeY = max.y - min.y;
+    if (worldPoint.x < min.x || worldPoint.x > max.x) {
+      return null;
+    }
+    if (worldPoint.y < min.y || worldPoint.y > max.y) {
+      return null;
+    }
+    const column = Math.min(cx - 1, Math.floor(cx * (worldPoint.x - min.x) / worldSizeX));
+    const row = Math.min(cy - 1, Math.floor(cy * (worldPoint.y - min.y) / worldSizeY));
+    return TileKey.fromRowColumnLevel(row, column, level);
+  }
+  TileKeyUtils2.worldCoordinatesToTileKey = worldCoordinatesToTileKey;
+  function geoRectangleToTileKeys(tilingScheme, geoBox, level) {
+    const wrap = (value2, lower, upper) => {
+      if (value2 < lower) {
+        return upper - (lower - value2) % (upper - lower);
+      }
+      return lower + (value2 - lower) % (upper - lower);
+    };
+    const clamp = (x, minVal, maxVal) => {
+      return Math.min(Math.max(x, minVal), maxVal);
+    };
+    const southWestLongitude = wrap(geoBox.southWest.longitudeInRadians, -Math.PI, Math.PI);
+    const southWestLatitude = clamp(geoBox.southWest.latitudeInRadians, -(Math.PI * 0.5), Math.PI * 0.5);
+    const northEastLongitude = wrap(geoBox.northEast.longitudeInRadians, -Math.PI, Math.PI);
+    const northEastLatitude = clamp(geoBox.northEast.latitudeInRadians, -(Math.PI * 0.5), Math.PI * 0.5);
+    const minTileKey = TileKeyUtils2.geoCoordinatesToTileKey(tilingScheme, GeoCoordinates.fromRadians(southWestLatitude, southWestLongitude), level);
+    const maxTileKey = TileKeyUtils2.geoCoordinatesToTileKey(tilingScheme, GeoCoordinates.fromRadians(northEastLatitude, northEastLongitude), level);
+    const columnCount = tilingScheme.subdivisionScheme.getLevelDimensionX(level);
+    if (!minTileKey || !maxTileKey) {
+      throw new Error("Invalid coordinates");
+    }
+    const minColumn = minTileKey.column;
+    let maxColumn = maxTileKey.column;
+    if (southWestLongitude > northEastLongitude) {
+      if (maxColumn !== minColumn) {
+        maxColumn += columnCount;
+      } else {
+        maxColumn += columnCount - 1;
+      }
+    }
+    const minRow = Math.min(minTileKey.row, maxTileKey.row);
+    const maxRow = Math.max(minTileKey.row, maxTileKey.row);
+    const keys = new Array();
+    for (let row = minRow; row <= maxRow; ++row) {
+      for (let column = minColumn; column <= maxColumn; ++column) {
+        keys.push(TileKey.fromRowColumnLevel(row, column % columnCount, level));
+      }
+    }
+    return keys;
+  }
+  TileKeyUtils2.geoRectangleToTileKeys = geoRectangleToTileKeys;
+  function getKeyForTileKeyAndOffset(tileKey, offset, bitshift = 4) {
+    const shiftedOffset = getShiftedOffset(offset, bitshift);
+    return tileKey.mortonCode() + shiftedOffset;
+  }
+  TileKeyUtils2.getKeyForTileKeyAndOffset = getKeyForTileKeyAndOffset;
+  function extractOffsetAndMortonKeyFromKey(key, bitshift = 4) {
+    let offset = 0;
+    let mortonCode = key;
+    let i = 0;
+    for (; i < bitshift; i++) {
+      const num = powerOfTwo2[52 - i];
+      if (mortonCode >= num) {
+        mortonCode -= num;
+        offset += powerOfTwo2[bitshift - 1 - i];
+      }
+    }
+    offset -= powerOfTwo2[bitshift - 1];
+    return { offset, mortonCode };
+  }
+  TileKeyUtils2.extractOffsetAndMortonKeyFromKey = extractOffsetAndMortonKeyFromKey;
+  function getParentKeyFromKey(calculatedKey, bitshift = 4) {
+    const { offset, mortonCode } = extractOffsetAndMortonKeyFromKey(calculatedKey, bitshift);
+    const parentTileKey = TileKey.fromMortonCode(TileKey.parentMortonCode(mortonCode));
+    return getKeyForTileKeyAndOffset(parentTileKey, offset, bitshift);
+  }
+  TileKeyUtils2.getParentKeyFromKey = getParentKeyFromKey;
+  function getShiftedOffset(offset, offsetBits = 4) {
+    let result = 0;
+    const totalOffsetsToStore = powerOfTwo2[offsetBits];
+    offset += totalOffsetsToStore / 2;
+    while (offset < 0) {
+      offset += totalOffsetsToStore;
+    }
+    while (offset >= totalOffsetsToStore) {
+      offset -= totalOffsetsToStore;
+    }
+    for (let i = 0; i < offsetBits && offset > 0; i++) {
+      if (offset & 1) {
+        result += powerOfTwo2[53 - offsetBits + i];
+      }
+      offset >>>= 1;
+    }
+    return result;
+  }
+})(TileKeyUtils || (TileKeyUtils = {}));
+
+// src/geoutils/tiling/SubTiles.ts
+var SubTiles = class {
+  constructor(tileKey, sizeX, sizeY) {
+    this.tileKey = tileKey;
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
+  }
+  [Symbol.iterator]() {
+    return this.sizeX === 2 && this.sizeY === 2 ? SubTiles.ZCurveIterator(this.tileKey) : SubTiles.RowColumnIterator(this.tileKey, this.sizeX, this.sizeY);
+  }
+};
+((SubTiles2) => {
+  function* RowColumnIterator(parentKey, sizeX, sizeY) {
+    for (let y = 0; y < sizeY; y++) {
+      for (let x = 0; x < sizeX; x++) {
+        yield TileKey.fromRowColumnLevel(parentKey.row * sizeY + y, parentKey.column * sizeX + x, parentKey.level + 1);
+      }
+    }
+  }
+  SubTiles2.RowColumnIterator = RowColumnIterator;
+  function* ZCurveIterator(parentKey) {
+    for (let i = 0; i < 4; i++) {
+      yield TileKey.fromRowColumnLevel(parentKey.row << 1 | i >> 1, parentKey.column << 1 | i & 1, parentKey.level + 1);
+    }
+  }
+  SubTiles2.ZCurveIterator = ZCurveIterator;
+})(SubTiles || (SubTiles = {}));
+
+// src/geoutils/tiling/TileTreeTraverse.ts
+var TileTreeTraverse = class {
+  m_subdivisionScheme;
+  constructor(subdivisionScheme) {
+    this.m_subdivisionScheme = subdivisionScheme;
+  }
+  subTiles(tileKey) {
+    const divX = this.m_subdivisionScheme.getSubdivisionX(tileKey.level);
+    const divY = this.m_subdivisionScheme.getSubdivisionY(tileKey.level);
+    return new SubTiles(tileKey, divX, divY);
+  }
+};
+
+// src/geoutils/tiling/TilingScheme.ts
+var TilingScheme = class {
+  constructor(subdivisionScheme, projection) {
+    this.subdivisionScheme = subdivisionScheme;
+    this.projection = projection;
+    this.boundingBoxGenerator = new FlatTileBoundingBoxGenerator(this);
+    this.tileTreeTraverse = new TileTreeTraverse(subdivisionScheme);
+  }
+  boundingBoxGenerator;
+  tileTreeTraverse;
+  getSubTileKeys(tileKey) {
+    return this.tileTreeTraverse.subTiles(tileKey);
+  }
+  getTileKey(geoPoint, level) {
+    return TileKeyUtils.geoCoordinatesToTileKey(this, geoPoint, level);
+  }
+  getTileKeys(geoBox, level) {
+    return TileKeyUtils.geoRectangleToTileKeys(this, geoBox, level);
+  }
+  getGeoBox(tileKey) {
+    return this.boundingBoxGenerator.getGeoBox(tileKey);
+  }
+  getWorldBox(tileKey, result) {
+    return this.boundingBoxGenerator.getWorldBox(tileKey, result);
+  }
+};
+
+// src/geoutils/tiling/PolarTilingScheme.ts
+var polarTilingScheme = new TilingScheme(quadTreeSubdivisionScheme, transverseMercatorProjection);
+
+// src/geoutils/tiling/WebMercatorTilingScheme.ts
+var webMercatorTilingScheme = new TilingScheme(quadTreeSubdivisionScheme, webMercatorProjection);
+
 // src/datasource-protocol/ColorUtils.ts
-import * as THREE6 from "three";
+import * as THREE9 from "three";
 
 // src/utils/assert.ts
 var isProduction = process.env.NODE_ENV === "production";
@@ -1584,7 +2702,7 @@ var Math2D;
 })(Math2D || (Math2D = {}));
 
 // src/utils/MathUtils.ts
-var MathUtils6;
+var MathUtils8;
 ((MathUtils38) => {
   function clamp(value2, min, max) {
     return value2 < min ? min : value2 > max ? max : value2;
@@ -1641,7 +2759,7 @@ var MathUtils6;
     return startValue + (endValue - startValue) * timeValue;
   }
   MathUtils38.easeInOutCubic = easeInOutCubic;
-})(MathUtils6 || (MathUtils6 = {}));
+})(MathUtils8 || (MathUtils8 = {}));
 
 // src/utils/Mixins.ts
 function applyMixinsWithoutProperties(derivedCtor, baseCtors) {
@@ -1923,7 +3041,7 @@ function composeUriResolvers(...resolvers) {
 }
 
 // src/datasource-protocol/RGBA.ts
-import { MathUtils as MathUtils7 } from "three";
+import { MathUtils as MathUtils9 } from "three";
 
 // src/datasource-protocol/StringEncodedNumeral.ts
 import { parseCSSColor } from "csscolorparser";
@@ -2035,10 +3153,10 @@ var RGBA = class {
     return ColorUtils.getHexFromRgba(this.r, this.g, this.b, this.a);
   }
   lerp(target, t) {
-    this.r = MathUtils7.lerp(this.r, target.r, t);
-    this.g = MathUtils7.lerp(this.g, target.g, t);
-    this.b = MathUtils7.lerp(this.b, target.b, t);
-    this.a = MathUtils7.lerp(this.a, target.a, t);
+    this.r = MathUtils9.lerp(this.r, target.r, t);
+    this.g = MathUtils9.lerp(this.g, target.g, t);
+    this.b = MathUtils9.lerp(this.b, target.b, t);
+    this.a = MathUtils9.lerp(this.a, target.a, t);
     return this;
   }
   toJSON() {
@@ -2054,7 +3172,7 @@ var SHIFT_BLUE = 0;
 var HEX_FULL_CHANNEL = 255;
 var HEX_RGB_MASK = 16777215;
 var HEX_TRGB_MASK = 4294967295;
-var tmpColor = new THREE6.Color();
+var tmpColor = new THREE9.Color();
 var ColorUtils;
 ((ColorUtils2) => {
   function getHexFromRgba(r, g, b, a) {
@@ -2103,1116 +3221,6 @@ var ColorUtils;
   ColorUtils2.removeAlphaFromHex = removeAlphaFromHex;
 })(ColorUtils || (ColorUtils = {}));
 
-// src/geoutils/coordinates/GeoBoxExtentLike.ts
-function isGeoBoxExtentLike(obj) {
-  return obj && typeof obj === "object" && typeof obj.latitudeSpan === "number" && typeof obj.longitudeSpan === "number";
-}
-
-// src/geoutils/coordinates/GeoCoordLike.ts
-function geoCoordLikeToGeoCoordinatesLike(coord) {
-  return isGeoCoordinatesLike(coord) ? coord : isLatLngLike(coord) ? { latitude: coord.lat, longitude: coord.lng } : { latitude: coord[1], longitude: coord[0] };
-}
-
-// src/geoutils/coordinates/GeoPolygon.ts
-import { Vector2 } from "three";
-function computeLonSpanAcrossGreewich(lonA, lonB) {
-  return Math.max(lonA, lonB) - Math.min(lonA, lonB);
-}
-function isLeftToRightAntimeridianCrossing(lonStart, lonEnd) {
-  return lonStart > 0 && lonEnd < 0 && computeLonSpanAcrossGreewich(lonStart, lonEnd) > 180;
-}
-function isRightToLeftAntimeridianCrossing(lonStart, lonEnd) {
-  return isLeftToRightAntimeridianCrossing(lonEnd, lonStart);
-}
-function isAntimeridianCrossing(lonStart, lonEnd) {
-  return Math.sign(lonStart) === -Math.sign(lonEnd) && computeLonSpanAcrossGreewich(lonStart, lonEnd) > 180;
-}
-var GeoPolygon = class {
-  m_coordinates;
-  constructor(coordinates, needsSort = false, needsWrapping = false) {
-    this.m_coordinates = coordinates.map((coord) => {
-      return geoCoordLikeToGeoCoordinatesLike(coord);
-    });
-    if (needsSort) {
-      this.sortCCW();
-    }
-    if (needsWrapping) {
-      this.wrapCoordinatesAround();
-    }
-  }
-  get coordinates() {
-    return this.m_coordinates;
-  }
-  getGeoBoundingBox() {
-    const centroid = this.getCentroid();
-    if (centroid === void 0) {
-      return GeoBox.fromCoordinates(this.coordinates[0], this.coordinates[0]);
-    }
-    const { east, west } = this.getEastAndWest(centroid);
-    const { north, south } = this.getNorthAndSouth();
-    return GeoBox.fromCoordinates(new GeoCoordinates(south, west), new GeoCoordinates(north, east));
-  }
-  getCentroid() {
-    const area = this.getArea();
-    if (area === 0) {
-      return void 0;
-    }
-    let latitude = 0;
-    let longitude = 0;
-    let f;
-    let previousIndex = this.m_coordinates.length - 1;
-    this.m_coordinates.forEach((coordinate, index) => {
-      const previousCoordinate = this.m_coordinates[previousIndex];
-      f = coordinate.latitude * previousCoordinate.longitude - previousCoordinate.latitude * coordinate.longitude;
-      latitude += (coordinate.latitude + previousCoordinate.latitude) * f;
-      longitude += (coordinate.longitude + previousCoordinate.longitude) * f;
-      previousIndex = index;
-    });
-    f = area * 6;
-    return new GeoCoordinates(latitude / f, area < 0 ? -180 + longitude / f : longitude / f);
-  }
-  sortCCW() {
-    const polyCenter = this.getPolyAverageCenter();
-    if (!polyCenter) {
-      return;
-    }
-    this.m_coordinates.sort((a, b) => {
-      const veca = new Vector2(a.latitude - polyCenter.latitude, a.longitude - polyCenter.longitude).normalize();
-      const vecb = new Vector2(b.latitude - polyCenter.latitude, b.longitude - polyCenter.longitude).normalize();
-      return vecb.angle() - veca.angle();
-    });
-  }
-  wrapCoordinatesAround() {
-    const firstAntimerCrossIndex = this.m_coordinates.findIndex((val, index) => {
-      const prevLonIndex = index === 0 ? this.m_coordinates.length - 1 : index - 1;
-      const prevLon = this.m_coordinates[prevLonIndex].longitude;
-      const lon = val.longitude;
-      return isLeftToRightAntimeridianCrossing(prevLon, lon);
-    });
-    if (firstAntimerCrossIndex < 0) {
-      return;
-    }
-    let wrapAround = true;
-    for (let i = 0; i < this.m_coordinates.length; i++) {
-      const index = (firstAntimerCrossIndex + i) % this.m_coordinates.length;
-      const currentLon = this.m_coordinates[index].longitude;
-      const nextLon = this.m_coordinates[(index + 1) % this.m_coordinates.length].longitude;
-      if (wrapAround) {
-        this.m_coordinates[index].longitude += 360;
-      }
-      if (isRightToLeftAntimeridianCrossing(currentLon, nextLon)) {
-        wrapAround = false;
-      } else if (isLeftToRightAntimeridianCrossing(currentLon, nextLon)) {
-        wrapAround = true;
-      }
-    }
-  }
-  getPolyAverageCenter() {
-    const polySum = this.m_coordinates.reduce((prev, curr) => {
-      return new GeoCoordinates(prev.latitude + curr.latitude, prev.longitude + curr.longitude);
-    });
-    return new GeoCoordinates(polySum.latitude / this.m_coordinates.length, polySum.longitude / this.m_coordinates.length);
-  }
-  getArea() {
-    let area = 0;
-    let previousIndex = this.m_coordinates.length - 1;
-    this.m_coordinates.forEach((coordinate, index) => {
-      const previousCoordinate = this.m_coordinates[previousIndex];
-      area += coordinate.latitude * previousCoordinate.longitude;
-      area -= coordinate.longitude * previousCoordinate.latitude;
-      previousIndex = index;
-    });
-    return area /= 2;
-  }
-  getEastAndWest(center) {
-    let west = center.longitude;
-    let east = center.longitude;
-    let previousIndex = this.m_coordinates.length - 1;
-    this.m_coordinates.forEach((coordinate, index) => {
-      const previousCoordinate = this.m_coordinates[previousIndex];
-      previousIndex = index;
-      const veca = new Vector2(coordinate.latitude - center.latitude, coordinate.longitude - center.longitude).normalize();
-      const vecb = new Vector2(previousCoordinate.latitude - center.latitude, previousCoordinate.longitude - center.longitude).normalize();
-      let ccw = Math.sign(vecb.angle() - veca.angle()) === 1;
-      if (vecb.y >= 0 && veca.y < 0) {
-        ccw = true;
-      }
-      const long = coordinate.longitude;
-      if (long < center.longitude) {
-        if (ccw) {
-          west = Math.min(west, long);
-        } else {
-          east = Math.min(east, long);
-        }
-      } else {
-        if (ccw) {
-          east = Math.max(east, long);
-        } else {
-          west = Math.max(west, long);
-        }
-      }
-    });
-    return { east, west };
-  }
-  getNorthAndSouth() {
-    let north = MIN_LATITUDE;
-    let south = MAX_LATITUDE;
-    this.m_coordinates.forEach((coordinate, index) => {
-      north = Math.max(north, coordinate.latitude);
-      south = Math.min(south, coordinate.latitude);
-    });
-    return { north, south };
-  }
-};
-
-// src/geoutils/math/OrientedBox3.ts
-import { Matrix4, Vector3 as Vector32 } from "three";
-function intersectsSlab(rayDir, p, axis, extent, t) {
-  const epsilon3 = 1e-20;
-  const e = axis.dot(p);
-  const f = axis.dot(rayDir);
-  if (Math.abs(f) < epsilon3) {
-    return Math.abs(e) <= extent;
-  }
-  const finv = 1 / f;
-  const t1 = (e + extent) * finv;
-  const t2 = (e - extent) * finv;
-  if (t1 > t2) {
-    if (t2 > t.min) {
-      t.min = t2;
-    }
-    if (t1 < t.max) {
-      t.max = t1;
-    }
-  } else {
-    if (t1 > t.min) {
-      t.min = t1;
-    }
-    if (t2 < t.max) {
-      t.max = t2;
-    }
-  }
-  return t.min <= t.max && t.max >= 0;
-}
-var tmpVec = new Vector32();
-var tmpT = { min: -Infinity, max: Infinity };
-var OrientedBox3 = class {
-  position = new Vector32();
-  xAxis = new Vector32(1, 0, 0);
-  yAxis = new Vector32(0, 1, 0);
-  zAxis = new Vector32(0, 0, 1);
-  extents = new Vector32();
-  constructor(position, rotationMatrix, extents) {
-    if (position !== void 0) {
-      this.position.copy(position);
-    }
-    if (rotationMatrix !== void 0) {
-      rotationMatrix.extractBasis(this.xAxis, this.yAxis, this.zAxis);
-    }
-    if (extents !== void 0) {
-      this.extents.copy(extents);
-    }
-  }
-  clone() {
-    const newBox = new OrientedBox3();
-    newBox.copy(this);
-    return newBox;
-  }
-  copy(other) {
-    this.position.copy(other.position);
-    this.xAxis.copy(other.xAxis);
-    this.yAxis.copy(other.yAxis);
-    this.zAxis.copy(other.zAxis);
-    this.extents.copy(other.extents);
-  }
-  getCenter(center = new Vector32()) {
-    return center.copy(this.position);
-  }
-  getSize(size = new Vector32()) {
-    return size.copy(this.extents).multiplyScalar(2);
-  }
-  getRotationMatrix(matrix = new Matrix4()) {
-    return matrix.makeBasis(this.xAxis, this.yAxis, this.zAxis);
-  }
-  intersects(frustumOrPlanes) {
-    const planes = Array.isArray(frustumOrPlanes) ? frustumOrPlanes : frustumOrPlanes.planes;
-    for (const plane of planes) {
-      const r = Math.abs(plane.normal.dot(this.xAxis) * this.extents.x) + Math.abs(plane.normal.dot(this.yAxis) * this.extents.y) + Math.abs(plane.normal.dot(this.zAxis) * this.extents.z);
-      const d = plane.distanceToPoint(this.position);
-      if (d + r < 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-  intersectsRay(ray) {
-    tmpT.min = -Infinity;
-    tmpT.max = Infinity;
-    tmpVec.copy(this.position).sub(ray.origin);
-    if (!intersectsSlab(ray.direction, tmpVec, this.xAxis, this.extents.x, tmpT)) {
-      return void 0;
-    }
-    if (!intersectsSlab(ray.direction, tmpVec, this.yAxis, this.extents.y, tmpT)) {
-      return void 0;
-    }
-    if (!intersectsSlab(ray.direction, tmpVec, this.zAxis, this.extents.z, tmpT)) {
-      return void 0;
-    }
-    return tmpT.min > 0 ? tmpT.min : tmpT.max;
-  }
-  contains(point) {
-    const dx = point.x - this.position.x;
-    const dy = point.y - this.position.y;
-    const dz = point.z - this.position.z;
-    const x = Math.abs(dx * this.xAxis.x + dy * this.xAxis.y + dz * this.xAxis.z);
-    const y = Math.abs(dx * this.yAxis.x + dy * this.yAxis.y + dz * this.yAxis.z);
-    const z = Math.abs(dx * this.zAxis.x + dy * this.zAxis.y + dz * this.zAxis.z);
-    if (x > this.extents.x || y > this.extents.y || z > this.extents.z) {
-      return false;
-    }
-    return true;
-  }
-  distanceToPoint(point) {
-    return Math.sqrt(this.distanceToPointSquared(point));
-  }
-  distanceToPointSquared(point) {
-    const d = new Vector32();
-    d.subVectors(point, this.position);
-    const lengths = [
-      d.dot(this.xAxis),
-      d.dot(this.yAxis),
-      d.dot(this.zAxis)
-    ];
-    let result = 0;
-    for (let i = 0; i < 3; ++i) {
-      const length = lengths[i];
-      const extent = this.extents.getComponent(i);
-      if (length < -extent) {
-        const dd = extent + length;
-        result += dd * dd;
-      } else if (length > extent) {
-        const dd = length - extent;
-        result += dd * dd;
-      }
-    }
-    return result;
-  }
-};
-
-// src/geoutils/math/Vector3Like.ts
-function isVector3Like(v) {
-  return v && typeof v.x === "number" && typeof v.y === "number" && typeof v.z === "number";
-}
-
-// src/geoutils/projection/EquirectangularProjection.ts
-import * as THREE7 from "three";
-var _EquirectangularProjection = class extends Projection {
-  type = 0 /* Planar */;
-  getScaleFactor(_worldPoint) {
-    return 1;
-  }
-  worldExtent(minAltitude, maxAltitude, result) {
-    if (!result) {
-      result = new THREE7.Box3();
-    }
-    result.min.x = 0;
-    result.min.y = 0;
-    result.min.z = minAltitude;
-    result.max.x = this.unitScale;
-    result.max.y = this.unitScale / 2;
-    result.max.z = maxAltitude;
-    return result;
-  }
-  projectPoint(geoPoint, result) {
-    if (result === void 0) {
-      result = { x: 0, y: 0, z: 0 };
-    }
-    result.x = (THREE7.MathUtils.degToRad(geoPoint.longitude) + Math.PI) * _EquirectangularProjection.geoToWorldScale * this.unitScale;
-    result.y = (THREE7.MathUtils.degToRad(geoPoint.latitude) + Math.PI * 0.5) * _EquirectangularProjection.geoToWorldScale * this.unitScale;
-    result.z = geoPoint.altitude ?? 0;
-    return result;
-  }
-  unprojectPoint(worldPoint) {
-    const geoPoint = GeoCoordinates.fromRadians(worldPoint.y * _EquirectangularProjection.worldToGeoScale / this.unitScale - Math.PI * 0.5, worldPoint.x * _EquirectangularProjection.worldToGeoScale / this.unitScale - Math.PI, worldPoint.z);
-    return geoPoint;
-  }
-  unprojectAltitude(worldPoint) {
-    return worldPoint.z;
-  }
-  projectBox(geoBox, result) {
-    const worldCenter = this.projectPoint(new GeoCoordinates(geoBox.center.latitude, geoBox.center.longitude, 0));
-    const { latitudeSpanInRadians, longitudeSpanInRadians, altitudeSpan } = geoBox;
-    const sizeX = longitudeSpanInRadians * _EquirectangularProjection.geoToWorldScale;
-    const sizeY = latitudeSpanInRadians * _EquirectangularProjection.geoToWorldScale;
-    if (!result) {
-      result = new THREE7.Box3();
-    }
-    if (isBox3Like(result)) {
-      result.min.x = worldCenter.x - sizeX * 0.5 * this.unitScale;
-      result.min.y = worldCenter.y - sizeY * 0.5 * this.unitScale;
-      result.max.x = worldCenter.x + sizeX * 0.5 * this.unitScale;
-      result.max.y = worldCenter.y + sizeY * 0.5 * this.unitScale;
-      if (altitudeSpan !== void 0) {
-        result.min.z = worldCenter.z - altitudeSpan * 0.5;
-        result.max.z = worldCenter.z + altitudeSpan * 0.5;
-      } else {
-        result.min.z = 0;
-        result.max.z = 0;
-      }
-    } else if (isOrientedBox3Like(result)) {
-      MathUtils3.newVector3(1, 0, 0, result.xAxis);
-      MathUtils3.newVector3(0, 1, 0, result.yAxis);
-      MathUtils3.newVector3(0, 0, 1, result.zAxis);
-      result.position.x = worldCenter.x;
-      result.position.y = worldCenter.y;
-      result.position.z = worldCenter.z;
-      result.extents.x = sizeX * 0.5 * this.unitScale;
-      result.extents.y = sizeY * 0.5 * this.unitScale;
-      result.extents.z = Math.max(Number.EPSILON, (altitudeSpan ?? 0) * 0.5);
-    }
-    return result;
-  }
-  unprojectBox(worldBox) {
-    const minGeo = this.unprojectPoint(worldBox.min);
-    const maxGeo = this.unprojectPoint(worldBox.max);
-    return GeoBox.fromCoordinates(minGeo, maxGeo);
-  }
-  groundDistance(worldPoint) {
-    return worldPoint.z;
-  }
-  scalePointToSurface(worldPoint) {
-    worldPoint.z = 0;
-    return worldPoint;
-  }
-  surfaceNormal(_worldPoint, normal) {
-    if (normal === void 0) {
-      normal = { x: 0, y: 0, z: 1 };
-    } else {
-      normal.x = 0;
-      normal.y = 0;
-      normal.z = 1;
-    }
-    return normal;
-  }
-};
-var EquirectangularProjection = _EquirectangularProjection;
-__publicField(EquirectangularProjection, "geoToWorldScale", 1 / (2 * Math.PI));
-__publicField(EquirectangularProjection, "worldToGeoScale", 2 * Math.PI / 1);
-var normalizedEquirectangularProjection = new EquirectangularProjection(1);
-var equirectangularProjection = new EquirectangularProjection(EarthConstants.EQUATORIAL_CIRCUMFERENCE);
-
-// src/geoutils/projection/TransverseMercatorProjection.ts
-import * as THREE8 from "three";
-var TransverseMercatorProjection = class extends Projection {
-  constructor(unitScale) {
-    super(unitScale);
-    this.unitScale = unitScale;
-  }
-  static clampGeoPoint(geoPoint, _unitScale) {
-    const lat = geoPoint.latitude;
-    const lon = geoPoint.longitude;
-    const r = TransverseMercatorUtils.POLE_RADIUS;
-    const rsq = TransverseMercatorUtils.POLE_RADIUS_SQ;
-    const nearestQuarter = Math.round(lon / 90);
-    const deltaLon = nearestQuarter * 90 - lon;
-    if (nearestQuarter % 2 === 0 || Math.abs(deltaLon) > r) {
-      return geoPoint;
-    }
-    const deltaLat = lat - 0;
-    const distanceToPoleSq = deltaLon * deltaLon + deltaLat * deltaLat;
-    if (distanceToPoleSq < rsq) {
-      const distanceToPole = Math.sqrt(distanceToPoleSq);
-      const scale = (r - distanceToPole) / distanceToPole;
-      const dir = 1;
-      const offsetLon = deltaLon === 0 && deltaLat === 0 ? r * dir : deltaLon;
-      return new GeoCoordinates(lat + deltaLat * scale, lon + offsetLon * scale);
-    }
-    return geoPoint;
-  }
-  type = 0 /* Planar */;
-  m_phi0 = 0;
-  m_lambda0 = 0;
-  getScaleFactor(worldPoint) {
-    return Math.cosh((worldPoint.x / this.unitScale - 0.5) * 2 * Math.PI);
-  }
-  worldExtent(minAltitude, maxAltitude, result) {
-    if (!result) {
-      result = new THREE8.Box3();
-    }
-    result.min.x = 0;
-    result.min.y = 0;
-    result.min.z = minAltitude;
-    result.max.x = this.unitScale;
-    result.max.y = this.unitScale;
-    result.max.z = maxAltitude;
-    return result;
-  }
-  projectPoint(geoPoint, result) {
-    if (!result) {
-      result = { x: 0, y: 0, z: 0 };
-    }
-    const clamped = TransverseMercatorProjection.clampGeoPoint(geoPoint, this.unitScale);
-    const normalLon = clamped.longitude / 360 + 0.5;
-    const offset = normalLon === 1 ? 0 : Math.floor(normalLon);
-    const phi = THREE8.MathUtils.degToRad(clamped.latitude);
-    const lambda = THREE8.MathUtils.degToRad(clamped.longitude - offset * 360) - this.m_lambda0;
-    const B = Math.cos(phi) * Math.sin(lambda);
-    result.x = Math.atanh(B);
-    result.y = Math.atan2(Math.tan(phi), Math.cos(lambda)) - this.m_phi0;
-    const outScale = 0.5 / Math.PI;
-    result.x = this.unitScale * (THREE8.MathUtils.clamp(result.x * outScale + 0.5, 0, 1) + offset);
-    result.y = this.unitScale * THREE8.MathUtils.clamp(result.y * outScale + 0.5, 0, 1);
-    result.z = geoPoint.altitude ?? 0;
-    return result;
-  }
-  unprojectPoint(worldPoint) {
-    const tau = Math.PI * 2;
-    const nx = worldPoint.x / this.unitScale;
-    const ny = worldPoint.y / this.unitScale;
-    const offset = nx === 1 ? 0 : Math.floor(nx);
-    const x = tau * (nx - 0.5 - offset);
-    const y = tau * (ny - 0.5);
-    const z = worldPoint.z || 0;
-    const D = y + this.m_phi0;
-    const phi = Math.asin(Math.sin(D) / Math.cosh(x));
-    const lambda = this.m_lambda0 + Math.atan2(Math.sinh(x), Math.cos(D)) + offset * tau;
-    const geoPoint = GeoCoordinates.fromRadians(phi, lambda, z);
-    return geoPoint;
-  }
-  projectBox(geoBox, result) {
-    const { north, south, east, west } = geoBox;
-    const pointsToCheck = [
-      geoBox.center,
-      geoBox.northEast,
-      geoBox.southWest,
-      new GeoCoordinates(south, east),
-      new GeoCoordinates(north, west)
-    ];
-    const E = TransverseMercatorUtils.POLE_EDGE_DEG;
-    const containsWestCut = west < -90 && east > -90;
-    const containsEastCut = west < 90 && east > 90;
-    const containsCenterX = west < 0 && east > 0;
-    const containsCenterY = west < E && east > -E && north > 0 && south < 0;
-    if (containsWestCut) {
-      pointsToCheck.push(new GeoCoordinates(north, -90));
-      pointsToCheck.push(new GeoCoordinates(south, -90));
-    }
-    if (containsEastCut) {
-      pointsToCheck.push(new GeoCoordinates(north, 90));
-      pointsToCheck.push(new GeoCoordinates(south, 90));
-    }
-    if (containsCenterX) {
-      pointsToCheck.push(new GeoCoordinates(north, 0));
-      pointsToCheck.push(new GeoCoordinates(south, 0));
-    }
-    if (containsCenterY) {
-      pointsToCheck.push(new GeoCoordinates(0, west));
-      pointsToCheck.push(new GeoCoordinates(0, east));
-    }
-    TransverseMercatorUtils.alignLatitude(pointsToCheck, pointsToCheck[0]);
-    const projected = pointsToCheck.map((p) => this.projectPoint(p));
-    const vx = projected.map((p) => p.x);
-    const vy = projected.map((p) => p.y);
-    const vz = projected.map((p) => p.z);
-    const minX = Math.min(...vx);
-    const minY = Math.min(...vy);
-    const minZ = Math.min(...vz);
-    const maxX = Math.max(...vx);
-    const maxY = Math.max(...vy);
-    const maxZ = Math.max(...vz);
-    if (!result) {
-      result = new THREE8.Box3();
-    }
-    if (isBox3Like(result)) {
-      result.min.x = minX;
-      result.min.y = minY;
-      result.min.z = minZ;
-      result.max.x = maxX;
-      result.max.y = maxY;
-      result.max.z = maxZ;
-    } else if (isOrientedBox3Like(result)) {
-      MathUtils3.newVector3(1, 0, 0, result.xAxis);
-      MathUtils3.newVector3(0, 1, 0, result.yAxis);
-      MathUtils3.newVector3(0, 0, 1, result.zAxis);
-      result.position.x = (minX + maxX) / 2;
-      result.position.y = (minY + maxY) / 2;
-      result.position.z = (minZ + maxZ) / 2;
-      result.extents.x = (maxX - minX) / 2;
-      result.extents.y = (maxY - minY) / 2;
-      result.extents.z = (maxZ - minZ) / 2;
-    } else {
-      throw new Error("invalid bounding box");
-    }
-    return result;
-  }
-  unprojectBox(worldBox) {
-    const s = this.unitScale;
-    const min = worldBox.min;
-    const max = worldBox.max;
-    const pointsToCheck = [
-      { x: (min.x + max.x) / 2, y: (min.y + max.y) / 2, z: 0 },
-      min,
-      max,
-      { x: min.x, y: max.y, z: 0 },
-      { x: max.x, y: min.y, z: 0 }
-    ];
-    const center = 0.5 * s;
-    const lowerQ = 0.25 * s;
-    const upperQ = 0.75 * s;
-    const containsCenterX = min.x < center && max.x > center;
-    const containsCenterY = min.y < center && max.y > center;
-    const containsLowerQY = min.y < lowerQ && max.y > lowerQ;
-    const containsUpperQY = min.y < upperQ && max.y > upperQ;
-    if (containsCenterY) {
-      pointsToCheck.push({ x: min.x, y: center, z: 0 });
-      pointsToCheck.push({ x: max.x, y: center, z: 0 });
-      if (containsCenterX) {
-        pointsToCheck.push({ x: center, y: center, z: 0 });
-      }
-    }
-    if (containsLowerQY) {
-      pointsToCheck.push({ x: min.x, y: lowerQ, z: 0 });
-      pointsToCheck.push({ x: max.x, y: lowerQ, z: 0 });
-      if (containsCenterX) {
-        pointsToCheck.push({ x: center, y: lowerQ, z: 0 });
-      }
-    }
-    if (containsUpperQY) {
-      pointsToCheck.push({ x: min.x, y: upperQ, z: 0 });
-      pointsToCheck.push({ x: max.x, y: upperQ, z: 0 });
-      if (containsCenterX) {
-        pointsToCheck.push({ x: center, y: upperQ, z: 0 });
-      }
-    }
-    const geoPoints = pointsToCheck.map((p) => this.unprojectPoint(p));
-    TransverseMercatorUtils.alignLongitude(geoPoints, geoPoints[0]);
-    const latitudes = geoPoints.map((g) => g.latitude);
-    const longitudes = geoPoints.filter((g) => Math.abs(g.latitude) < 90).map((g) => g.longitude);
-    const altitudes = geoPoints.map((g) => g.altitude ?? 0);
-    const minGeo = new GeoCoordinates(Math.min(...latitudes), Math.min(...longitudes), Math.min(...altitudes));
-    const maxGeo = new GeoCoordinates(Math.max(...latitudes), Math.max(...longitudes), Math.max(...altitudes));
-    const geoBox = GeoBox.fromCoordinates(minGeo, maxGeo);
-    return geoBox;
-  }
-  unprojectAltitude(worldPoint) {
-    return worldPoint.z;
-  }
-  groundDistance(worldPoint) {
-    return worldPoint.z;
-  }
-  scalePointToSurface(worldPoint) {
-    worldPoint.z = 0;
-    return worldPoint;
-  }
-  surfaceNormal(_worldPoint, normal) {
-    if (normal === void 0) {
-      normal = { x: 0, y: 0, z: -1 };
-    } else {
-      normal.x = 0;
-      normal.y = 0;
-      normal.z = -1;
-    }
-    return normal;
-  }
-};
-var _TransverseMercatorUtils = class {
-  static alignLatitude(points, referencePoint) {
-    const EPSILON = 1e-9;
-    for (const point of points) {
-      if (point.latitude === 0) {
-        point.latitude = referencePoint.latitude * EPSILON;
-      }
-    }
-  }
-  static alignLongitude(points, referencePoint) {
-    const bad = referencePoint.longitude < 0 ? 180 : -180;
-    const good = referencePoint.longitude < 0 ? -180 : 180;
-    for (const point of points) {
-      if (point.longitude === bad) {
-        point.longitude = good;
-      }
-    }
-  }
-};
-var TransverseMercatorUtils = _TransverseMercatorUtils;
-__publicField(TransverseMercatorUtils, "POLE_EDGE", 1.4844222297453322);
-__publicField(TransverseMercatorUtils, "POLE_EDGE_DEG", THREE8.MathUtils.radToDeg(_TransverseMercatorUtils.POLE_EDGE));
-__publicField(TransverseMercatorUtils, "POLE_RADIUS", 90 - _TransverseMercatorUtils.POLE_EDGE_DEG);
-__publicField(TransverseMercatorUtils, "POLE_RADIUS_SQ", Math.pow(_TransverseMercatorUtils.POLE_RADIUS, 2));
-var transverseMercatorProjection = new TransverseMercatorProjection(EarthConstants.EQUATORIAL_CIRCUMFERENCE);
-
-// src/geoutils/tiling/QuadTreeSubdivisionScheme.ts
-var QuadTreeSubdivisionScheme = class {
-  getSubdivisionX() {
-    return 2;
-  }
-  getSubdivisionY() {
-    return 2;
-  }
-  getLevelDimensionX(level) {
-    return 1 << level;
-  }
-  getLevelDimensionY(level) {
-    return 1 << level;
-  }
-};
-var quadTreeSubdivisionScheme = new QuadTreeSubdivisionScheme();
-
-// src/geoutils/tiling/FlatTileBoundingBoxGenerator.ts
-import * as THREE9 from "three";
-var FlatTileBoundingBoxGenerator = class {
-  constructor(tilingScheme, minElevation = 0, maxElevation = 0) {
-    this.tilingScheme = tilingScheme;
-    this.minElevation = minElevation;
-    this.maxElevation = maxElevation;
-    this.m_tilingScheme = tilingScheme;
-    this.m_worldBox = tilingScheme.projection.worldExtent(minElevation, maxElevation);
-    const { min, max } = this.m_worldBox;
-    this.m_worldDimensions = {
-      x: max.x - min.x,
-      y: max.y - min.y,
-      z: max.z - min.z
-    };
-  }
-  m_tilingScheme;
-  m_worldDimensions;
-  m_worldBox;
-  get projection() {
-    return this.m_tilingScheme.projection;
-  }
-  get subdivisionScheme() {
-    return this.m_tilingScheme.subdivisionScheme;
-  }
-  getWorldBox(tileKey, result) {
-    const level = tileKey.level;
-    const levelDimensionX = this.subdivisionScheme.getLevelDimensionX(level);
-    const levelDimensionY = this.subdivisionScheme.getLevelDimensionY(level);
-    const sizeX = this.m_worldDimensions.x / levelDimensionX;
-    const sizeY = this.m_worldDimensions.y / levelDimensionY;
-    const originX = this.m_worldBox.min.x + sizeX * tileKey.column;
-    const originY = this.m_worldBox.min.y + sizeY * tileKey.row;
-    if (!result) {
-      result = new THREE9.Box3();
-    }
-    result.min.x = originX;
-    result.min.y = originY;
-    result.min.z = this.m_worldBox.min.z;
-    result.max.x = originX + sizeX;
-    result.max.y = originY + sizeY;
-    result.max.z = this.m_worldBox.max.z;
-    return result;
-  }
-  getGeoBox(tileKey) {
-    const worldBox = this.getWorldBox(tileKey);
-    return this.projection.unprojectBox(worldBox);
-  }
-};
-
-// src/geoutils/tiling/TileKey.ts
-var powerOfTwo = [
-  1,
-  2,
-  4,
-  8,
-  16,
-  32,
-  64,
-  128,
-  256,
-  512,
-  1024,
-  2048,
-  4096,
-  8192,
-  16384,
-  32768,
-  65536,
-  131072,
-  262144,
-  524288,
-  1048576,
-  2097152,
-  4194304,
-  8388608,
-  16777216,
-  33554432,
-  67108864,
-  134217728,
-  268435456,
-  536870912,
-  1073741824,
-  2147483648,
-  4294967296,
-  8589934592,
-  17179869184,
-  34359738368,
-  68719476736,
-  137438953472,
-  274877906944,
-  549755813888,
-  1099511627776,
-  2199023255552,
-  4398046511104,
-  8796093022208,
-  17592186044416,
-  35184372088832,
-  70368744177664,
-  140737488355328,
-  281474976710656,
-  562949953421312,
-  1125899906842624,
-  2251799813685248,
-  4503599627370496
-];
-var TileKey = class {
-  constructor(row, column, level) {
-    this.row = row;
-    this.column = column;
-    this.level = level;
-  }
-  static fromRowColumnLevel(row, column, level) {
-    return new TileKey(row, column, level);
-  }
-  static fromQuadKey(quadkey) {
-    const level = quadkey.length;
-    let row = 0;
-    let column = 0;
-    for (let i = 0; i < quadkey.length; ++i) {
-      const mask = 1 << i;
-      const d = parseInt(quadkey.charAt(level - i - 1), 10);
-      if (d & 1) {
-        column |= mask;
-      }
-      if (d & 2) {
-        row |= mask;
-      }
-    }
-    return TileKey.fromRowColumnLevel(row, column, level);
-  }
-  static fromMortonCode(quadKey64) {
-    let level = 0;
-    let row = 0;
-    let column = 0;
-    let quadKey = quadKey64;
-    while (quadKey > 1) {
-      const mask = 1 << level;
-      if (quadKey & 1) {
-        column |= mask;
-      }
-      if (quadKey & 2) {
-        row |= mask;
-      }
-      level++;
-      quadKey = (quadKey - (quadKey & 3)) / 4;
-    }
-    const result = TileKey.fromRowColumnLevel(row, column, level);
-    result.m_mortonCode = quadKey64;
-    return result;
-  }
-  static fromHereTile(quadkey64) {
-    const result = TileKey.fromMortonCode(parseInt(quadkey64, 10));
-    result.m_hereTile = quadkey64;
-    return result;
-  }
-  static columnsAtLevel(level) {
-    return Math.pow(2, level);
-  }
-  static rowsAtLevel(level) {
-    return Math.pow(2, level);
-  }
-  static atCoords(level, coordX, coordY, totalWidth, totalHeight) {
-    return TileKey.fromRowColumnLevel(Math.floor(coordY / (totalHeight / TileKey.rowsAtLevel(level))), Math.floor(coordX / (totalWidth / TileKey.columnsAtLevel(level))), level);
-  }
-  static parentMortonCode(mortonCode) {
-    return Math.floor(mortonCode / 4);
-  }
-  m_mortonCode;
-  m_hereTile;
-  parent() {
-    if (this.level === 0) {
-      throw new Error("Cannot get the parent of the root tile key");
-    }
-    return TileKey.fromRowColumnLevel(this.row >>> 1, this.column >>> 1, this.level - 1);
-  }
-  changedLevelBy(delta) {
-    const level = Math.max(0, this.level + delta);
-    let row = this.row;
-    let column = this.column;
-    if (delta >= 0) {
-      row <<= delta;
-      column <<= delta;
-    } else {
-      row >>>= -delta;
-      column >>>= -delta;
-    }
-    return TileKey.fromRowColumnLevel(row, column, level);
-  }
-  changedLevelTo(level) {
-    return this.changedLevelBy(level - this.level);
-  }
-  mortonCode() {
-    if (this.m_mortonCode === void 0) {
-      let column = this.column;
-      let row = this.row;
-      let result = powerOfTwo[this.level << 1];
-      for (let i = 0; i < this.level; ++i) {
-        if (column & 1) {
-          result += powerOfTwo[2 * i];
-        }
-        if (row & 1) {
-          result += powerOfTwo[2 * i + 1];
-        }
-        column >>>= 1;
-        row >>>= 1;
-      }
-      this.m_mortonCode = result;
-    }
-    return this.m_mortonCode;
-  }
-  toHereTile() {
-    if (this.m_hereTile === void 0) {
-      this.m_hereTile = this.mortonCode().toString();
-    }
-    return this.m_hereTile;
-  }
-  toQuadKey() {
-    let result = "";
-    for (let i = this.level; i > 0; --i) {
-      const mask = 1 << i - 1;
-      const col = (this.column & mask) !== 0;
-      const row = (this.row & mask) !== 0;
-      if (col && row) {
-        result += "3";
-      } else if (row) {
-        result += "2";
-      } else if (col) {
-        result += "1";
-      } else {
-        result += "0";
-      }
-    }
-    return result;
-  }
-  equals(qnr) {
-    return this.row === qnr.row && this.column === qnr.column && this.level === qnr.level;
-  }
-  addedSubKey(sub) {
-    const subQuad = TileKey.fromQuadKey(sub.length === 0 ? "-" : sub);
-    const child = this.changedLevelBy(subQuad.level);
-    return TileKey.fromRowColumnLevel(child.row + subQuad.row, child.column + subQuad.column, child.level);
-  }
-  addedSubHereTile(sub) {
-    const subQuad = TileKey.fromHereTile(sub);
-    const child = this.changedLevelBy(subQuad.level);
-    return TileKey.fromRowColumnLevel(child.row + subQuad.row, child.column + subQuad.column, child.level);
-  }
-  getSubHereTile(delta) {
-    const key = this.mortonCode();
-    const msb = 1 << delta * 2;
-    const mask = msb - 1;
-    const result = key & mask | msb;
-    return result.toString();
-  }
-  rowCount() {
-    return TileKey.rowsAtLevel(this.level);
-  }
-  columnCount() {
-    return TileKey.columnsAtLevel(this.level);
-  }
-};
-
-// src/geoutils/tiling/TileKeyUtils.ts
-var powerOfTwo2 = (() => {
-  let val = 0.5;
-  return new Array(53).fill(0).map(() => val *= 2);
-})();
-var TileKeyUtils;
-((TileKeyUtils2) => {
-  function geoCoordinatesToTileKey(tilingScheme, geoPoint, level) {
-    const projection = tilingScheme.projection;
-    const worldPoint = projection.projectPoint(geoPoint);
-    return worldCoordinatesToTileKey(tilingScheme, worldPoint, level);
-  }
-  TileKeyUtils2.geoCoordinatesToTileKey = geoCoordinatesToTileKey;
-  function worldCoordinatesToTileKey(tilingScheme, worldPoint, level) {
-    const projection = tilingScheme.projection;
-    const subdivisionScheme = tilingScheme.subdivisionScheme;
-    const cx = subdivisionScheme.getLevelDimensionX(level);
-    const cy = subdivisionScheme.getLevelDimensionY(level);
-    const { min, max } = projection.worldExtent(0, 0);
-    const worldSizeX = max.x - min.x;
-    const worldSizeY = max.y - min.y;
-    if (worldPoint.x < min.x || worldPoint.x > max.x) {
-      return null;
-    }
-    if (worldPoint.y < min.y || worldPoint.y > max.y) {
-      return null;
-    }
-    const column = Math.min(cx - 1, Math.floor(cx * (worldPoint.x - min.x) / worldSizeX));
-    const row = Math.min(cy - 1, Math.floor(cy * (worldPoint.y - min.y) / worldSizeY));
-    return TileKey.fromRowColumnLevel(row, column, level);
-  }
-  TileKeyUtils2.worldCoordinatesToTileKey = worldCoordinatesToTileKey;
-  function geoRectangleToTileKeys(tilingScheme, geoBox, level) {
-    const wrap = (value2, lower, upper) => {
-      if (value2 < lower) {
-        return upper - (lower - value2) % (upper - lower);
-      }
-      return lower + (value2 - lower) % (upper - lower);
-    };
-    const clamp = (x, minVal, maxVal) => {
-      return Math.min(Math.max(x, minVal), maxVal);
-    };
-    const southWestLongitude = wrap(geoBox.southWest.longitudeInRadians, -Math.PI, Math.PI);
-    const southWestLatitude = clamp(geoBox.southWest.latitudeInRadians, -(Math.PI * 0.5), Math.PI * 0.5);
-    const northEastLongitude = wrap(geoBox.northEast.longitudeInRadians, -Math.PI, Math.PI);
-    const northEastLatitude = clamp(geoBox.northEast.latitudeInRadians, -(Math.PI * 0.5), Math.PI * 0.5);
-    const minTileKey = TileKeyUtils2.geoCoordinatesToTileKey(tilingScheme, GeoCoordinates.fromRadians(southWestLatitude, southWestLongitude), level);
-    const maxTileKey = TileKeyUtils2.geoCoordinatesToTileKey(tilingScheme, GeoCoordinates.fromRadians(northEastLatitude, northEastLongitude), level);
-    const columnCount = tilingScheme.subdivisionScheme.getLevelDimensionX(level);
-    if (!minTileKey || !maxTileKey) {
-      throw new Error("Invalid coordinates");
-    }
-    const minColumn = minTileKey.column;
-    let maxColumn = maxTileKey.column;
-    if (southWestLongitude > northEastLongitude) {
-      if (maxColumn !== minColumn) {
-        maxColumn += columnCount;
-      } else {
-        maxColumn += columnCount - 1;
-      }
-    }
-    const minRow = Math.min(minTileKey.row, maxTileKey.row);
-    const maxRow = Math.max(minTileKey.row, maxTileKey.row);
-    const keys = new Array();
-    for (let row = minRow; row <= maxRow; ++row) {
-      for (let column = minColumn; column <= maxColumn; ++column) {
-        keys.push(TileKey.fromRowColumnLevel(row, column % columnCount, level));
-      }
-    }
-    return keys;
-  }
-  TileKeyUtils2.geoRectangleToTileKeys = geoRectangleToTileKeys;
-  function getKeyForTileKeyAndOffset(tileKey, offset, bitshift = 4) {
-    const shiftedOffset = getShiftedOffset(offset, bitshift);
-    return tileKey.mortonCode() + shiftedOffset;
-  }
-  TileKeyUtils2.getKeyForTileKeyAndOffset = getKeyForTileKeyAndOffset;
-  function extractOffsetAndMortonKeyFromKey(key, bitshift = 4) {
-    let offset = 0;
-    let mortonCode = key;
-    let i = 0;
-    for (; i < bitshift; i++) {
-      const num = powerOfTwo2[52 - i];
-      if (mortonCode >= num) {
-        mortonCode -= num;
-        offset += powerOfTwo2[bitshift - 1 - i];
-      }
-    }
-    offset -= powerOfTwo2[bitshift - 1];
-    return { offset, mortonCode };
-  }
-  TileKeyUtils2.extractOffsetAndMortonKeyFromKey = extractOffsetAndMortonKeyFromKey;
-  function getParentKeyFromKey(calculatedKey, bitshift = 4) {
-    const { offset, mortonCode } = extractOffsetAndMortonKeyFromKey(calculatedKey, bitshift);
-    const parentTileKey = TileKey.fromMortonCode(TileKey.parentMortonCode(mortonCode));
-    return getKeyForTileKeyAndOffset(parentTileKey, offset, bitshift);
-  }
-  TileKeyUtils2.getParentKeyFromKey = getParentKeyFromKey;
-  function getShiftedOffset(offset, offsetBits = 4) {
-    let result = 0;
-    const totalOffsetsToStore = powerOfTwo2[offsetBits];
-    offset += totalOffsetsToStore / 2;
-    while (offset < 0) {
-      offset += totalOffsetsToStore;
-    }
-    while (offset >= totalOffsetsToStore) {
-      offset -= totalOffsetsToStore;
-    }
-    for (let i = 0; i < offsetBits && offset > 0; i++) {
-      if (offset & 1) {
-        result += powerOfTwo2[53 - offsetBits + i];
-      }
-      offset >>>= 1;
-    }
-    return result;
-  }
-})(TileKeyUtils || (TileKeyUtils = {}));
-
-// src/geoutils/tiling/SubTiles.ts
-var SubTiles = class {
-  constructor(tileKey, sizeX, sizeY) {
-    this.tileKey = tileKey;
-    this.sizeX = sizeX;
-    this.sizeY = sizeY;
-  }
-  [Symbol.iterator]() {
-    return this.sizeX === 2 && this.sizeY === 2 ? SubTiles.ZCurveIterator(this.tileKey) : SubTiles.RowColumnIterator(this.tileKey, this.sizeX, this.sizeY);
-  }
-};
-((SubTiles2) => {
-  function* RowColumnIterator(parentKey, sizeX, sizeY) {
-    for (let y = 0; y < sizeY; y++) {
-      for (let x = 0; x < sizeX; x++) {
-        yield TileKey.fromRowColumnLevel(parentKey.row * sizeY + y, parentKey.column * sizeX + x, parentKey.level + 1);
-      }
-    }
-  }
-  SubTiles2.RowColumnIterator = RowColumnIterator;
-  function* ZCurveIterator(parentKey) {
-    for (let i = 0; i < 4; i++) {
-      yield TileKey.fromRowColumnLevel(parentKey.row << 1 | i >> 1, parentKey.column << 1 | i & 1, parentKey.level + 1);
-    }
-  }
-  SubTiles2.ZCurveIterator = ZCurveIterator;
-})(SubTiles || (SubTiles = {}));
-
-// src/geoutils/tiling/TileTreeTraverse.ts
-var TileTreeTraverse = class {
-  m_subdivisionScheme;
-  constructor(subdivisionScheme) {
-    this.m_subdivisionScheme = subdivisionScheme;
-  }
-  subTiles(tileKey) {
-    const divX = this.m_subdivisionScheme.getSubdivisionX(tileKey.level);
-    const divY = this.m_subdivisionScheme.getSubdivisionY(tileKey.level);
-    return new SubTiles(tileKey, divX, divY);
-  }
-};
-
-// src/geoutils/tiling/TilingScheme.ts
-var TilingScheme = class {
-  constructor(subdivisionScheme, projection) {
-    this.subdivisionScheme = subdivisionScheme;
-    this.projection = projection;
-    this.boundingBoxGenerator = new FlatTileBoundingBoxGenerator(this);
-    this.tileTreeTraverse = new TileTreeTraverse(subdivisionScheme);
-  }
-  boundingBoxGenerator;
-  tileTreeTraverse;
-  getSubTileKeys(tileKey) {
-    return this.tileTreeTraverse.subTiles(tileKey);
-  }
-  getTileKey(geoPoint, level) {
-    return TileKeyUtils.geoCoordinatesToTileKey(this, geoPoint, level);
-  }
-  getTileKeys(geoBox, level) {
-    return TileKeyUtils.geoRectangleToTileKeys(this, geoBox, level);
-  }
-  getGeoBox(tileKey) {
-    return this.boundingBoxGenerator.getGeoBox(tileKey);
-  }
-  getWorldBox(tileKey, result) {
-    return this.boundingBoxGenerator.getWorldBox(tileKey, result);
-  }
-};
-
-// src/geoutils/tiling/PolarTilingScheme.ts
-var polarTilingScheme = new TilingScheme(quadTreeSubdivisionScheme, transverseMercatorProjection);
-
-// src/geoutils/tiling/WebMercatorTilingScheme.ts
-var webMercatorTilingScheme = new TilingScheme(quadTreeSubdivisionScheme, webMercatorProjection);
-
 // src/datasource-protocol/Expr.ts
 import * as THREE14 from "three";
 
@@ -3241,8 +3249,8 @@ function checkArrayLength(arg, array) {
     throw new Error(`the array must have ${length} element(s)`);
   }
 }
-function checkArray(context2, arg) {
-  const value2 = context2.evaluate(arg);
+function checkArray(context, arg) {
+  const value2 = context.evaluate(arg);
   if (!Array.isArray(value2)) {
     throw new Error(`'${value2}' is not an array`);
   }
@@ -3250,19 +3258,19 @@ function checkArray(context2, arg) {
 }
 var operators = {
   array: {
-    call: (context2, call) => {
+    call: (context, call) => {
       switch (call.args.length) {
         case 0:
           throw new Error("not enough arguments");
         case 1:
-          return checkArray(context2, call.args[0]);
+          return checkArray(context, call.args[0]);
         case 2: {
-          const array = checkArray(context2, call.args[1]);
+          const array = checkArray(context, call.args[1]);
           checkElementTypes(call.args[0], array);
           return array;
         }
         case 3: {
-          const array = checkArray(context2, call.args[2]);
+          const array = checkArray(context, call.args[2]);
           checkArrayLength(call.args[1], array);
           checkElementTypes(call.args[0], array);
           return array;
@@ -3273,21 +3281,21 @@ var operators = {
     }
   },
   "make-array": {
-    call: (context2, call) => {
+    call: (context, call) => {
       if (call.args.length === 0) {
         throw new Error("not enough arguments");
       }
-      return [...call.args.map((arg) => context2.evaluate(arg))];
+      return [...call.args.map((arg) => context.evaluate(arg))];
     }
   },
   at: {
-    call: (context2, call) => {
+    call: (context, call) => {
       const args = call.args;
-      const index = context2.evaluate(args[0]);
+      const index = context.evaluate(args[0]);
       if (typeof index !== "number") {
         throw new Error(`expected the index of the element to retrieve`);
       }
-      const value2 = context2.evaluate(args[1]);
+      const value2 = context.evaluate(args[1]);
       if (!Array.isArray(value2)) {
         throw new Error(`expected an array`);
       }
@@ -3295,21 +3303,21 @@ var operators = {
     }
   },
   slice: {
-    call: (context2, call) => {
+    call: (context, call) => {
       if (call.args.length < 2) {
         throw new Error("not enough arguments");
       }
-      const input = context2.evaluate(call.args[0]);
+      const input = context.evaluate(call.args[0]);
       if (!(typeof input === "string" || Array.isArray(input))) {
         throw new Error("input must be a string or an array");
       }
-      const start = context2.evaluate(call.args[1]);
+      const start = context.evaluate(call.args[1]);
       if (typeof start !== "number") {
         throw new Error("expected an index");
       }
       let end;
       if (call.args.length > 2) {
-        end = context2.evaluate(call.args[2]);
+        end = context.evaluate(call.args[2]);
         if (typeof end !== "number") {
           throw new Error("expected an index");
         }
@@ -3323,19 +3331,19 @@ var ArrayOperators = operators;
 // src/datasource-protocol/operators/CastOperators.ts
 var operators2 = {
   "to-boolean": {
-    call: (context2, call) => {
-      return Boolean(context2.evaluate(call.args[0]));
+    call: (context, call) => {
+      return Boolean(context.evaluate(call.args[0]));
     }
   },
   "to-string": {
-    call: (context2, call) => {
-      return String(context2.evaluate(call.args[0]));
+    call: (context, call) => {
+      return String(context.evaluate(call.args[0]));
     }
   },
   "to-number": {
-    call: (context2, call) => {
+    call: (context, call) => {
       for (const arg of call.args) {
-        const value2 = Number(context2.evaluate(arg));
+        const value2 = Number(context.evaluate(arg));
         if (!isNaN(value2)) {
           return value2;
         }
@@ -3350,8 +3358,8 @@ var CastOperators = operators2;
 import * as THREE10 from "three";
 var operators3 = {
   alpha: {
-    call: (context2, call) => {
-      let color = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      let color = context.evaluate(call.args[0]);
       if (typeof color === "string") {
         color = parseStringEncodedColor(color);
       }
@@ -3360,11 +3368,11 @@ var operators3 = {
     }
   },
   rgba: {
-    call: (context2, call) => {
-      const r = context2.evaluate(call.args[0]);
-      const g = context2.evaluate(call.args[1]);
-      const b = context2.evaluate(call.args[2]);
-      const a = context2.evaluate(call.args[3]);
+    call: (context, call) => {
+      const r = context.evaluate(call.args[0]);
+      const g = context.evaluate(call.args[1]);
+      const b = context.evaluate(call.args[2]);
+      const a = context.evaluate(call.args[3]);
       if (typeof r === "number" && typeof g === "number" && typeof b === "number" && typeof a === "number" && r >= 0 && g >= 0 && b >= 0 && a >= 0 && a <= 1) {
         return rgbaToHex(r, g, b, a);
       }
@@ -3372,10 +3380,10 @@ var operators3 = {
     }
   },
   rgb: {
-    call: (context2, call) => {
-      const r = context2.evaluate(call.args[0]);
-      const g = context2.evaluate(call.args[1]);
-      const b = context2.evaluate(call.args[2]);
+    call: (context, call) => {
+      const r = context.evaluate(call.args[0]);
+      const g = context.evaluate(call.args[1]);
+      const b = context.evaluate(call.args[2]);
       if (typeof r === "number" && typeof g === "number" && typeof b === "number" && r >= 0 && g >= 0 && b >= 0) {
         return rgbToHex(r, g, b);
       }
@@ -3383,10 +3391,10 @@ var operators3 = {
     }
   },
   hsl: {
-    call: (context2, call) => {
-      const h = context2.evaluate(call.args[0]);
-      const s = context2.evaluate(call.args[1]);
-      const l = context2.evaluate(call.args[2]);
+    call: (context, call) => {
+      const h = context.evaluate(call.args[0]);
+      const s = context.evaluate(call.args[1]);
+      const l = context.evaluate(call.args[2]);
       if (typeof h === "number" && typeof s === "number" && typeof l === "number" && h >= 0 && s >= 0 && l >= 0) {
         return hslToHex(h, s, l);
       }
@@ -3406,9 +3414,9 @@ function hslToHex(h, s, l) {
 var ColorOperators = operators3;
 
 // src/datasource-protocol/operators/ComparisonOperators.ts
-function compare(context2, call, strict = false) {
-  const left = context2.evaluate(call.args[0]);
-  const right = context2.evaluate(call.args[1]);
+function compare(context, call, strict = false) {
+  const left = context.evaluate(call.args[0]);
+  const right = context.evaluate(call.args[1]);
   if (!(typeof left === "number" && typeof right === "number" || typeof left === "string" && typeof right === "string")) {
     if (strict) {
       throw new Error(`invalid operands '${left}' and '${right}' for operator '${call.op}'`);
@@ -3429,35 +3437,35 @@ function compare(context2, call, strict = false) {
 }
 var operators4 = {
   "!": {
-    call: (context2, call) => {
-      return !context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      return !context.evaluate(call.args[0]);
     }
   },
   "==": {
-    call: (context2, call) => {
-      const left = context2.evaluate(call.args[0]);
-      const right = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const left = context.evaluate(call.args[0]);
+      const right = context.evaluate(call.args[1]);
       return left === right;
     }
   },
   "!=": {
-    call: (context2, call) => {
-      const left = context2.evaluate(call.args[0]);
-      const right = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const left = context.evaluate(call.args[0]);
+      const right = context.evaluate(call.args[1]);
       return left !== right;
     }
   },
   "<": {
-    call: (context2, call) => compare(context2, call)
+    call: (context, call) => compare(context, call)
   },
   ">": {
-    call: (context2, call) => compare(context2, call)
+    call: (context, call) => compare(context, call)
   },
   "<=": {
-    call: (context2, call) => compare(context2, call)
+    call: (context, call) => compare(context, call)
   },
   ">=": {
-    call: (context2, call) => compare(context2, call)
+    call: (context, call) => compare(context, call)
   }
 };
 var ComparisonOperators = operators4;
@@ -3503,8 +3511,8 @@ var MapEnv = class extends Env {
 // src/datasource-protocol/operators/FeatureOperators.ts
 var operators5 = {
   "geometry-type": {
-    call: (context2, call) => {
-      const geometryType = context2.env.lookup("$geometryType");
+    call: (context, call) => {
+      const geometryType = context.env.lookup("$geometryType");
       switch (geometryType) {
         case "point":
           return "Point";
@@ -3519,15 +3527,15 @@ var operators5 = {
   },
   "feature-state": {
     isDynamicOperator: () => true,
-    call: (context2, call) => {
-      if (context2.scope !== 2 /* Dynamic */) {
+    call: (context, call) => {
+      if (context.scope !== 2 /* Dynamic */) {
         throw new Error("feature-state cannot be used in this context");
       }
-      const property = context2.evaluate(call.args[0]);
+      const property = context.evaluate(call.args[0]);
       if (typeof property !== "string") {
         throw new Error(`expected the name of the property of the feature state`);
       }
-      const state = context2.env.lookup("$state");
+      const state = context.env.lookup("$state");
       if (Env.isEnv(state)) {
         return state.lookup(property) ?? null;
       } else if (state instanceof Map) {
@@ -3537,21 +3545,21 @@ var operators5 = {
     }
   },
   id: {
-    call: (context2, call) => {
-      return context2.env.lookup("$id") ?? null;
+    call: (context, call) => {
+      return context.env.lookup("$id") ?? null;
     }
   }
 };
 var FeatureOperators = operators5;
 
 // src/datasource-protocol/operators/FlowOperators.ts
-function conditionalCast(context2, type, args) {
+function conditionalCast(context, type, args) {
   switch (type) {
     case "boolean":
     case "number":
     case "string":
       for (const childExpr of args) {
-        const value2 = context2.evaluate(childExpr);
+        const value2 = context.evaluate(childExpr);
         if (typeof value2 === type) {
           return value2;
         }
@@ -3563,9 +3571,9 @@ function conditionalCast(context2, type, args) {
 }
 var operators6 = {
   all: {
-    call: (context2, call) => {
+    call: (context, call) => {
       for (const childExpr of call.args) {
-        if (!context2.evaluate(childExpr)) {
+        if (!context.evaluate(childExpr)) {
           return false;
         }
       }
@@ -3573,9 +3581,9 @@ var operators6 = {
     }
   },
   any: {
-    call: (context2, call) => {
+    call: (context, call) => {
       for (const childExpr of call.args) {
-        if (context2.evaluate(childExpr)) {
+        if (context.evaluate(childExpr)) {
           return true;
         }
       }
@@ -3583,9 +3591,9 @@ var operators6 = {
     }
   },
   none: {
-    call: (context2, call) => {
+    call: (context, call) => {
       for (const childExpr of call.args) {
-        if (context2.evaluate(childExpr)) {
+        if (context.evaluate(childExpr)) {
           return false;
         }
       }
@@ -3593,18 +3601,18 @@ var operators6 = {
     }
   },
   boolean: {
-    call: (context2, call) => {
-      return conditionalCast(context2, "boolean", call.args);
+    call: (context, call) => {
+      return conditionalCast(context, "boolean", call.args);
     }
   },
   number: {
-    call: (context2, call) => {
-      return conditionalCast(context2, "number", call.args);
+    call: (context, call) => {
+      return conditionalCast(context, "number", call.args);
     }
   },
   string: {
-    call: (context2, call) => {
-      return conditionalCast(context2, "string", call.args);
+    call: (context, call) => {
+      return conditionalCast(context, "string", call.args);
     }
   }
 };
@@ -3613,9 +3621,9 @@ var FlowOperators = operators6;
 // src/datasource-protocol/operators/MapOperators.ts
 var operators7 = {
   "ppi-scale": {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
-      const scaleFactor = call.args[1] ? context2.evaluate(call.args[1]) : 1;
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
+      const scaleFactor = call.args[1] ? context.evaluate(call.args[1]) : 1;
       return value2 * scaleFactor;
     }
   },
@@ -3623,10 +3631,10 @@ var operators7 = {
     isDynamicOperator: () => {
       return true;
     },
-    call: (context2, call) => {
-      const pixels = context2.evaluate(call.args[0]);
-      const scaleFactor = call.args[1] ? context2.evaluate(call.args[1]) : 1;
-      const zoom = context2.env.lookup("$zoom");
+    call: (context, call) => {
+      const pixels = context.evaluate(call.args[0]);
+      const scaleFactor = call.args[1] ? context.evaluate(call.args[1]) : 1;
+      const zoom = context.env.lookup("$zoom");
       const zoomWidth = Math.pow(2, 17) / Math.pow(2, zoom);
       const v = pixels * zoomWidth * scaleFactor;
       return v;
@@ -3636,18 +3644,18 @@ var operators7 = {
     isDynamicOperator: () => {
       return true;
     },
-    call: (context2, call) => {
-      const pixels = context2.evaluate(call.args[0]);
-      const scaleFactor = call.args[1] ? context2.evaluate(call.args[1]) : 1;
-      const zoom = context2.env.lookup("$zoom");
+    call: (context, call) => {
+      const pixels = context.evaluate(call.args[0]);
+      const scaleFactor = call.args[1] ? context.evaluate(call.args[1]) : 1;
+      const zoom = context.env.lookup("$zoom");
       const zoomWidthDiscrete = Math.pow(2, 17) / Math.pow(2, Math.floor(zoom));
       const v = pixels * zoomWidthDiscrete * scaleFactor;
       return v;
     }
   },
   ppi: {
-    call: (context2) => {
-      const ppi = context2.env.lookup("$ppi");
+    call: (context) => {
+      const ppi = context.env.lookup("$ppi");
       if (typeof ppi === "number") {
         return ppi;
       }
@@ -3658,11 +3666,11 @@ var operators7 = {
     isDynamicOperator: () => {
       return true;
     },
-    call: (context2, call) => {
-      if (context2.scope === 0 /* Value */) {
+    call: (context, call) => {
+      if (context.scope === 0 /* Value */) {
         return call;
       }
-      return context2.env.lookup("$zoom") ?? null;
+      return context.env.lookup("$zoom") ?? null;
     }
   }
 };
@@ -3672,9 +3680,9 @@ var MapOperators = operators7;
 import * as THREE11 from "three";
 var operators8 = {
   "^": {
-    call: (context2, call) => {
-      const a = context2.evaluate(call.args[0]);
-      const b = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const a = context.evaluate(call.args[0]);
+      const b = context.evaluate(call.args[1]);
       if (typeof a !== "number" || typeof b !== "number") {
         throw new Error(`invalid operands '${typeof a}' and '${typeof b}' for operator '^'`);
       }
@@ -3682,16 +3690,16 @@ var operators8 = {
     }
   },
   "-": {
-    call: (context2, call) => {
+    call: (context, call) => {
       if (call.args.length === 1) {
-        const value2 = context2.evaluate(call.args[0]);
+        const value2 = context.evaluate(call.args[0]);
         if (typeof value2 !== "number") {
           throw new Error(`\xECnvalid operand '${typeof value2} for operator '-'`);
         }
         return -value2;
       }
-      const a = context2.evaluate(call.args[0]);
-      const b = context2.evaluate(call.args[1]);
+      const a = context.evaluate(call.args[0]);
+      const b = context.evaluate(call.args[1]);
       if (typeof a !== "number" || typeof b !== "number") {
         throw new Error(`invalid operands '${typeof a}' and '${typeof b}' for operator '-'`);
       }
@@ -3699,9 +3707,9 @@ var operators8 = {
     }
   },
   "/": {
-    call: (context2, call) => {
-      const a = context2.evaluate(call.args[0]);
-      const b = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const a = context.evaluate(call.args[0]);
+      const b = context.evaluate(call.args[1]);
       if (typeof a !== "number" || typeof b !== "number") {
         throw new Error(`invalid operands '${typeof a}' and '${typeof b}' for operator '/'`);
       }
@@ -3709,9 +3717,9 @@ var operators8 = {
     }
   },
   "%": {
-    call: (context2, call) => {
-      const a = context2.evaluate(call.args[0]);
-      const b = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const a = context.evaluate(call.args[0]);
+      const b = context.evaluate(call.args[1]);
       if (typeof a !== "number" || typeof b !== "number") {
         throw new Error(`invalid operands '${typeof a}' and '${typeof b}' for operator '%'`);
       }
@@ -3719,18 +3727,18 @@ var operators8 = {
     }
   },
   "+": {
-    call: (context2, call) => {
-      return call.args.reduce((a, b) => Number(a) + Number(context2.evaluate(b)), 0);
+    call: (context, call) => {
+      return call.args.reduce((a, b) => Number(a) + Number(context.evaluate(b)), 0);
     }
   },
   "*": {
-    call: (context2, call) => {
-      return call.args.reduce((a, b) => Number(a) * Number(context2.evaluate(b)), 1);
+    call: (context, call) => {
+      return call.args.reduce((a, b) => Number(a) * Number(context.evaluate(b)), 1);
     }
   },
   abs: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'abs'`);
       }
@@ -3738,8 +3746,8 @@ var operators8 = {
     }
   },
   acos: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'acos'`);
       }
@@ -3747,8 +3755,8 @@ var operators8 = {
     }
   },
   asin: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'asin'`);
       }
@@ -3756,8 +3764,8 @@ var operators8 = {
     }
   },
   atan: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'atan'`);
       }
@@ -3765,8 +3773,8 @@ var operators8 = {
     }
   },
   ceil: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'ceil'`);
       }
@@ -3774,8 +3782,8 @@ var operators8 = {
     }
   },
   cos: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'cos'`);
       }
@@ -3788,8 +3796,8 @@ var operators8 = {
     }
   },
   floor: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'floor'`);
       }
@@ -3797,8 +3805,8 @@ var operators8 = {
     }
   },
   ln: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'ln'`);
       }
@@ -3806,8 +3814,8 @@ var operators8 = {
     }
   },
   ln2: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'ln2'`);
       }
@@ -3815,8 +3823,8 @@ var operators8 = {
     }
   },
   log10: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'log10'`);
       }
@@ -3824,20 +3832,20 @@ var operators8 = {
     }
   },
   max: {
-    call: (context2, call) => {
-      return Math.max(...call.args.map((v) => Number(context2.evaluate(v))));
+    call: (context, call) => {
+      return Math.max(...call.args.map((v) => Number(context.evaluate(v))));
     }
   },
   min: {
-    call: (context2, call) => {
-      return Math.min(...call.args.map((v) => Number(context2.evaluate(v))));
+    call: (context, call) => {
+      return Math.min(...call.args.map((v) => Number(context.evaluate(v))));
     }
   },
   clamp: {
-    call: (context2, call) => {
-      const v = context2.evaluate(call.args[0]);
-      const min = context2.evaluate(call.args[1]);
-      const max = context2.evaluate(call.args[2]);
+    call: (context, call) => {
+      const v = context.evaluate(call.args[0]);
+      const min = context.evaluate(call.args[1]);
+      const max = context.evaluate(call.args[2]);
       if (typeof v !== "number" || typeof min !== "number" || typeof max !== "number") {
         throw new Error(`invalid operands '${v}', ${min}, ${max} for operator 'clamp'`);
       }
@@ -3850,8 +3858,8 @@ var operators8 = {
     }
   },
   round: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'round'`);
       }
@@ -3859,8 +3867,8 @@ var operators8 = {
     }
   },
   sin: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'sin'`);
       }
@@ -3868,8 +3876,8 @@ var operators8 = {
     }
   },
   sqrt: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'sqrt'`);
       }
@@ -3877,8 +3885,8 @@ var operators8 = {
     }
   },
   tan: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (typeof value2 !== "number") {
         throw new Error(`invalid operand '${value2}' for operator 'tan'`);
       }
@@ -3913,15 +3921,15 @@ function getAllCombinations(input, index = 0) {
   combinations.push([input[index]]);
   return combinations;
 }
-function getKeyCombinations(lookupExpr, context2) {
+function getKeyCombinations(lookupExpr, context) {
   const keys = lookupExpr.args.slice(1);
   const result = [];
   for (let i = 0; i < keys.length; i += 2) {
-    const value2 = context2.evaluate(keys[i + 1]);
+    const value2 = context.evaluate(keys[i + 1]);
     if (value2 === null) {
       continue;
     }
-    const key = context2.evaluate(keys[i]);
+    const key = context.evaluate(keys[i]);
     result.push(stringifyKeyValue(key, value2));
   }
   result.sort().reverse();
@@ -3955,8 +3963,8 @@ function searchLookupMap(keys, map) {
 }
 var operators9 = {
   length: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
       if (Array.isArray(value2) || typeof value2 === "string") {
         return value2.length;
       }
@@ -3964,9 +3972,9 @@ var operators9 = {
     }
   },
   coalesce: {
-    call: (context2, call) => {
+    call: (context, call) => {
       for (const childExpr of call.args) {
-        const value2 = context2.evaluate(childExpr);
+        const value2 = context.evaluate(childExpr);
         if (value2 !== null) {
           return value2;
         }
@@ -3975,10 +3983,10 @@ var operators9 = {
     }
   },
   lookup: {
-    call: (context2, lookup) => {
+    call: (context, lookup) => {
       assert(lookup.args.length > 0, "missing lookup table");
-      const keyCombinations = getKeyCombinations(lookup, context2);
-      let table = context2.evaluate(lookup.args[0]);
+      const keyCombinations = getKeyCombinations(lookup, context);
+      let table = context.evaluate(lookup.args[0]);
       assert(Array.isArray(table) || table instanceof Map, "wrong lookup table type");
       if (Array.isArray(table)) {
         table = createLookupMap(table);
@@ -3993,12 +4001,12 @@ var MiscOperators = operators9;
 
 // src/datasource-protocol/operators/ObjectOperators.ts
 var hasOwnProperty = Object.prototype.hasOwnProperty;
-function lookupMember(context2, args, lookupMode) {
-  const memberName = context2.evaluate(args[0]);
+function lookupMember(context, args, lookupMode) {
+  const memberName = context.evaluate(args[0]);
   if (typeof memberName !== "string") {
     throw new Error(`expected the name of an attribute`);
   }
-  const object = context2.evaluate(args[1]);
+  const object = context.evaluate(args[1]);
   if (object && typeof object === "object") {
     if (Env.isEnv(object)) {
       const value2 = object.lookup(memberName) ?? null;
@@ -4012,9 +4020,9 @@ function lookupMember(context2, args, lookupMode) {
 }
 var operators10 = {
   in: {
-    call: (context2, call) => {
-      const value2 = context2.evaluate(call.args[0]);
-      const object = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const value2 = context.evaluate(call.args[0]);
+      const object = context.evaluate(call.args[1]);
       if (typeof value2 === "string" && typeof object === "string") {
         return object.includes(value2);
       } else if (Array.isArray(object)) {
@@ -4024,16 +4032,16 @@ var operators10 = {
     }
   },
   get: {
-    call: (context2, call) => lookupMember(context2, call.args, 0 /* get */)
+    call: (context, call) => lookupMember(context, call.args, 0 /* get */)
   },
   has: {
-    call: (context2, call) => lookupMember(context2, call.args, 1 /* has */)
+    call: (context, call) => lookupMember(context, call.args, 1 /* has */)
   },
   "dynamic-properties": {
     isDynamicOperator: () => true,
-    call: (context2, call) => {
-      if (context2.scope === 2 /* Dynamic */) {
-        return context2.env;
+    call: (context, call) => {
+      if (context.scope === 2 /* Dynamic */) {
+        return context.env;
       }
       return call;
     }
@@ -4044,24 +4052,24 @@ var ObjectOperators = operators10;
 // src/datasource-protocol/operators/StringOperators.ts
 var operators11 = {
   concat: {
-    call: (context2, call) => {
-      return "".concat(...call.args.map((a) => String(context2.evaluate(a))));
+    call: (context, call) => {
+      return "".concat(...call.args.map((a) => String(context.evaluate(a))));
     }
   },
   downcase: {
-    call: (context2, call) => {
-      return String(context2.evaluate(call.args[0])).toLocaleLowerCase();
+    call: (context, call) => {
+      return String(context.evaluate(call.args[0])).toLocaleLowerCase();
     }
   },
   upcase: {
-    call: (context2, call) => {
-      return String(context2.evaluate(call.args[0])).toLocaleUpperCase();
+    call: (context, call) => {
+      return String(context.evaluate(call.args[0])).toLocaleUpperCase();
     }
   },
   "~=": {
-    call: (context2, call) => {
-      const left = context2.evaluate(call.args[0]);
-      const right = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const left = context.evaluate(call.args[0]);
+      const right = context.evaluate(call.args[1]);
       if (typeof left === "string" && typeof right === "string") {
         return left.includes(right);
       }
@@ -4069,9 +4077,9 @@ var operators11 = {
     }
   },
   "^=": {
-    call: (context2, call) => {
-      const left = context2.evaluate(call.args[0]);
-      const right = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const left = context.evaluate(call.args[0]);
+      const right = context.evaluate(call.args[1]);
       if (typeof left === "string" && typeof right === "string") {
         return left.startsWith(right);
       }
@@ -4079,9 +4087,9 @@ var operators11 = {
     }
   },
   "$=": {
-    call: (context2, call) => {
-      const left = context2.evaluate(call.args[0]);
-      const right = context2.evaluate(call.args[1]);
+    call: (context, call) => {
+      const left = context.evaluate(call.args[0]);
+      const right = context.evaluate(call.args[1]);
       if (typeof left === "string" && typeof right === "string") {
         return left.endsWith(right);
       }
@@ -4094,8 +4102,8 @@ var StringOperators = operators11;
 // src/datasource-protocol/operators/TypeOperators.ts
 var operators12 = {
   typeof: {
-    call: (context2, call) => {
-      return typeof context2.evaluate(call.args[0]);
+    call: (context, call) => {
+      return typeof context.evaluate(call.args[0]);
     }
   }
 };
@@ -4103,7 +4111,7 @@ var TypeOperators = operators12;
 
 // src/datasource-protocol/operators/VectorOperators.ts
 import * as THREE12 from "three";
-function isVector(context2, call, type) {
+function isVector(context, call, type) {
   let ctor;
   switch (type) {
     case "vector2":
@@ -4117,14 +4125,14 @@ function isVector(context2, call, type) {
       break;
   }
   for (const childExpr of call.args) {
-    const value2 = context2.evaluate(childExpr);
+    const value2 = context.evaluate(childExpr);
     if (value2 instanceof ctor) {
       return value2;
     }
   }
   throw new Error(`expected a "${type}"`);
 }
-function toVector(context2, call, type) {
+function toVector(context, call, type) {
   let VectorCtor;
   let components;
   switch (type) {
@@ -4142,7 +4150,7 @@ function toVector(context2, call, type) {
       break;
   }
   for (const childExpr of call.args) {
-    const value2 = context2.evaluate(childExpr);
+    const value2 = context.evaluate(childExpr);
     if (value2 instanceof VectorCtor) {
       return value2;
     } else if (Array.isArray(value2) && value2.length === components && value2.every((v) => typeof v === "number")) {
@@ -4153,7 +4161,7 @@ function toVector(context2, call, type) {
 }
 var operators13 = {
   "make-vector": {
-    call: (context2, call) => {
+    call: (context, call) => {
       if (call._value !== void 0) {
         return call._value;
       }
@@ -4162,7 +4170,7 @@ var operators13 = {
       } else if (call.args.length > 4) {
         throw new Error("too many arguments");
       }
-      const components = call.args.map((arg) => context2.evaluate(arg));
+      const components = call.args.map((arg) => context.evaluate(arg));
       components.forEach((element, index) => {
         if (typeof element !== "number") {
           throw new Error(`expected vector component at index ${index} to have type "number"`);
@@ -4189,22 +4197,22 @@ var operators13 = {
     }
   },
   vector2: {
-    call: (context2, call) => isVector(context2, call, "vector2")
+    call: (context, call) => isVector(context, call, "vector2")
   },
   vector3: {
-    call: (context2, call) => isVector(context2, call, "vector3")
+    call: (context, call) => isVector(context, call, "vector3")
   },
   vector4: {
-    call: (context2, call) => isVector(context2, call, "vector4")
+    call: (context, call) => isVector(context, call, "vector4")
   },
   "to-vector2": {
-    call: (context2, call) => toVector(context2, call, "vector2")
+    call: (context, call) => toVector(context, call, "vector2")
   },
   "to-vector3": {
-    call: (context2, call) => toVector(context2, call, "vector3")
+    call: (context, call) => toVector(context, call, "vector3")
   },
   "to-vector4": {
-    call: (context2, call) => toVector(context2, call, "vector4")
+    call: (context, call) => toVector(context, call, "vector4")
   }
 };
 var VectorOperators = operators13;
@@ -4229,21 +4237,21 @@ var Pixels = class {
 
 // src/datasource-protocol/ExprEvaluator.ts
 var operatorDescriptors = /* @__PURE__ */ new Map();
-function promoteValue(context2, expr) {
+function promoteValue(context, expr) {
   if (expr instanceof StringLiteralExpr) {
     return expr.promotedValue ?? expr.value;
   }
-  const value2 = context2.evaluate(expr);
+  const value2 = context.evaluate(expr);
   if (typeof value2 === "string") {
     return RGBA.parse(value2) ?? Pixels.parse(value2) ?? value2;
   }
   return value2;
 }
-function cubicInterpolate(context2, interp, t) {
+function cubicInterpolate(context, interp, t) {
   if (t < interp.stops[0][0]) {
-    return promoteValue(context2, interp.stops[0][1]);
+    return promoteValue(context, interp.stops[0][1]);
   } else if (t >= interp.stops[interp.stops.length - 1][0]) {
-    return promoteValue(context2, interp.stops[interp.stops.length - 1][1]);
+    return promoteValue(context, interp.stops[interp.stops.length - 1][1]);
   }
   const i1 = interp.stops.findIndex((stop) => stop[0] > t);
   const i0 = Math.max(0, i1 - 1);
@@ -4263,10 +4271,10 @@ function cubicInterpolate(context2, interp, t) {
   const c0 = (1 + wP) * ppp + (-1.5 - 2 * wP) * pp + (-0.5 + wP) * p + 1;
   const c1 = (-1 - wN) * ppp + (1.5 + wN) * pp + 0.5 * p;
   const cN = wN * ppp - wN * pp;
-  const vP = promoteValue(context2, interp.stops[iP][1]);
-  const v0 = promoteValue(context2, interp.stops[i0][1]);
-  const v1 = promoteValue(context2, interp.stops[i1][1]);
-  const vN = promoteValue(context2, interp.stops[iN][1]);
+  const vP = promoteValue(context, interp.stops[iP][1]);
+  const v0 = promoteValue(context, interp.stops[i0][1]);
+  const v1 = promoteValue(context, interp.stops[i1][1]);
+  const vN = promoteValue(context, interp.stops[iN][1]);
   if (typeof vP === "number" && typeof v0 === "number" && typeof v1 === "number" && typeof vN === "number") {
     return cP * vP + c0 * v0 + c1 * v1 + cN * vN;
   } else if (vP instanceof RGBA && v0 instanceof RGBA && v1 instanceof RGBA && vN instanceof RGBA) {
@@ -4327,48 +4335,48 @@ var ExprEvaluator = class {
   static getOperator(op) {
     return operatorDescriptors.get(op);
   }
-  visitVarExpr(expr, context2) {
-    const value2 = context2.env.lookup(expr.name);
+  visitVarExpr(expr, context) {
+    const value2 = context.env.lookup(expr.name);
     return value2 !== void 0 ? value2 : null;
   }
-  visitNullLiteralExpr(expr, context2) {
+  visitNullLiteralExpr(expr, context) {
     return null;
   }
-  visitBooleanLiteralExpr(expr, context2) {
+  visitBooleanLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitNumberLiteralExpr(expr, context2) {
+  visitNumberLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitStringLiteralExpr(expr, context2) {
+  visitStringLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitObjectLiteralExpr(expr, context2) {
+  visitObjectLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitHasAttributeExpr(expr, context2) {
-    return context2.env.lookup(expr.name) !== void 0;
+  visitHasAttributeExpr(expr, context) {
+    return context.env.lookup(expr.name) !== void 0;
   }
-  visitMatchExpr(match, context2) {
-    const r = context2.evaluate(match.value);
+  visitMatchExpr(match, context) {
+    const r = context.evaluate(match.value);
     for (const [label, body] of match.branches) {
       if (Array.isArray(label) && label.includes(r)) {
-        return context2.evaluate(body);
+        return context.evaluate(body);
       } else if (label === r) {
-        return context2.evaluate(body);
+        return context.evaluate(body);
       }
     }
-    return context2.evaluate(match.fallback);
+    return context.evaluate(match.fallback);
   }
-  visitCaseExpr(match, context2) {
-    if (context2.scope === 0 /* Value */) {
+  visitCaseExpr(match, context) {
+    if (context.scope === 0 /* Value */) {
       const firstDynamicCondition = match.branches.findIndex(([condition, _]) => condition.isDynamic());
       if (firstDynamicCondition !== -1) {
         let branches;
         for (let i = 0; i < match.branches.length; ++i) {
           const [condition, body] = match.branches[i];
-          const evaluatedCondition = context2.evaluate(condition);
-          const evaluatedBody = context2.evaluate(body);
+          const evaluatedCondition = context.evaluate(condition);
+          const evaluatedBody = context.evaluate(body);
           if (i < firstDynamicCondition && Boolean(evaluatedCondition)) {
             return evaluatedBody;
           }
@@ -4379,97 +4387,97 @@ var ExprEvaluator = class {
             branches = [];
           }
           branches == null ? void 0 : branches.push([
-            context2.wrapValue(evaluatedCondition),
-            context2.wrapValue(evaluatedBody)
+            context.wrapValue(evaluatedCondition),
+            context.wrapValue(evaluatedBody)
           ]);
           if (!Expr3.isExpr(evaluatedCondition) && Boolean(evaluatedCondition)) {
             return new CaseExpr(branches, LiteralExpr.fromValue(null));
           }
         }
-        const fallback = context2.evaluate(match.fallback);
-        return branches === void 0 ? fallback : new CaseExpr(branches, context2.wrapValue(fallback));
+        const fallback = context.evaluate(match.fallback);
+        return branches === void 0 ? fallback : new CaseExpr(branches, context.wrapValue(fallback));
       }
     }
     for (const [condition, body] of match.branches) {
-      if (context2.evaluate(condition)) {
-        return context2.evaluate(body);
+      if (context.evaluate(condition)) {
+        return context.evaluate(body);
       }
     }
-    return context2.evaluate(match.fallback);
+    return context.evaluate(match.fallback);
   }
-  visitCallExpr(expr, context2) {
+  visitCallExpr(expr, context) {
     const descriptor = expr.descriptor ?? operatorDescriptors.get(expr.op);
     if (descriptor) {
       expr.descriptor = descriptor;
       let result;
-      if (context2.scope === 0 /* Value */ && expr.isDynamic()) {
+      if (context.scope === 0 /* Value */ && expr.isDynamic()) {
         if (expr.descriptor.partialEvaluate) {
-          return expr.descriptor.partialEvaluate(context2, expr);
+          return expr.descriptor.partialEvaluate(context, expr);
         }
         const args = expr.args.map((arg) => {
-          return context2.wrapValue(context2.evaluate(arg));
+          return context.wrapValue(context.evaluate(arg));
         });
         if (args.every((arg, i) => arg === expr.args[i])) {
           return expr;
         }
         result = new CallExpr7(expr.op, args);
       } else {
-        result = descriptor.call(context2, expr);
+        result = descriptor.call(context, expr);
       }
       return result;
     }
     throw new Error(`undefined operator '${expr.op}'`);
   }
-  visitLookupExpr(expr, context2) {
-    return this.visitCallExpr(expr, context2);
+  visitLookupExpr(expr, context) {
+    return this.visitCallExpr(expr, context);
   }
-  visitStepExpr(expr, context2) {
-    if (context2.scope === 0 /* Value */) {
-      const input = context2.evaluate(expr.input);
-      const defaultValue = context2.evaluate(expr.defaultValue);
-      return new StepExpr(context2.wrapValue(input), context2.wrapValue(defaultValue), expr.stops.map(([key, value2]) => {
-        const v = context2.evaluate(value2);
-        return [key, context2.wrapValue(v)];
+  visitStepExpr(expr, context) {
+    if (context.scope === 0 /* Value */) {
+      const input = context.evaluate(expr.input);
+      const defaultValue = context.evaluate(expr.defaultValue);
+      return new StepExpr(context.wrapValue(input), context.wrapValue(defaultValue), expr.stops.map(([key, value2]) => {
+        const v = context.evaluate(value2);
+        return [key, context.wrapValue(v)];
       }));
     } else {
-      const input = context2.evaluate(expr.input);
+      const input = context.evaluate(expr.input);
       if (typeof input !== "number") {
         throw new Error(`input '${input}' must be a number`);
       }
       if (input < expr.stops[0][0]) {
-        return context2.evaluate(expr.defaultValue);
+        return context.evaluate(expr.defaultValue);
       }
       let index = expr.stops.findIndex((s) => s[0] > input);
       if (index === -1) {
         index = expr.stops.length;
       }
-      return context2.evaluate(expr.stops[index - 1][1]);
+      return context.evaluate(expr.stops[index - 1][1]);
     }
   }
-  visitInterpolateExpr(expr, context2) {
-    if (context2.scope === 0 /* Value */) {
-      const input = context2.evaluate(expr.input);
-      return new InterpolateExpr(expr.mode, context2.wrapValue(input), expr.stops.map(([key, value2]) => {
-        const v = context2.evaluate(value2);
-        return [key, context2.wrapValue(v)];
+  visitInterpolateExpr(expr, context) {
+    if (context.scope === 0 /* Value */) {
+      const input = context.evaluate(expr.input);
+      return new InterpolateExpr(expr.mode, context.wrapValue(input), expr.stops.map(([key, value2]) => {
+        const v = context.evaluate(value2);
+        return [key, context.wrapValue(v)];
       }));
     } else {
-      const param = context2.evaluate(expr.input);
+      const param = context.evaluate(expr.input);
       if (typeof param !== "number") {
         throw new Error(`input must be a number`);
       }
       if (expr.mode[0] === "cubic") {
-        return cubicInterpolate(context2, expr, param);
+        return cubicInterpolate(context, expr, param);
       }
       const keyIndex = expr.stops.findIndex((stop) => stop[0] > param);
       if (keyIndex === -1) {
-        return context2.evaluate(expr.stops[expr.stops.length - 1][1]);
+        return context.evaluate(expr.stops[expr.stops.length - 1][1]);
       } else if (keyIndex === 0) {
-        return context2.evaluate(expr.stops[0][1]);
+        return context.evaluate(expr.stops[0][1]);
       }
       const [key, value2] = expr.stops[keyIndex];
       const [prevKey, prevValue] = expr.stops[keyIndex - 1];
-      const v0 = promoteValue(context2, prevValue);
+      const v0 = promoteValue(context, prevValue);
       let t = 0;
       switch (expr.mode[0]) {
         case "discrete":
@@ -4485,7 +4493,7 @@ var ExprEvaluator = class {
         default:
           throw new Error(`interpolation mode ${JSON.stringify(expr.mode)} is not supported`);
       }
-      const v1 = promoteValue(context2, value2);
+      const v1 = promoteValue(context, value2);
       if (typeof v0 === "number" && typeof v1 === "number") {
         return THREE13.MathUtils.lerp(v0, v1, t);
       } else if (v0 instanceof RGBA && v1 instanceof RGBA) {
@@ -4539,73 +4547,73 @@ var ExprInstantiator = class {
   visitObjectLiteralExpr(expr, _context) {
     return expr;
   }
-  visitVarExpr(expr, context2) {
-    if (context2.preserve && context2.preserve.has(expr.name)) {
+  visitVarExpr(expr, context) {
+    if (context.preserve && context.preserve.has(expr.name)) {
       return expr;
     }
-    const value2 = context2.env.lookup(expr.name);
+    const value2 = context.env.lookup(expr.name);
     return LiteralExpr.fromValue(value2 !== void 0 ? value2 : null);
   }
-  visitHasAttributeExpr(expr, context2) {
-    if (context2.preserve && context2.preserve.has(expr.name)) {
+  visitHasAttributeExpr(expr, context) {
+    if (context.preserve && context.preserve.has(expr.name)) {
       return expr;
     }
-    const value2 = context2.env.lookup(expr.name) !== void 0;
+    const value2 = context.env.lookup(expr.name) !== void 0;
     return LiteralExpr.fromValue(value2);
   }
-  visitCallExprImpl(expr, context2, constructor) {
-    const args = expr.args.map((arg) => arg.accept(this, context2));
+  visitCallExprImpl(expr, context, constructor) {
+    const args = expr.args.map((arg) => arg.accept(this, context));
     if (args.some((a, i) => a !== expr.args[i])) {
       return constructor(expr.op, args);
     }
     return expr;
   }
-  visitCallExpr(expr, context2) {
-    return this.visitCallExprImpl(expr, context2, (op, args) => {
+  visitCallExpr(expr, context) {
+    return this.visitCallExprImpl(expr, context, (op, args) => {
       return new CallExpr7(op, args);
     });
   }
-  visitLookupExpr(expr, context2) {
-    return this.visitCallExprImpl(expr, context2, (op, args) => {
+  visitLookupExpr(expr, context) {
+    return this.visitCallExprImpl(expr, context, (op, args) => {
       return new LookupExpr3(args);
     });
   }
-  visitMatchExpr(match, context2) {
-    const value2 = match.value.accept(this, context2);
+  visitMatchExpr(match, context) {
+    const value2 = match.value.accept(this, context);
     if (value2 instanceof LiteralExpr) {
       const r = value2.value;
       for (const [label, body] of match.branches) {
         if (Array.isArray(label) && label.includes(r)) {
-          return body.accept(this, context2);
+          return body.accept(this, context);
         } else if (label === r) {
-          return body.accept(this, context2);
+          return body.accept(this, context);
         }
       }
-      return match.fallback.accept(this, context2);
+      return match.fallback.accept(this, context);
     }
     let changed = match.value !== value2;
     const branches = match.branches.map(([label, branch]) => {
-      const newBranch = branch.accept(this, context2);
+      const newBranch = branch.accept(this, context);
       if (newBranch !== branch) {
         changed = true;
       }
       return [label, newBranch];
     });
-    const fallback = match.fallback.accept(this, context2);
+    const fallback = match.fallback.accept(this, context);
     if (fallback !== match.fallback) {
       changed = true;
     }
     return changed ? new MatchExpr2(value2, branches, fallback) : match;
   }
-  visitCaseExpr(expr, context2) {
+  visitCaseExpr(expr, context) {
     const branches = [];
     let changed = false;
     for (const [condition, branch] of expr.branches) {
-      const newCondition = condition.accept(this, context2);
+      const newCondition = condition.accept(this, context);
       const deps = newCondition.dependencies();
       if (!condition.isDynamic() && deps.properties.size === 0) {
         if (Boolean(newCondition.evaluate(emptyEnv, 1 /* Condition */))) {
-          return branch.accept(this, context2);
+          return branch.accept(this, context);
         }
       } else {
         if (newCondition !== condition) {
@@ -4615,19 +4623,19 @@ var ExprInstantiator = class {
       }
     }
     if (branches.length === 0) {
-      return expr.fallback.accept(this, context2);
+      return expr.fallback.accept(this, context);
     }
     if (branches.length !== expr.branches.length) {
       changed = true;
     }
     branches.forEach((branch) => {
-      const instantiatedBranch = branch[1].accept(this, context2);
+      const instantiatedBranch = branch[1].accept(this, context);
       if (instantiatedBranch !== branch[1]) {
         changed = true;
       }
       branch[1] = instantiatedBranch;
     });
-    const fallback = expr.fallback.accept(this, context2);
+    const fallback = expr.fallback.accept(this, context);
     if (fallback !== expr.fallback) {
       changed = true;
     }
@@ -4636,20 +4644,20 @@ var ExprInstantiator = class {
     }
     return new CaseExpr(branches, fallback);
   }
-  visitStepExpr(expr, context2) {
-    const input = expr.input.accept(this, context2);
-    const defaultValue = expr.defaultValue.accept(this, context2);
+  visitStepExpr(expr, context) {
+    const input = expr.input.accept(this, context);
+    const defaultValue = expr.defaultValue.accept(this, context);
     const stops = expr.stops.map(([key, value2]) => [
       key,
-      value2.accept(this, context2)
+      value2.accept(this, context)
     ]);
     return new StepExpr(input, defaultValue, stops);
   }
-  visitInterpolateExpr(expr, context2) {
-    const input = expr.input.accept(this, context2);
+  visitInterpolateExpr(expr, context) {
+    const input = expr.input.accept(this, context);
     const stops = expr.stops.map(([key, value2]) => [
       key,
-      value2.accept(this, context2)
+      value2.accept(this, context)
     ]);
     return new InterpolateExpr(expr.mode, input, stops);
   }
@@ -5127,71 +5135,71 @@ var _ComputeExprDependencies = class {
     expr.accept(this.instance, dependencies);
     return dependencies;
   }
-  visitNullLiteralExpr(expr, context2) {
+  visitNullLiteralExpr(expr, context) {
   }
-  visitBooleanLiteralExpr(expr, context2) {
+  visitBooleanLiteralExpr(expr, context) {
   }
-  visitNumberLiteralExpr(expr, context2) {
+  visitNumberLiteralExpr(expr, context) {
   }
-  visitStringLiteralExpr(expr, context2) {
+  visitStringLiteralExpr(expr, context) {
   }
-  visitObjectLiteralExpr(expr, context2) {
+  visitObjectLiteralExpr(expr, context) {
   }
-  visitVarExpr(expr, context2) {
-    context2.properties.add(expr.name);
+  visitVarExpr(expr, context) {
+    context.properties.add(expr.name);
   }
-  visitHasAttributeExpr(expr, context2) {
-    context2.properties.add(expr.name);
+  visitHasAttributeExpr(expr, context) {
+    context.properties.add(expr.name);
   }
-  visitCallExpr(expr, context2) {
-    expr.args.forEach((childExpr) => childExpr.accept(this, context2));
+  visitCallExpr(expr, context) {
+    expr.args.forEach((childExpr) => childExpr.accept(this, context));
     switch (expr.op) {
       case "dynamic-properties":
-        context2.volatile = true;
+        context.volatile = true;
         break;
       case "feature-state":
-        context2.featureState = true;
-        context2.properties.add("$state");
-        context2.properties.add("$id");
+        context.featureState = true;
+        context.properties.add("$state");
+        context.properties.add("$id");
         break;
       case "id":
-        context2.properties.add("$id");
+        context.properties.add("$id");
         break;
       case "zoom":
       case "world-ppi-scale":
       case "world-discrete-ppi-scale":
-        context2.properties.add("$zoom");
+        context.properties.add("$zoom");
         break;
       case "geometry-type":
-        context2.properties.add("$geometryType");
+        context.properties.add("$geometryType");
         break;
       default:
         break;
     }
   }
-  visitLookupExpr(expr, context2) {
-    return this.visitCallExpr(expr, context2);
+  visitLookupExpr(expr, context) {
+    return this.visitCallExpr(expr, context);
   }
-  visitMatchExpr(expr, context2) {
-    expr.value.accept(this, context2);
-    expr.branches.forEach(([_, branch]) => branch.accept(this, context2));
-    expr.fallback.accept(this, context2);
+  visitMatchExpr(expr, context) {
+    expr.value.accept(this, context);
+    expr.branches.forEach(([_, branch]) => branch.accept(this, context));
+    expr.fallback.accept(this, context);
   }
-  visitCaseExpr(expr, context2) {
+  visitCaseExpr(expr, context) {
     expr.branches.forEach(([condition, branch]) => {
-      condition.accept(this, context2);
-      branch.accept(this, context2);
+      condition.accept(this, context);
+      branch.accept(this, context);
     });
-    expr.fallback.accept(this, context2);
+    expr.fallback.accept(this, context);
   }
-  visitStepExpr(expr, context2) {
-    expr.input.accept(this, context2);
-    expr.defaultValue.accept(this, context2);
-    expr.stops.forEach(([_, value2]) => value2.accept(this, context2));
+  visitStepExpr(expr, context) {
+    expr.input.accept(this, context);
+    expr.defaultValue.accept(this, context);
+    expr.stops.forEach(([_, value2]) => value2.accept(this, context));
   }
-  visitInterpolateExpr(expr, context2) {
-    expr.input.accept(this, context2);
-    expr.stops.forEach(([_, value2]) => value2.accept(this, context2));
+  visitInterpolateExpr(expr, context) {
+    expr.input.accept(this, context);
+    expr.stops.forEach(([_, value2]) => value2.accept(this, context));
   }
 };
 var ComputeExprDependencies = _ComputeExprDependencies;
@@ -5221,8 +5229,8 @@ var Expr3 = class {
   evaluate(env, scope = 0 /* Value */, cache6) {
     return this.accept(exprEvaluator, new ExprEvaluatorContext(exprEvaluator, env, scope, cache6));
   }
-  instantiate(context2) {
-    return this.accept(exprInstantiator, context2);
+  instantiate(context) {
+    return this.accept(exprInstantiator, context);
   }
   dependencies() {
     if (!this.m_dependencies) {
@@ -5248,8 +5256,8 @@ var VarExpr3 = class extends Expr3 {
     super();
     this.name = name2;
   }
-  accept(visitor, context2) {
-    return visitor.visitVarExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitVarExpr(this, context);
   }
   exprIsDynamic() {
     return false;
@@ -5279,8 +5287,8 @@ var _NullLiteralExpr = class extends LiteralExpr {
   constructor() {
     super();
   }
-  accept(visitor, context2) {
-    return visitor.visitNullLiteralExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitNullLiteralExpr(this, context);
   }
   exprIsDynamic() {
     return false;
@@ -5293,8 +5301,8 @@ var BooleanLiteralExpr3 = class extends LiteralExpr {
     super();
     this.value = value2;
   }
-  accept(visitor, context2) {
-    return visitor.visitBooleanLiteralExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitBooleanLiteralExpr(this, context);
   }
 };
 var NumberLiteralExpr = class extends LiteralExpr {
@@ -5302,8 +5310,8 @@ var NumberLiteralExpr = class extends LiteralExpr {
     super();
     this.value = value2;
   }
-  accept(visitor, context2) {
-    return visitor.visitNumberLiteralExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitNumberLiteralExpr(this, context);
   }
 };
 var StringLiteralExpr = class extends LiteralExpr {
@@ -5318,8 +5326,8 @@ var StringLiteralExpr = class extends LiteralExpr {
     }
     return this.m_promotedValue ?? void 0;
   }
-  accept(visitor, context2) {
-    return visitor.visitStringLiteralExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitStringLiteralExpr(this, context);
   }
 };
 var ObjectLiteralExpr = class extends LiteralExpr {
@@ -5330,8 +5338,8 @@ var ObjectLiteralExpr = class extends LiteralExpr {
   get isArrayLiteral() {
     return Array.isArray(this.value);
   }
-  accept(visitor, context2) {
-    return visitor.visitObjectLiteralExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitObjectLiteralExpr(this, context);
   }
 };
 var HasAttributeExpr3 = class extends Expr3 {
@@ -5339,8 +5347,8 @@ var HasAttributeExpr3 = class extends Expr3 {
     super();
     this.name = name2;
   }
-  accept(visitor, context2) {
-    return visitor.visitHasAttributeExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitHasAttributeExpr(this, context);
   }
   exprIsDynamic() {
     return false;
@@ -5356,8 +5364,8 @@ var CallExpr7 = class extends Expr3 {
   get children() {
     return this.args;
   }
-  accept(visitor, context2) {
-    return visitor.visitCallExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitCallExpr(this, context);
   }
   exprIsDynamic() {
     const descriptor = this.descriptor ?? ExprEvaluator.getOperator(this.op);
@@ -5389,8 +5397,8 @@ var LookupExpr3 = class extends CallExpr7 {
     args.unshift(lookupTableExpr);
     return new LookupExpr3(args);
   }
-  accept(visitor, context2) {
-    return visitor.visitLookupExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitLookupExpr(this, context);
   }
 };
 var MatchExpr2 = class extends Expr3 {
@@ -5418,8 +5426,8 @@ var MatchExpr2 = class extends Expr3 {
         return false;
     }
   }
-  accept(visitor, context2) {
-    return visitor.visitMatchExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitMatchExpr(this, context);
   }
   exprIsDynamic() {
     return this.value.isDynamic() || this.branches.some(([_, branch]) => branch.isDynamic()) || this.fallback.isDynamic();
@@ -5431,8 +5439,8 @@ var CaseExpr = class extends Expr3 {
     this.branches = branches;
     this.fallback = fallback;
   }
-  accept(visitor, context2) {
-    return visitor.visitCaseExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitCaseExpr(this, context);
   }
   exprIsDynamic() {
     return this.branches.some(([cond, branch]) => cond.isDynamic() || branch.isDynamic()) || this.fallback.isDynamic();
@@ -5445,8 +5453,8 @@ var StepExpr = class extends Expr3 {
     this.defaultValue = defaultValue;
     this.stops = stops;
   }
-  accept(visitor, context2) {
-    return visitor.visitStepExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitStepExpr(this, context);
   }
   exprIsDynamic() {
     return this.input.isDynamic() || this.defaultValue.isDynamic() || this.stops.some(([_, value2]) => value2.isDynamic());
@@ -5459,8 +5467,8 @@ var InterpolateExpr = class extends Expr3 {
     this.input = input;
     this.stops = stops;
   }
-  accept(visitor, context2) {
-    return visitor.visitInterpolateExpr(this, context2);
+  accept(visitor, context) {
+    return visitor.visitInterpolateExpr(this, context);
   }
   exprIsDynamic() {
     return this.input.isDynamic() || this.stops.some(([_, value2]) => value2.isDynamic());
@@ -5470,19 +5478,19 @@ var ExprSerializer = class {
   serialize(expr) {
     return expr.accept(this, void 0);
   }
-  visitNullLiteralExpr(expr, context2) {
+  visitNullLiteralExpr(expr, context) {
     return null;
   }
-  visitBooleanLiteralExpr(expr, context2) {
+  visitBooleanLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitNumberLiteralExpr(expr, context2) {
+  visitNumberLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitStringLiteralExpr(expr, context2) {
+  visitStringLiteralExpr(expr, context) {
     return expr.value;
   }
-  visitObjectLiteralExpr(expr, context2) {
+  visitObjectLiteralExpr(expr, context) {
     if (expr.value instanceof THREE14.Vector2) {
       return ["make-vector", expr.value.x, expr.value.y];
     } else if (expr.value instanceof THREE14.Vector3) {
@@ -5498,22 +5506,22 @@ var ExprSerializer = class {
     }
     return ["literal", expr.value];
   }
-  visitVarExpr(expr, context2) {
+  visitVarExpr(expr, context) {
     return ["get", expr.name];
   }
-  visitHasAttributeExpr(expr, context2) {
+  visitHasAttributeExpr(expr, context) {
     return ["has", expr.name];
   }
-  visitCallExpr(expr, context2) {
+  visitCallExpr(expr, context) {
     return [
       expr.op,
       ...expr.args.map((childExpr) => this.serialize(childExpr))
     ];
   }
-  visitLookupExpr(expr, context2) {
-    return this.visitCallExpr(expr, context2);
+  visitLookupExpr(expr, context) {
+    return this.visitCallExpr(expr, context);
   }
-  visitMatchExpr(expr, context2) {
+  visitMatchExpr(expr, context) {
     const branches = [];
     for (const [label, body] of expr.branches) {
       branches.push(label, this.serialize(body));
@@ -5525,14 +5533,14 @@ var ExprSerializer = class {
       this.serialize(expr.fallback)
     ];
   }
-  visitCaseExpr(expr, context2) {
+  visitCaseExpr(expr, context) {
     const branches = [];
     for (const [condition, body] of expr.branches) {
       branches.push(this.serialize(condition), this.serialize(body));
     }
     return ["case", ...branches, this.serialize(expr.fallback)];
   }
-  visitStepExpr(expr, context2) {
+  visitStepExpr(expr, context) {
     const result = ["step"];
     result.push(this.serialize(expr.input));
     result.push(this.serialize(expr.defaultValue));
@@ -5542,7 +5550,7 @@ var ExprSerializer = class {
     });
     return result;
   }
-  visitInterpolateExpr(expr, context2) {
+  visitInterpolateExpr(expr, context) {
     const result = ["interpolate", expr.mode];
     result.push(this.serialize(expr.input));
     expr.stops.forEach(([key, value2]) => {
@@ -6018,10 +6026,10 @@ var ExprPool = class {
   add(expr) {
     return expr.accept(this, void 0);
   }
-  visitNullLiteralExpr(expr, context2) {
+  visitNullLiteralExpr(expr, context) {
     return NullLiteralExpr3.instance;
   }
-  visitBooleanLiteralExpr(expr, context2) {
+  visitBooleanLiteralExpr(expr, context) {
     const e = this.m_booleanLiterals.get(expr.value);
     if (e) {
       return e;
@@ -6029,7 +6037,7 @@ var ExprPool = class {
     this.m_booleanLiterals.set(expr.value, expr);
     return expr;
   }
-  visitNumberLiteralExpr(expr, context2) {
+  visitNumberLiteralExpr(expr, context) {
     const e = this.m_numberLiterals.get(expr.value);
     if (e) {
       return e;
@@ -6037,7 +6045,7 @@ var ExprPool = class {
     this.m_numberLiterals.set(expr.value, expr);
     return expr;
   }
-  visitStringLiteralExpr(expr, context2) {
+  visitStringLiteralExpr(expr, context) {
     const e = this.m_stringLiterals.get(expr.value);
     if (e) {
       return e;
@@ -6045,7 +6053,7 @@ var ExprPool = class {
     this.m_stringLiterals.set(expr.value, expr);
     return expr;
   }
-  visitObjectLiteralExpr(expr, context2) {
+  visitObjectLiteralExpr(expr, context) {
     const e = this.m_objectLiterals.get(expr.value);
     if (e) {
       return e;
@@ -6067,7 +6075,7 @@ var ExprPool = class {
     this.m_objectLiterals.set(expr.value, expr);
     return expr;
   }
-  visitVarExpr(expr, context2) {
+  visitVarExpr(expr, context) {
     const e = this.m_varExprs.get(expr.name);
     if (e) {
       return e;
@@ -6075,7 +6083,7 @@ var ExprPool = class {
     this.m_varExprs.set(expr.name, expr);
     return expr;
   }
-  visitHasAttributeExpr(expr, context2) {
+  visitHasAttributeExpr(expr, context) {
     const e = this.m_hasAttributeExprs.get(expr.name);
     if (e) {
       return e;
@@ -6083,10 +6091,10 @@ var ExprPool = class {
     this.m_hasAttributeExprs.set(expr.name, expr);
     return expr;
   }
-  visitMatchExpr(expr, context2) {
-    const value2 = expr.value.accept(this, context2);
-    const branches = expr.branches.map(([label, body]) => [label, body.accept(this, context2)]);
-    const fallback = expr.fallback.accept(this, context2);
+  visitMatchExpr(expr, context) {
+    const value2 = expr.value.accept(this, context);
+    const branches = expr.branches.map(([label, body]) => [label, body.accept(this, context)]);
+    const fallback = expr.fallback.accept(this, context);
     for (const candidate of this.m_matchExprs) {
       if (candidate.value !== value2) {
         continue;
@@ -6112,12 +6120,12 @@ var ExprPool = class {
     this.m_matchExprs.push(r);
     return r;
   }
-  visitCaseExpr(expr, context2) {
+  visitCaseExpr(expr, context) {
     const branches = expr.branches.map(([condition, body]) => [
-      condition.accept(this, context2),
-      body.accept(this, context2)
+      condition.accept(this, context),
+      body.accept(this, context)
     ]);
-    const fallback = expr.fallback.accept(this, context2);
+    const fallback = expr.fallback.accept(this, context);
     for (const candidate of this.m_caseExprs) {
       if (candidate.fallback !== fallback) {
         continue;
@@ -6140,8 +6148,8 @@ var ExprPool = class {
     this.m_caseExprs.push(r);
     return r;
   }
-  visitCallExprImpl(expr, context2, constructor) {
-    const expressions = expr.args.map((childExpr) => childExpr.accept(this, context2));
+  visitCallExprImpl(expr, context, constructor) {
+    const expressions = expr.args.map((childExpr) => childExpr.accept(this, context));
     if (!this.m_callExprs.has(expr.op)) {
       this.m_callExprs.set(expr.op, []);
     }
@@ -6165,25 +6173,25 @@ var ExprPool = class {
     calls.push(e);
     return e;
   }
-  visitCallExpr(expr, context2) {
-    return this.visitCallExprImpl(expr, context2, (op, args) => {
+  visitCallExpr(expr, context) {
+    return this.visitCallExprImpl(expr, context, (op, args) => {
       return new CallExpr7(op, args);
     });
   }
-  visitLookupExpr(expr, context2) {
-    return this.visitCallExprImpl(expr, context2, (op, args) => {
+  visitLookupExpr(expr, context) {
+    return this.visitCallExprImpl(expr, context, (op, args) => {
       return new LookupExpr3(args);
     });
   }
-  visitStepExpr(expr, context2) {
+  visitStepExpr(expr, context) {
     if (this.m_stepExprs.includes(expr)) {
       return expr;
     }
-    const input = expr.input.accept(this, context2);
-    const defaultValue = expr.defaultValue.accept(this, context2);
+    const input = expr.input.accept(this, context);
+    const defaultValue = expr.defaultValue.accept(this, context);
     const stops = expr.stops.map((stop) => {
       const key = stop[0];
-      const value2 = stop[1].accept(this, context2);
+      const value2 = stop[1].accept(this, context);
       return value2 === stop[1] ? stop : [key, value2];
     });
     for (const step of this.m_stepExprs) {
@@ -6195,14 +6203,14 @@ var ExprPool = class {
     this.m_stepExprs.push(e);
     return e;
   }
-  visitInterpolateExpr(expr, context2) {
+  visitInterpolateExpr(expr, context) {
     if (this.m_interpolateExprs.includes(expr)) {
       return expr;
     }
-    const input = expr.input.accept(this, context2);
+    const input = expr.input.accept(this, context);
     const stops = expr.stops.map((stop) => {
       const key = stop[0];
-      const value2 = stop[1].accept(this, context2);
+      const value2 = stop[1].accept(this, context);
       return value2 === stop[1] ? stop : [key, value2];
     });
     for (const interp of this.m_interpolateExprs) {
@@ -9729,7 +9737,7 @@ var AnimatedExtrusionHandler = class {
     }
     const duration = this.duration;
     const timeProgress = Math.min(currentTime - this.m_startTime, duration);
-    const extrusionRatio = MathUtils6.easeInOutCubic(ExtrusionFeatureDefs.DEFAULT_RATIO_MIN, ExtrusionFeatureDefs.DEFAULT_RATIO_MAX, timeProgress / duration);
+    const extrusionRatio = MathUtils8.easeInOutCubic(ExtrusionFeatureDefs.DEFAULT_RATIO_MIN, ExtrusionFeatureDefs.DEFAULT_RATIO_MAX, timeProgress / duration);
     this.setExtrusionRatio(extrusionRatio);
     if (timeProgress >= duration) {
       this.m_state = 2 /* Finished */;
@@ -10264,8 +10272,8 @@ var CameraAnimationBuilder = class {
       target: midCoord0,
       distance: maxAltitude,
       timestamp: duration / 3,
-      tilt: MathUtils3.interpolateAnglesDeg(startControlPoint.tilt, targetControlPoint.tilt, 0.25),
-      heading: MathUtils3.interpolateAnglesDeg(startControlPoint.heading, targetControlPoint.heading, 0.25)
+      tilt: MathUtils4.interpolateAnglesDeg(startControlPoint.tilt, targetControlPoint.tilt, 0.25),
+      heading: MathUtils4.interpolateAnglesDeg(startControlPoint.heading, targetControlPoint.heading, 0.25)
     });
     controlPoints.push(midPoint0);
     const midCoord1 = GeoCoordinates.lerp(startControlPoint.target, targetControlPoint.target, 0.75);
@@ -10273,8 +10281,8 @@ var CameraAnimationBuilder = class {
       target: midCoord1,
       distance: maxAltitude,
       timestamp: duration / 3 * 2,
-      tilt: MathUtils3.interpolateAnglesDeg(startControlPoint.tilt, targetControlPoint.tilt, 0.75),
-      heading: MathUtils3.interpolateAnglesDeg(startControlPoint.heading, targetControlPoint.heading, 0.75)
+      tilt: MathUtils4.interpolateAnglesDeg(startControlPoint.tilt, targetControlPoint.tilt, 0.75),
+      heading: MathUtils4.interpolateAnglesDeg(startControlPoint.heading, targetControlPoint.heading, 0.75)
     });
     controlPoints.push(midPoint1);
     targetControlPoint.timestamp = duration;
@@ -12552,9 +12560,9 @@ function buildMetricValueEvaluator(value2, metricUnit) {
     }
   }
   if (metricUnit === "Pixel") {
-    return (context2) => {
-      const pixelToWorld = context2.env.lookup("$pixelToMeters") ?? 1;
-      const evaluated = getPropertyValue(value2, context2.env);
+    return (context) => {
+      const pixelToWorld = context.env.lookup("$pixelToMeters") ?? 1;
+      const evaluated = getPropertyValue(value2, context.env);
       return pixelToWorld * evaluated;
     };
   } else {
@@ -12733,9 +12741,9 @@ var MapMaterialAdapter = class {
   static create(material, styledProperties) {
     return MapMaterialAdapter.install(new MapMaterialAdapter(material, styledProperties));
   }
-  static ensureUpdated(material, context2) {
+  static ensureUpdated(material, context) {
     var _a;
-    return ((_a = MapMaterialAdapter.get(material)) == null ? void 0 : _a.ensureUpdated(context2)) ?? false;
+    return ((_a = MapMaterialAdapter.get(material)) == null ? void 0 : _a.ensureUpdated(context)) ?? false;
   }
   material;
   styledProperties;
@@ -12764,12 +12772,12 @@ var MapMaterialAdapter = class {
   toJSON() {
     return { styledProperties: this.styledProperties };
   }
-  ensureUpdated(context2) {
-    if (this.m_lastUpdateFrameNumber === context2.frameNumber) {
+  ensureUpdated(context) {
+    if (this.m_lastUpdateFrameNumber === context.frameNumber) {
       return false;
     }
-    this.m_lastUpdateFrameNumber = context2.frameNumber;
-    return this.updateDynamicProperties(context2);
+    this.m_lastUpdateFrameNumber = context.frameNumber;
+    return this.updateDynamicProperties(context);
   }
   setupStaticProperties() {
     let updateBaseColor = false;
@@ -12793,12 +12801,12 @@ var MapMaterialAdapter = class {
       this.applyMaterialBaseColor(color, opacity);
     }
   }
-  updateDynamicProperties(context2) {
+  updateDynamicProperties(context) {
     let somethingChanged = false;
     if (this.m_dynamicProperties.length > 0) {
       let updateBaseColor = false;
       for (const [propName, propDefinition] of this.m_dynamicProperties) {
-        const newValue = Expr3.isExpr(propDefinition) ? getPropertyValue(propDefinition, context2.env) : propDefinition(context2);
+        const newValue = Expr3.isExpr(propDefinition) ? getPropertyValue(propDefinition, context.env) : propDefinition(context);
         if (newValue === this.currentStyledProperties[propName]) {
           continue;
         }
@@ -12917,9 +12925,9 @@ var MapObjectAdapter = class {
   static create(object, params) {
     return MapObjectAdapter.install(new MapObjectAdapter(object, params));
   }
-  static ensureUpdated(object, context2) {
+  static ensureUpdated(object, context) {
     var _a;
-    return ((_a = MapObjectAdapter.get(object)) == null ? void 0 : _a.ensureUpdated(context2)) ?? false;
+    return ((_a = MapObjectAdapter.get(object)) == null ? void 0 : _a.ensureUpdated(context)) ?? false;
   }
   object;
   technique;
@@ -12941,12 +12949,12 @@ var MapObjectAdapter = class {
   toJSON() {
     return { kind: this.kind, technique: this.technique };
   }
-  ensureUpdated(context2) {
-    if (this.m_lastUpdateFrameNumber === context2.frameNumber) {
+  ensureUpdated(context) {
+    if (this.m_lastUpdateFrameNumber === context.frameNumber) {
       return false;
     }
-    this.m_lastUpdateFrameNumber = context2.frameNumber;
-    return this.updateMaterials(context2);
+    this.m_lastUpdateFrameNumber = context.frameNumber;
+    return this.updateMaterials(context);
   }
   isVisible() {
     return this.object.visible && this.m_notCompletlyTransparent;
@@ -12957,11 +12965,11 @@ var MapObjectAdapter = class {
   get pickability() {
     return this.m_pickability;
   }
-  updateMaterials(context2) {
+  updateMaterials(context) {
     let somethingChanged = false;
     const materials = this.getObjectMaterials();
     for (const material of materials) {
-      const changed = MapMaterialAdapter.ensureUpdated(material, context2);
+      const changed = MapMaterialAdapter.ensureUpdated(material, context);
       somethingChanged = somethingChanged || changed;
     }
     if (somethingChanged) {
@@ -15246,7 +15254,7 @@ var CopyrightInfo;
         if (existingInfo === void 0) {
           result.push({ ...sourceInfo });
         } else {
-          existingInfo.year = MathUtils6.max2(sourceInfo.year, existingInfo.year);
+          existingInfo.year = MathUtils8.max2(sourceInfo.year, existingInfo.year);
           existingInfo.label = getOptionValue(sourceInfo.label, existingInfo.label);
           existingInfo.link = getOptionValue(sourceInfo.link, existingInfo.link);
         }
@@ -16115,7 +16123,7 @@ var MapViewFog = class {
       const endRatio = 1;
       assert(startRatio <= endRatio);
       const t = Math.abs(Math.cos(mapView.tilt));
-      const density = MathUtils6.smoothStep(horizontalDensity, verticalDensity, t);
+      const density = MathUtils8.smoothStep(horizontalDensity, verticalDensity, t);
       this.m_fog.near = THREE60.MathUtils.lerp(viewRange * startRatio, viewRange, 1 - density);
       this.m_fog.far = THREE60.MathUtils.lerp(viewRange * endRatio, viewRange, density);
       this.m_fog.near = Math.min(this.m_fog.near, mapView.camera.far);
@@ -21023,37 +21031,37 @@ import * as THREE79 from "three";
 import * as THREE78 from "three";
 
 // src/mapview/poi/PixelPicker.ts
-function getPixelFromImage(xPos, yPos, image, canvas2) {
+function getPixelFromImage(xPos, yPos, image, canvas) {
   if (image instanceof ImageData) {
     const stride = image.data.length / (image.height * image.width);
     return getPixelFromImageData(image, xPos, yPos, stride);
   }
-  if (!canvas2) {
-    canvas2 = document.createElement("canvas");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
   }
-  return getPixelFromCanvasImageSource(image, xPos, yPos, canvas2);
+  return getPixelFromCanvasImageSource(image, xPos, yPos, canvas);
 }
 function screenToUvCoordinates(screenX, screenY, box, uvBox) {
   const minX = box.x;
   const maxX = box.x + box.w;
   const minY = box.y;
   const maxY = box.y + box.h;
-  const u = MathUtils6.map(screenX, minX, maxX, uvBox.s0, uvBox.s1);
-  const v = MathUtils6.map(screenY, minY, maxY, uvBox.t0, uvBox.t1);
+  const u = MathUtils8.map(screenX, minX, maxX, uvBox.s0, uvBox.s1);
+  const v = MathUtils8.map(screenY, minY, maxY, uvBox.t0, uvBox.t1);
   return { u, v };
 }
-function getPixelFromCanvasImageSource(image, xPos, yPos, canvas2) {
+function getPixelFromCanvasImageSource(image, xPos, yPos, canvas) {
   const { width, height } = image instanceof SVGImageElement ? image.getBBox() : image;
   if (xPos > width || xPos < 0 || yPos > height || yPos < 0) {
     return void 0;
   }
   let pixelData;
-  canvas2.width = width;
-  canvas2.height = height;
-  const context2 = canvas2.getContext("2d");
-  if (context2 !== null) {
-    context2.drawImage(image, 0, 0);
-    pixelData = context2.getImageData(xPos, yPos, 1, 1).data;
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (context !== null) {
+    context.drawImage(image, 0, 0);
+    pixelData = context.getImageData(xPos, yPos, 1, 1).data;
   }
   return pixelData;
 }
@@ -21308,12 +21316,12 @@ var BoxBuffer = class {
     info.heapSize += numBytes;
     info.gpuSize += numBytes;
   }
-  isPixelTransparent(image, xScreenPos, yScreenPos, box, uvBox, canvas2) {
+  isPixelTransparent(image, xScreenPos, yScreenPos, box, uvBox, canvas) {
     const { u, v } = screenToUvCoordinates(xScreenPos, yScreenPos, box, uvBox);
     const { width, height } = image instanceof SVGImageElement ? image.getBBox() : image;
     const x = width * u;
     const y = height * v;
-    const pixel = getPixelFromImage(x, y, image, canvas2);
+    const pixel = getPixelFromImage(x, y, image, canvas);
     return pixel !== void 0 && pixel[3] === 0;
   }
   clearAttributes() {
@@ -22016,7 +22024,7 @@ function checkReadyForPlacement(textElement, poiIndex, viewState, poiManager, ma
   if (!poiManager.updatePoiFromPoiTable(textElement)) {
     return { result: 1 /* NotReady */, viewDistance };
   }
-  if (!textElement.visible || viewState.zoomLevel === textElement.maxZoomLevel || !MathUtils6.isClamped(viewState.zoomLevel, textElement.minZoomLevel, textElement.maxZoomLevel)) {
+  if (!textElement.visible || viewState.zoomLevel === textElement.maxZoomLevel || !MathUtils8.isClamped(viewState.zoomLevel, textElement.minZoomLevel, textElement.maxZoomLevel)) {
     return { result: 2 /* Invisible */, viewDistance };
   }
   viewDistance = maxViewDistance === void 0 ? computeViewDistance(textElement, poiIndex, viewState.worldCenter, viewState.lookAtVector) : checkViewDistance(textElement, poiIndex, viewState.worldCenter, viewState.lookAtVector, viewState.projection.type, maxViewDistance);
@@ -22573,7 +22581,7 @@ var RenderState = class {
       this.m_state = this.m_state === 1 /* FadingIn */ ? 2 /* FadedIn */ : -2 /* FadedOut */;
     } else {
       this.value = fadingTime / this.fadeTime;
-      this.opacity = THREE83.MathUtils.clamp(MathUtils6.smootherStep(startValue, endValue, this.value), 0, 1);
+      this.opacity = THREE83.MathUtils.clamp(MathUtils8.smootherStep(startValue, endValue, this.value), 0, 1);
       assert(this.isFading());
     }
   }
@@ -23149,9 +23157,9 @@ var TextStyleCache = class {
       }
       let alternativeTextCanvas = textCanvases.get(DEFAULT_FONT_CATALOG_NAME);
       if (!alternativeTextCanvas && textCanvases.size > 0) {
-        for (const [, canvas2] of textCanvases) {
-          if (canvas2) {
-            alternativeTextCanvas = canvas2;
+        for (const [, canvas] of textCanvases) {
+          if (canvas) {
+            alternativeTextCanvas = canvas;
             break;
           }
         }
@@ -23363,15 +23371,15 @@ function hasTextElements(dataSourceTileList) {
   }
   return false;
 }
-function addTextToCanvas(textElement, canvas2, screenPosition, path, pathOverflow) {
+function addTextToCanvas(textElement, canvas, screenPosition, path, pathOverflow) {
   tmpAdditionParams.path = path;
   tmpAdditionParams.pathOverflow = pathOverflow;
   tmpAdditionParams.layer = textElement.renderOrder;
   tmpAdditionParams.letterCaseArray = textElement.glyphCaseArray;
   tmpAdditionParams.pickingData = textElement.userData ? textElement : void 0;
-  canvas2.addText(textElement.glyphs, screenPosition, tmpAdditionParams);
+  canvas.addText(textElement.glyphs, screenPosition, tmpAdditionParams);
 }
-function addTextBufferToCanvas(textElementState, canvas2, screenPosition, fadeFactor, scaleFactor) {
+function addTextBufferToCanvas(textElementState, canvas, screenPosition, fadeFactor, scaleFactor) {
   const textElement = textElementState.element;
   const textRenderState = textElementState.textRenderState;
   const opacity = textRenderState.opacity * fadeFactor * textElement.renderStyle.opacity;
@@ -23380,16 +23388,16 @@ function addTextBufferToCanvas(textElementState, canvas2, screenPosition, fadeFa
   }
   tmpTextBufferCreationParams.letterCaseArray = textElement.glyphCaseArray;
   if (textElement.textBufferObject === void 0) {
-    textElement.textBufferObject = canvas2.createTextBufferObject(textElement.glyphs, tmpTextBufferCreationParams);
+    textElement.textBufferObject = canvas.createTextBufferObject(textElement.glyphs, tmpTextBufferCreationParams);
   }
-  const backgroundIsVisible = textElement.renderStyle.backgroundOpacity > 0 && canvas2.textRenderStyle.fontSize.backgroundSize > 0;
+  const backgroundIsVisible = textElement.renderStyle.backgroundOpacity > 0 && canvas.textRenderStyle.fontSize.backgroundSize > 0;
   tmpBufferAdditionParams.layer = textElement.renderOrder;
   tmpBufferAdditionParams.position = screenPosition;
   tmpBufferAdditionParams.scale = scaleFactor;
   tmpBufferAdditionParams.opacity = opacity;
   tmpBufferAdditionParams.backgroundOpacity = backgroundIsVisible ? tmpBufferAdditionParams.opacity * textElement.renderStyle.backgroundOpacity : 0;
   tmpBufferAdditionParams.pickingData = textElement.userData ? textElement : void 0;
-  canvas2.addTextBufferObject(textElement.textBufferObject, tmpBufferAdditionParams);
+  canvas.addTextBufferObject(textElement.textBufferObject, tmpBufferAdditionParams);
   return true;
 }
 function shouldRenderPointText(labelState, viewState, options) {
@@ -23401,7 +23409,7 @@ function shouldRenderPointText(labelState, viewState, options) {
   if (!hasText) {
     return false;
   }
-  const visibleInZoomLevel = poiInfo === void 0 || MathUtils6.isClamped(viewState.zoomLevel, poiInfo.textMinZoomLevel, poiInfo.textMaxZoomLevel);
+  const visibleInZoomLevel = poiInfo === void 0 || MathUtils8.isClamped(viewState.zoomLevel, poiInfo.textMinZoomLevel, poiInfo.textMaxZoomLevel);
   if (!visibleInZoomLevel) {
     return false;
   }
@@ -24233,7 +24241,7 @@ var TextElementsRenderer = class {
     labelState.setViewDistance(textDistance);
     const poiInfo = pointLabel.poiInfo;
     let iconRejected = false;
-    const renderIcon = poiInfo !== void 0 && MathUtils6.isClamped(this.m_viewState.zoomLevel, poiInfo.iconMinZoomLevel, poiInfo.iconMaxZoomLevel) && poiInfo.isValid !== false;
+    const renderIcon = poiInfo !== void 0 && MathUtils8.isClamped(this.m_viewState.zoomLevel, poiInfo.iconMinZoomLevel, poiInfo.iconMaxZoomLevel) && poiInfo.isValid !== false;
     const distanceScaleFactor = this.getDistanceScalingFactor(pointLabel, textDistance, this.m_viewState.lookAtDistance);
     const iconReady = renderIcon && this.m_poiRenderer.prepareRender(pointLabel, this.m_viewState.env);
     let iconInvisible = false;
@@ -24482,8 +24490,8 @@ var _TextElementBuilder = class {
       return;
     }
     const poiInfo = textElement.poiInfo;
-    textElement.minZoomLevel = textElement.minZoomLevel ?? MathUtils6.min2(poiInfo.iconMinZoomLevel, poiInfo.textMinZoomLevel);
-    textElement.maxZoomLevel = textElement.maxZoomLevel ?? MathUtils6.max2(poiInfo.iconMaxZoomLevel, poiInfo.textMaxZoomLevel);
+    textElement.minZoomLevel = textElement.minZoomLevel ?? MathUtils8.min2(poiInfo.iconMinZoomLevel, poiInfo.textMinZoomLevel);
+    textElement.maxZoomLevel = textElement.maxZoomLevel ?? MathUtils8.max2(poiInfo.iconMaxZoomLevel, poiInfo.textMaxZoomLevel);
   }
   static composeRenderOrder(baseRenderOrder, offset) {
     return baseRenderOrder * _TextElementBuilder.RENDER_ORDER_UP_BOUND + offset;
@@ -26322,8 +26330,8 @@ var VisibleTileSet = class {
       const tiles = renderListEntry.renderedTiles;
       tiles.forEach((tile) => {
         tile.update(renderListEntry.zoomLevel);
-        minElevation = MathUtils6.min2(minElevation, tile.geoBox.minAltitude);
-        maxElevation = MathUtils6.max2(maxElevation, tile.geoBox.maxAltitude);
+        minElevation = MathUtils8.min2(minElevation, tile.geoBox.minAltitude);
+        maxElevation = MathUtils8.max2(maxElevation, tile.geoBox.maxAltitude);
       });
     });
     if (minElevation === void 0) {
@@ -26754,7 +26762,7 @@ var MapViewDefaults = {
   theme: {},
   maxTilesPerFrame: 0
 };
-var MapView = class extends EventDispatcher {
+var MapView3 = class extends EventDispatcher {
   handleRequestAnimationFrame;
   m_animatedExtrusionHandler;
   m_animationCount = 0;
@@ -28203,10 +28211,10 @@ var MemoCallExpr = class extends CallExpr7 {
     this.m_deps = Array.from(expr.dependencies().properties);
     this.descriptor = this;
   }
-  call(context2) {
+  call(context) {
     let changed = false;
     this.m_deps.forEach((d, i) => {
-      const newValue = context2.env.lookup(d);
+      const newValue = context.env.lookup(d);
       if (!changed && newValue !== this.m_cachedProperties[i]) {
         changed = true;
       }
@@ -28215,7 +28223,7 @@ var MemoCallExpr = class extends CallExpr7 {
       }
     });
     if (changed || this.m_cachedValue === void 0) {
-      this.m_cachedValue = context2.evaluate(this.args[0]);
+      this.m_cachedValue = context.evaluate(this.args[0]);
     }
     return this.m_cachedValue;
   }
@@ -29884,7 +29892,7 @@ var MapViewUtils;
     } else if (deltaTilt <= 0) {
       return deltaTilt;
     } else if (mapTargetWorld.equals(rotationTargetWorld) || offsetY < 0) {
-      return MathUtils3.clamp(deltaTilt + tilt, 0, maxTiltAngle) - tilt;
+      return MathUtils4.clamp(deltaTilt + tilt, 0, maxTiltAngle) - tilt;
     }
     const rotationCenterTilt = extractTiltAngleFromLocation(projection, camera, rotationTargetWorld, tiltAxis);
     const maxRotationTiltAngle = THREE97.MathUtils.degToRad(89);
@@ -29903,7 +29911,7 @@ var MapViewUtils;
     const RpCM = ninetyRad * 2 - (MRpC + CMRp);
     const CMRpMaxTilt = ninetyRad * 2 - RpCM - ninetyRad - maxTiltAngle;
     const maxTilt = ninetyRad + angleBetweenNormals - CMRpMaxTilt;
-    const clampedDeltaTilt = MathUtils3.clamp(deltaTilt + rotationCenterTilt, 0, Math.min(maxTilt, maxRotationTiltAngle)) - rotationCenterTilt;
+    const clampedDeltaTilt = MathUtils4.clamp(deltaTilt + rotationCenterTilt, 0, Math.min(maxTilt, maxRotationTiltAngle)) - rotationCenterTilt;
     return clampedDeltaTilt;
   }
   function applyTiltAroundTarget(mapView, rotationTargetWorld, deltaTilt, tiltAxis) {
@@ -30060,7 +30068,7 @@ var MapViewUtils;
     }
     let north = startPosition.latitude;
     let south = startPosition.latitude;
-    let lonCenter = MathUtils3.normalizeLongitudeDeg(startPosition.longitude);
+    let lonCenter = MathUtils4.normalizeLongitudeDeg(startPosition.longitude);
     let lonSpan = 0;
     let east = startPosition.longitude;
     let west = startPosition.longitude;
@@ -30073,8 +30081,8 @@ var MapViewUtils;
       } else if (p.latitude < south) {
         south = p.latitude;
       }
-      let longitude = MathUtils3.normalizeLongitudeDeg(p.longitude);
-      const relToCenter = MathUtils3.angleDistanceDeg(lonCenter, longitude);
+      let longitude = MathUtils4.normalizeLongitudeDeg(p.longitude);
+      const relToCenter = MathUtils4.angleDistanceDeg(lonCenter, longitude);
       longitude = lonCenter - relToCenter;
       if (relToCenter < 0 && -relToCenter > lonSpan / 2) {
         east = Math.max(east, lonCenter - relToCenter);
@@ -32571,11 +32579,15 @@ export {
   DEPTH_PRE_PASS_STENCIL_MASK,
   DataSource,
   DebugContext,
+  EarthConstants,
   ElevationBasedClipPlanesEvaluator,
   EventDispatcher,
   FixedClipPlanesEvaluator,
   FrameStats,
   FrameStatsArray,
+  GeoBox,
+  GeoCoordinates,
+  GeoPolygon,
   ImageCache,
   ImageItem,
   IndexedBufferedGeometryAccessor,
@@ -32583,20 +32595,27 @@ export {
   LoadingState,
   MAX_FOV_DEG,
   MAX_FOV_RAD,
+  MAX_LATITUDE,
+  MAX_LONGITUDE,
   MIN_FOV_DEG,
   MIN_FOV_RAD,
+  MIN_LATITUDE,
+  MIN_LONGITUDE,
   MSAARenderPass,
   MSAASampling,
   MapAnchors,
   MapRenderingManager,
-  MapView,
+  MapView3 as MapView,
   MapViewAtmosphere,
   MapViewEventNames,
   MapViewFog,
   MapViewImageCache,
   MapViewPoints,
   MapViewUtils,
+  MathUtils4 as MathUtils,
+  MercatorConstants,
   MultiStageTimer,
+  OrientedBox3,
   Pass,
   PerformanceStatistics,
   PickHandler,
@@ -32605,6 +32624,8 @@ export {
   PoiTable,
   PoiTableManager,
   PolarTileDataSource,
+  Projection,
+  ProjectionType,
   ResourceComputationType,
   RingBuffer,
   SampledTimer,
@@ -32620,11 +32641,15 @@ export {
   Tile,
   TileDataAccessor,
   TileGeometryCreator,
+  TileKey,
+  TileKeyUtils,
   TileLoaderState,
   TileOffsetUtils,
   TileTaskGroups,
+  TilingScheme,
   TiltViewClipPlanesEvaluator,
   TopViewClipPlanesEvaluator,
+  TransverseMercatorUtils,
   UrlCopyrightProvider,
   VisibleTileSet,
   WorkerBasedDecoder,
@@ -32641,17 +32666,36 @@ export {
   createDepthPrePassMesh,
   createMaterial,
   debugContext,
+  equirectangularProjection,
   evaluateBaseColorProperty,
   evaluateColorProperty,
+  geoCoordLikeToGeoCoordinatesLike,
+  geoCoordLikeToGeoPointLike,
   getBufferAttribute,
   getFeatureDataSize,
   getMaterialConstructor,
+  isAntimeridianCrossing,
+  isBox3Like,
   isDepthPrePassMesh,
+  isGeoBoxExtentLike,
+  isGeoCoordLike,
+  isGeoCoordinatesLike,
+  isGeoPointLike,
   isLineAccessor,
   isObject3dAccessor,
   isRenderDepthPrePassEnabled,
+  isVector2Like,
+  isVector3Like,
+  mercatorProjection,
+  normalizedEquirectangularProjection,
   poiIsRenderable,
+  polarTilingScheme,
+  powerOfTwo2 as powerOfTwo,
   setDepthPrePassStencil,
-  usesObject3D
+  sphereProjection,
+  transverseMercatorProjection,
+  usesObject3D,
+  webMercatorProjection,
+  webMercatorTilingScheme
 };
 //!!!!!!!ALTITUDE IS NOT TAKEN INTO ACCOUNT!!!!!!!!!

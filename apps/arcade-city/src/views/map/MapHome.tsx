@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { StyleSheet } from 'react-native'
-import { ArcadeMap } from '@arcadecity/arcade-map'
+import { ArcadeMap } from './ArcadeMap'
+
+// import { ArcadeMap } from '@arcadecity/arcade-map'
 
 // import { Text } from '@arcadecity/ui'
 

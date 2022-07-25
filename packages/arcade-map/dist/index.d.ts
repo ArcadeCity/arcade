@@ -4,45 +4,6 @@ import { Vector3, Matrix4, Plane, Frustum, Ray, Object3D, PerspectiveCamera } fr
 declare const ArcadeMap: () => JSX.Element;
 
 /**
- * A class representing RGBA colors.
- *
- * @hidden
- * @internal
- */
-declare class RGBA {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-    /**
-     * Parses a string describing a color.
-     *
-     * @param text - The string color literal
-     */
-    static parse(text: string): RGBA | undefined;
-    /**
-     * Constructs a [[RGBA]] color using the given components in the [0..1] range.
-     */
-    constructor(r?: number, g?: number, b?: number, a?: number);
-    /**
-     * Clones this [[RGBA]] color.
-     */
-    clone(): RGBA;
-    /**
-     * Returns this color encoded as one single number.
-     */
-    getHex(): number;
-    /**
-     * Linearly interpolate the components of this color.
-     */
-    lerp(target: RGBA, t: number): this;
-    /**
-     * Returns this color encoded as JSON literal.
-     */
-    toJSON(): string;
-}
-
-/**
  * Represents an object that carry {@link GeoBox} extents like interface.
  */
 interface GeoBoxExtentLike {
@@ -55,6 +16,10 @@ interface GeoBoxExtentLike {
      */
     readonly longitudeSpan: number;
 }
+/**
+ * Type guard to assert that `object` conforms to {@link GeoBoxExtentLike} interface.
+ */
+declare function isGeoBoxExtentLike(obj: any): obj is GeoBoxExtentLike;
 
 /**
  * Represents an object with `GeoCoordinates` like interface.
@@ -67,11 +32,19 @@ interface GeoCoordinatesLike {
     /** The optional altitude in meters. */
     altitude?: number;
 }
+/**
+ * Type guard to assert that `object` conforms to {@link GeoCoordinatesLike} data interface.
+ */
+declare function isGeoCoordinatesLike(object: any): object is GeoCoordinatesLike;
 
 /**
  * An [[Array]] following the order longitude, latitude, altitude.
  */
 declare type GeoPointLike = [number, number, number?];
+/**
+ * Type guard to assert that `object` conforms to [[GeoPointLike]] interface.
+ */
+declare function isGeoPointLike(geoPoint: any): geoPoint is GeoPointLike;
 
 /**
  * Represents an object with `LatLng` like interface.
@@ -87,7 +60,14 @@ interface LatLngLike {
  * Represents an object in different geo coordinate formats
  */
 declare type GeoCoordLike = GeoPointLike | GeoCoordinatesLike | LatLngLike;
+declare function geoCoordLikeToGeoCoordinatesLike(coord: GeoCoordLike): GeoCoordinatesLike;
+declare function geoCoordLikeToGeoPointLike(coord: GeoCoordLike): GeoPointLike;
+declare function isGeoCoordLike(object: any): boolean;
 
+declare const MAX_LATITUDE = 90;
+declare const MIN_LATITUDE = -90;
+declare const MAX_LONGITUDE = 180;
+declare const MIN_LONGITUDE = -180;
 /**
  * `GeoCoordinates` is used to represent geo positions.
  */
@@ -353,6 +333,7 @@ interface GeoPolygonLike {
     coordinates: GeoCoordLike[];
 }
 
+declare function isAntimeridianCrossing(lonStart: number, lonEnd: number): boolean;
 declare type MinThreeItemsArray<T> = [T, T, T, ...T[]];
 declare type GeoPolygonCoordinates = MinThreeItemsArray<GeoCoordinatesLike | GeoCoordinates | GeoCoordLike>;
 /**
@@ -414,6 +395,7 @@ interface Vector3Like {
      */
     z: number;
 }
+declare function isVector3Like(v: any): v is Vector3Like;
 
 /**
  * An interface representing bounding box in world coordinates.
@@ -427,6 +409,108 @@ interface Box3Like {
      * The maximum position in world coordinates of this bounding box.
      */
     readonly max: Vector3Like;
+}
+/**
+ * Returns true if the given object implements the {@link Box3Like} interface.
+ *
+ * @param object - A valid object.
+ */
+declare function isBox3Like(object: {}): object is Box3Like;
+
+declare namespace MathUtils {
+    /**
+     * Creates a new empty bounding box.
+     *
+     * @deprecated Use {@link https://threejs.org/docs/#api/en/math/Box3 | THREE.Box3} instead.
+     */
+    function newEmptyBox3(): Box3Like;
+    /**
+     * Creates a new [Vector3Like] instance.
+     *
+     * @param x - The x component.
+     * @param y - The y component.
+     * @param z - The z component.
+     */
+    function newVector3(x: number, y: number, z: number): Vector3Like;
+    /**
+     * Creates a new [Vector3Like] instance.
+     *
+     * @param x - The x component.
+     * @param y - The y component.
+     * @param z - The z component.
+     * @param v - The resulting [Vector3Like] instance.
+     */
+    function newVector3<Vector extends Vector3Like>(x: number, y: number, z: number, v: Vector): Vector;
+    /**
+     * Copies the vector across.
+     *
+     * @param from - The vector to copy from.
+     * @param to - The resulting [Vector3Like] instance, with the contents copied from from
+     */
+    function copyVector3<Vector extends Vector3Like>(from: Vector3Like, to: Vector): Vector;
+    /**
+     * Converts an angle measured in degrees to an equivalent value in radians.
+     *
+     * @param degrees - Value in degrees.
+     * @returns Value in radians.
+     * @deprecated use THREE.MathUtils.degToRad instead
+     */
+    const degToRad: typeof THREE$1.MathUtils.degToRad;
+    /**
+     * Converts an angle measured in radians to an equivalent value in degrees.
+     *
+     * @param degrees - Value in radians.
+     * @returns Value in degrees.
+     * @deprecated Use {@link https://threejs.org/docs/#api/en/math/MathUtils.radToDeg
+     *                | THREE.MathUtils.radToDeg}.
+     */
+    const radToDeg: typeof THREE$1.MathUtils.radToDeg;
+    /**
+     * Ensures that input value fits in a given range.
+     *
+     * @param value - The value to be clamped.
+     * @param min - Minimum value.
+     * @param max - Maximum value.
+     * @returns Clamped value.
+     * @deprecated Use {@link https://threejs.org/docs/#api/en/math/MathUtils.clamp
+     *                | THREE.MathUtils.clamp}.
+     */
+    const clamp: typeof THREE$1.MathUtils.clamp;
+    /**
+     * Normalize angle in degrees to range `[0, 360)`.
+     *
+     * @param a - Angle in degrees.
+     * @returns Angle in degrees in range `[0, 360)`.
+     */
+    function normalizeAngleDeg(a: number): number;
+    /**
+     * Normalize latitude angle in degrees to range `[-180, 180]`.
+     *
+     * @param a - Latitude angle in degrees.
+     * @returns Latitude angle in degrees in range `[-180, 180]`.
+     */
+    function normalizeLongitudeDeg(a: number): number;
+    /**
+     * Return the minimal delta between angles `a` and `b` given in degrees.
+     *
+     * Equivalent to `a - b` in coordinate space with exception vector direction can be reversed
+     * that if `abs(a-b) > 180` because trip is shorter in 'other' direction.
+     *
+     * Useful when interpolating between `b` and `a` in angle space.
+     *
+     * @param a - Start angle in degrees.
+     * @param b - End angle in degrees.
+     * @returns Angle that that satisfies condition `a - b - d = 0` in angle space.
+     */
+    function angleDistanceDeg(a: number, b: number): number;
+    /**
+     * Interpolate linearly between two angles given in degrees.
+     *
+     * @param p0 - Angle from in degrees
+     * @param p1 - Angle to in degrees
+     * @param t - Interpolation factor (alpha), in range `0-1`.
+     */
+    function interpolateAnglesDeg(p0: number, p1: number, t: number): number;
 }
 
 /**
@@ -566,6 +650,20 @@ interface Vector2Like {
      * The Y position.
      */
     y: number;
+}
+declare function isVector2Like(v: any): v is Vector2Like;
+
+declare class EarthConstants {
+    /** The equatorial circumference in meters. */
+    static EQUATORIAL_CIRCUMFERENCE: number;
+    /** The equatorial radius in meters. */
+    static EQUATORIAL_RADIUS: number;
+    /** The lowest point on earth (Dead Sea) in meters. */
+    static MIN_ELEVATION: number;
+    /** The highest point on earth (Mt. Everest) in meters. */
+    static MAX_ELEVATION: number;
+    /** The highest artificial structure (building) on earth, Burj Khalifa tower in Dubai */
+    static MAX_BUILDING_HEIGHT: number;
 }
 
 /**
@@ -733,6 +831,59 @@ declare abstract class Projection {
      */
     reprojectPoint<WorldCoordinates extends Vector3Like>(sourceProjection: Projection, worldPos: Vector3Like, result: WorldCoordinates): WorldCoordinates;
 }
+
+/**
+ * Equirectangular {@link Projection} used to convert geo coordinates to unit coordinates and vice
+ * versa.
+ */
+declare const normalizedEquirectangularProjection: Projection;
+/**
+ * Equirectangular {@link Projection} used to convert geo coordinates to world coordinates and vice
+ * versa.
+ */
+declare const equirectangularProjection: Projection;
+
+declare class MercatorConstants {
+    static readonly MAXIMUM_LATITUDE: number;
+}
+/**
+ * Mercator {@link Projection} used to convert geo coordinates to world coordinates and vice versa.
+ */
+declare const mercatorProjection: Projection;
+/**
+ * Web Mercator {@link Projection} used to convert geo coordinates to world coordinates
+ * and vice versa.
+ */
+declare const webMercatorProjection: Projection;
+
+declare const sphereProjection: Projection;
+
+declare class TransverseMercatorUtils {
+    static POLE_EDGE: number;
+    static POLE_EDGE_DEG: number;
+    static POLE_RADIUS: number;
+    static POLE_RADIUS_SQ: number;
+    /**
+     * There are two regions on projected space that have same geo coordinates,
+     * it's the entire lines   { x: [0..1], y: 0 } and { x: [0..1], y: 1 }
+     * they both have geo coordinates of   (0, [-90..+90])
+     * and should be aligned somehow to fall into first or second region
+     * to make proper bounding boxes, tile bounds, etc.
+     */
+    static alignLatitude(points: GeoCoordinatesLike[], referencePoint: GeoCoordinatesLike): void;
+    /**
+     * There are two regions on projected plane,
+     * { x: 0.5, y: [0..0.25] }    and    { x: 0.5, y: [0.75..1] }
+     * that represent longitude edge where -180 and +180 met.
+     * Points falling in this regions should be aligned to get proper boxes etc.
+     */
+    static alignLongitude(points: GeoCoordinatesLike[], referencePoint: GeoCoordinatesLike): void;
+}
+/**
+ * Transverse Mercator {@link Projection} used to convert geo coordinates to world coordinates
+ * and vice versa.
+ */
+declare const transverseMercatorProjection: Projection;
 
 /**
  * Interface representing a `SubdivisionScheme`.
@@ -1109,6 +1260,13 @@ declare class TilingScheme {
     getWorldBox(tileKey: TileKey, result?: Box3Like): Box3Like;
 }
 
+/**
+ * A {@link TilingScheme} featuring quadtree subdivision scheme and
+ * transverse Mercator projection.
+ */
+declare const polarTilingScheme: TilingScheme;
+
+declare const powerOfTwo: number[];
 declare namespace TileKeyUtils {
     function geoCoordinatesToTileKey(tilingScheme: TilingScheme, geoPoint: GeoCoordinatesLike, level: number): TileKey | null;
     function worldCoordinatesToTileKey(tilingScheme: TilingScheme, worldPoint: Vector3Like, level: number): TileKey | null;
@@ -1150,6 +1308,50 @@ declare namespace TileKeyUtils {
      * @param bitshift - Bit shift used to create the key
      */
     function getParentKeyFromKey(calculatedKey: number, bitshift?: number): number;
+}
+
+/**
+ * A {@link TilingScheme} featuring quadtree subdivision scheme and web Mercator projection.
+ */
+declare const webMercatorTilingScheme: TilingScheme;
+
+/**
+ * A class representing RGBA colors.
+ *
+ * @hidden
+ * @internal
+ */
+declare class RGBA {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+    /**
+     * Parses a string describing a color.
+     *
+     * @param text - The string color literal
+     */
+    static parse(text: string): RGBA | undefined;
+    /**
+     * Constructs a [[RGBA]] color using the given components in the [0..1] range.
+     */
+    constructor(r?: number, g?: number, b?: number, a?: number);
+    /**
+     * Clones this [[RGBA]] color.
+     */
+    clone(): RGBA;
+    /**
+     * Returns this color encoded as one single number.
+     */
+    getHex(): number;
+    /**
+     * Linearly interpolate the components of this color.
+     */
+    lerp(target: RGBA, t: number): this;
+    /**
+     * Returns this color encoded as JSON literal.
+     */
+    toJSON(): string;
 }
 
 /**
@@ -16212,4 +16414,4 @@ declare class WorkerLoader {
     static waitWorkerInitialized(worker: Worker, timeout: number): Promise<Worker>;
 }
 
-export { AnimatedExtrusionHandler, AnimatedExtrusionState, ArcadeMap, AreaCopyrightInfo, AtmosphereLightMode, BASE_TECHNIQUE_NON_MATERIAL_PROPS, BaseTileLoader, BoundsGenerator, BufferedGeometryAccessor, BufferedGeometryAccessorBase, BufferedGeometryLineAccessor, BufferedGeometryObject3dAccessor, CalculationStatus, CameraMovementDetector, CameraUtils, Circles, ClipPlanesEvaluator, ColorCache, ConcurrentDecoderFacade, ConcurrentTilerFacade, CopyrightCoverageProvider, CopyrightCoverageResponse, CopyrightElementHandler, CopyrightInfo, CopyrightProvider, DEFAULT_FONT_CATALOG_NAME, DEFAULT_FOV_CALCULATION, DEFAULT_MAX_THEME_INTHERITANCE_DEPTH, DEFAULT_TEXT_DISTANCE_SCALE, DEPTH_PRE_PASS_STENCIL_MASK, DataSource, DataSourceOptions, DataSourceTileList, DebugContext, DepthPrePassProperties, DisplacementMap, ElevationBasedClipPlanesEvaluator, ElevationProvider, ElevationRange, ElevationRangeSource, EventDispatcher, FadingParameters, FixedClipPlanesEvaluator, FovCalculation, FrameStats, FrameStatsArray, IGeometryAccessor, ILineAccessor, IMapAntialiasSettings, IMapRenderingManager, IObject3dAccessor, IPass, IPassManager, ITileDataVisitor, ITileLoader, ImageCache, ImageItem, IndexedBufferedGeometryAccessor, IndexedBufferedGeometryLineAccessor, LoadingState, LookAtParams, MAX_FOV_DEG, MAX_FOV_RAD, MIN_FOV_DEG, MIN_FOV_RAD, MSAARenderPass, MSAASampling, MapAnchor, MapAnchors, MapRenderingManager, MapView, MapViewAtmosphere, MapViewEventNames, MapViewFog, MapViewImageCache, MapViewOptions, MapViewPoints, MapViewUtils, MaterialConstructor, MaterialOptions, MultiStageTimer, Pass, PerformanceStatistics, PickHandler, PickObjectType, PickResult, PoiInfo, PoiManager, PoiTable, PoiTableManager, PolarTileDataSource, PolarTileDataSourceOptions, PolygonFadingParameters, RenderEvent, RequestHeaders, ResourceComputationType, RingBuffer, SampledTimer, SimpleFrameStatistics, SimpleTimer, Squares, Statistics, Stats, TextCanvases, TextElement, TextElementIndex, TextElementStyle, TextElementType, TextElementsRenderer, TextPickResult, TextStyleCache, TextureLoader, TexturizableImage, ThemeLoadOptions, ThemeLoader, Tile, TileDataAccessor, TileDataAccessorOptions, TileDisplacementMap, TileFeatureData, TileGeometryCreator, TileLoaderState, TileObject, TileOffsetUtils, TileResourceInfo, TileResourceUsage, TileTaskGroups, TiltViewClipPlanesEvaluator, Timer, TopViewClipPlanesEvaluator, UrlCopyrightProvider, VisibleTileSet, VisibleTileSetOptions, WorkerBasedDecoder, WorkerBasedTiler, WorkerLoader, applyBaseColorToMaterial, applySecondaryColorToMaterial, buildMetricValueEvaluator, buildObject, computeArrayAverage, computeArrayStats, createDefaultClipPlanesEvaluator, createDepthPrePassMaterial, createDepthPrePassMesh, createMaterial, debugContext, evaluateBaseColorProperty, evaluateColorProperty, getBufferAttribute, getFeatureDataSize, getMaterialConstructor, isDepthPrePassMesh, isLineAccessor, isObject3dAccessor, isRenderDepthPrePassEnabled, poiIsRenderable, setDepthPrePassStencil, usesObject3D };
+export { AnimatedExtrusionHandler, AnimatedExtrusionState, ArcadeMap, AreaCopyrightInfo, AtmosphereLightMode, BASE_TECHNIQUE_NON_MATERIAL_PROPS, BaseTileLoader, BoundsGenerator, Box3Like, BufferedGeometryAccessor, BufferedGeometryAccessorBase, BufferedGeometryLineAccessor, BufferedGeometryObject3dAccessor, CalculationStatus, CameraMovementDetector, CameraUtils, Circles, ClipPlanesEvaluator, ColorCache, ConcurrentDecoderFacade, ConcurrentTilerFacade, CopyrightCoverageProvider, CopyrightCoverageResponse, CopyrightElementHandler, CopyrightInfo, CopyrightProvider, DEFAULT_FONT_CATALOG_NAME, DEFAULT_FOV_CALCULATION, DEFAULT_MAX_THEME_INTHERITANCE_DEPTH, DEFAULT_TEXT_DISTANCE_SCALE, DEPTH_PRE_PASS_STENCIL_MASK, DataSource, DataSourceOptions, DataSourceTileList, DebugContext, DepthPrePassProperties, DisplacementMap, EarthConstants, ElevationBasedClipPlanesEvaluator, ElevationProvider, ElevationRange, ElevationRangeSource, EventDispatcher, FadingParameters, FixedClipPlanesEvaluator, FovCalculation, FrameStats, FrameStatsArray, GeoBox, GeoBoxExtentLike, GeoCoordLike, GeoCoordinates, GeoCoordinatesLike, GeoPointLike, GeoPolygon, GeoPolygonCoordinates, IGeometryAccessor, ILineAccessor, IMapAntialiasSettings, IMapRenderingManager, IObject3dAccessor, IPass, IPassManager, ITileDataVisitor, ITileLoader, ImageCache, ImageItem, IndexedBufferedGeometryAccessor, IndexedBufferedGeometryLineAccessor, LoadingState, LookAtParams, MAX_FOV_DEG, MAX_FOV_RAD, MAX_LATITUDE, MAX_LONGITUDE, MIN_FOV_DEG, MIN_FOV_RAD, MIN_LATITUDE, MIN_LONGITUDE, MSAARenderPass, MSAASampling, MapAnchor, MapAnchors, MapRenderingManager, MapView, MapViewAtmosphere, MapViewEventNames, MapViewFog, MapViewImageCache, MapViewOptions, MapViewPoints, MapViewUtils, MaterialConstructor, MaterialOptions, MathUtils, MercatorConstants, MultiStageTimer, OrientedBox3, Pass, PerformanceStatistics, PickHandler, PickObjectType, PickResult, PoiInfo, PoiManager, PoiTable, PoiTableManager, PolarTileDataSource, PolarTileDataSourceOptions, PolygonFadingParameters, Projection, ProjectionType, RenderEvent, RequestHeaders, ResourceComputationType, RingBuffer, SampledTimer, SimpleFrameStatistics, SimpleTimer, Squares, Statistics, Stats, TextCanvases, TextElement, TextElementIndex, TextElementStyle, TextElementType, TextElementsRenderer, TextPickResult, TextStyleCache, TextureLoader, TexturizableImage, ThemeLoadOptions, ThemeLoader, Tile, TileDataAccessor, TileDataAccessorOptions, TileDisplacementMap, TileFeatureData, TileGeometryCreator, TileKey, TileKeyUtils, TileLoaderState, TileObject, TileOffsetUtils, TileResourceInfo, TileResourceUsage, TileTaskGroups, TilingScheme, TiltViewClipPlanesEvaluator, Timer, TopViewClipPlanesEvaluator, TransverseMercatorUtils, UrlCopyrightProvider, Vector2Like, Vector3Like, VisibleTileSet, VisibleTileSetOptions, WorkerBasedDecoder, WorkerBasedTiler, WorkerLoader, applyBaseColorToMaterial, applySecondaryColorToMaterial, buildMetricValueEvaluator, buildObject, computeArrayAverage, computeArrayStats, createDefaultClipPlanesEvaluator, createDepthPrePassMaterial, createDepthPrePassMesh, createMaterial, debugContext, equirectangularProjection, evaluateBaseColorProperty, evaluateColorProperty, geoCoordLikeToGeoCoordinatesLike, geoCoordLikeToGeoPointLike, getBufferAttribute, getFeatureDataSize, getMaterialConstructor, isAntimeridianCrossing, isBox3Like, isDepthPrePassMesh, isGeoBoxExtentLike, isGeoCoordLike, isGeoCoordinatesLike, isGeoPointLike, isLineAccessor, isObject3dAccessor, isRenderDepthPrePassEnabled, isVector2Like, isVector3Like, mercatorProjection, normalizedEquirectangularProjection, poiIsRenderable, polarTilingScheme, powerOfTwo, setDepthPrePassStencil, sphereProjection, transverseMercatorProjection, usesObject3D, webMercatorProjection, webMercatorTilingScheme };
