@@ -57,10 +57,10 @@ const doit = (rideRequest: RideRequest) => {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const checkForEm = async () => {
-  document.getElementById('overlay-text')!.innerHTML = 'Loading requests'
+  document.getElementById('overlay-text')!.innerHTML = 'Loading Bullrun ride requests'
   await delay(2000)
   const requests = store.getState().requests
-  document.getElementById('overlay-text')!.innerHTML = `Loaded ${requests.length} requests`
+  document.getElementById('overlay-text')!.innerHTML = `Loaded ${requests.length} ride requests`
   await delay(2000)
   for (const rideRequest of requests) {
     doit(rideRequest)
