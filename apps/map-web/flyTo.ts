@@ -33,7 +33,7 @@ export const flyTo = (coords: GeoCoordinates, map: MapView) => {
   }
 }
 
-function stopAnimation() {
+export function stopAnimation() {
   if (cameraAnimation) {
     cameraAnimation.stop()
     cameraAnimation = undefined
