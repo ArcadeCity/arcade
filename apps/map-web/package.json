@@ -17,10 +17,13 @@
     "@here/harp-mapview": "^0.28.0",
     "@here/harp-vectortile-datasource": "^0.28.0",
     "@here/harp-webpack-utils": "^0.28.0",
-    "three": "^0.129.0"
+    "nostr-tools": "^0.23.4",
+    "three": "^0.129.0",
+    "zustand": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.6.1",
+    "node-polyfill-webpack-plugin": "^2.0.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",
     "webpack": "^5.74.0",
