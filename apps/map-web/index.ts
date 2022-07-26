@@ -22,7 +22,9 @@ function onEvent(event: NostrEvent) {
     const from = new GeoCoordinates(rideRequest.from.lat, rideRequest.from.lng)
 
     // Update text for text-overlay-container element with the ride request
-    const text = `${rideRequest.name} wants a ride`
+    const text = `${rideRequest.name} wants a ride<br />from ${from.latitude.toFixed(
+      4
+    )}, ${from.longitude.toFixed(4)}<br />to ${to.latitude.toFixed(4)}, ${to.longitude.toFixed(4)}`
     document.getElementById('overlay-text')!.innerHTML = text
 
     mapView.lookAt({
@@ -33,7 +35,7 @@ function onEvent(event: NostrEvent) {
 
     setTimeout(() => {
       flyTo(from, mapView)
-    }, 2000)
+    }, 1000)
   }
 }
 
