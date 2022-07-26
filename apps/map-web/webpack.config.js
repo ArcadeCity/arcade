@@ -1,5 +1,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { addHarpWebpackConfig } = require('@here/harp-webpack-utils/scripts/HarpWebpackConfig')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 // this webpack config consists of two generated bundles.
 // 1. The bundle that is loaded in the web worker to do background tasks
@@ -8,6 +9,7 @@ const { addHarpWebpackConfig } = require('@here/harp-webpack-utils/scripts/HarpW
 module.exports = addHarpWebpackConfig(
   {
     plugins: [
+      new NodePolyfillPlugin(),
       new CopyWebpackPlugin({
         patterns: [
           require.resolve('three/build/three.min.js'),
