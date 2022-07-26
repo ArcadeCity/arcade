@@ -1,5 +1,5 @@
 {
-  "name": "@arcadecity/map-demo",
+  "name": "@arcadecity/map-web",
   "version": "0.1.0",
   "description": "Generated with generator-harp.gl 0.28.0",
   "scripts": {
