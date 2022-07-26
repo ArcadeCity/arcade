@@ -22,15 +22,23 @@
       z-index: -1;
     }
 
-    #copyrightNotice {
+    #text-overlay-container {
+      display: flex;
       position: absolute;
-      right: 0;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      left: 0;
       bottom: 0;
-      background-color: #f0fef1;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100vh;
+      color: #EEECFB;
       z-index: 100;
       padding: 2px 5px;
       font-family: sans-serif;
-      font-size: 0.8em;
+      font-size: 2em;
       font-weight: normal;
     }
   </style>
@@ -40,7 +48,9 @@
   <script src="three.min.js"></script>
 
   <canvas id="map"></canvas>
-  <div id="copyrightNotice"></div>
+  <div id="text-overlay-container">
+    <div id="overlay-text"></div>
+  </div>
 </body>
 
 </html>

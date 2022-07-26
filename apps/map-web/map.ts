@@ -5,6 +5,7 @@
  */
 
 import { GeoCoordinates } from '@here/harp-geoutils'
+import { store } from './store'
 import { View } from './View'
 
 const app = new View({
@@ -27,3 +28,6 @@ mapView.lookAt({ target: new GeoCoordinates(40.70398928, -74.01219808), zoomLeve
 
 // make sure the map is rendered
 mapView.update()
+
+// Save mapView to store for use elsewhere in app
+store.setState({ mapView })

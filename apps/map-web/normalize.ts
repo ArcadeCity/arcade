@@ -4,6 +4,17 @@ export const normalizeRideRequestEvent = (event: NostrEvent) => {
   try {
     const content = JSON.parse(event.content)
     if (!content.to) return
+
+    // Filter out my dummy requests
+    if (
+      content.from.lat > -2 &&
+      content.from.lat < 2 &&
+      content.from.lng > -2 &&
+      content.from.lng < 2
+    ) {
+      return
+    }
+
     const rideRequest: RideRequest = {
       amount: content.amount,
       created_at: event.created_at,
