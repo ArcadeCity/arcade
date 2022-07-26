@@ -12,8 +12,7 @@ pool.addRelay('wss://relay.damus.io', { read: true, write: false })
 function onEvent(event: NostrEvent) {
   const rideRequest = normalizeRideRequestEvent(event)
   if (rideRequest) {
-    console.log('New ride request:', rideRequest.id)
-    // useStore.getState().addRequest(rideRequest)
+    console.log('New ride request:', rideRequest)
   }
 }
 
@@ -21,6 +20,6 @@ pool.sub({
   cb: onEvent,
   filter: {
     kinds: [60],
-    limit: 25,
+    limit: 1,
   },
 })
