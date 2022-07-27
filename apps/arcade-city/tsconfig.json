@@ -15,5 +15,6 @@
       "stores": ["src/stores"],
       "views/*": ["src/views/*"]
     }
-  }
+  },
+  "include": ["src/**/*"]
 }
