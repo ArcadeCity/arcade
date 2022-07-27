@@ -1,8 +1,8 @@
 import { values } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
+import { View as Panel } from 'react-native'
 import { useStores } from 'stores'
-import { Panel } from 'views/hud'
 import { PlayerDetail } from 'views/hud/PlayerDetail'
 import { Text } from 'views/shared'
 
@@ -17,7 +17,7 @@ export const Nearby = observer(() => {
     playerStore.getNearby(authStore.coords.latitude, authStore.coords.longitude)
   }, [authStore.coords.latitude])
   return (
-    <Panel title='Nearby Players'>
+    <Panel>
       {authStore.coords.latitude === 0 && authStore.coords.longitude === 0 && (
         <Text
           text="We don't have your location - showing unsorted"
