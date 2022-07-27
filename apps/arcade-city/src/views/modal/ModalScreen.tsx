@@ -22,6 +22,7 @@ export default function ModalScreen() {
         preset='description'
         text='Feel free to email us ideas at cityhall@arcade.city, tweet at us @ArcadeCityHall, or post on our public roadmap.'
       />
+      <Text preset='description' text='Swipe down from the top to close this screen.' />
 
       <Button
         onPress={() => Linking.openURL('https://twitter.com/ArcadeCityHall')}
