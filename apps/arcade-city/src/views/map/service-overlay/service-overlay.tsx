@@ -6,6 +6,7 @@ import { Animated, TouchableOpacity, View } from 'react-native'
 import { useStores } from 'stores'
 import { ModalName } from 'stores/modal-store'
 import { Button, Icon, Text } from 'views/shared'
+import { typography } from '@arcadecity/ui'
 import * as s from './style'
 
 export const ServiceOverlay = observer(() => {
@@ -44,8 +45,17 @@ export const ServiceOverlay = observer(() => {
       <TouchableOpacity style={s.CLOSEBTN} onPress={() => setShow(false)}>
         <Icon name='close' />
       </TouchableOpacity>
-      <Text preset='descriptionSlim' tx={'common.welcomeUser'} txOptions={{ username }} />
-      <Text preset='title3' tx='map.howCanWeHelp' style={{ marginBottom: 18 }} />
+      <Text
+        preset='descriptionSlim'
+        tx={'common.welcomeUser'}
+        txOptions={{ username }}
+        style={{ fontFamily: typography.secondary }}
+      />
+      <Text
+        preset='title3'
+        tx='map.howCanWeHelp'
+        style={{ marginBottom: 18, fontFamily: typography.secondary }}
+      />
       <View style={{ flex: 1, flexDirection: 'row', marginTop: 4, marginBottom: 2 }}>
         <Button
           text={capitalize(translate('service.ride'))}

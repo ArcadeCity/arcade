@@ -12,7 +12,7 @@ export const CONTAINER: ViewStyle = {
 
 export const DRIVEROVERLAY: ViewStyle = {
   ...CONTAINER,
-  bottom: 40,
+  bottom: 30,
   backgroundColor: color.background,
   borderRadius: 8,
   padding: 20,
