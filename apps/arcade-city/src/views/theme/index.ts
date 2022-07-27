@@ -1,2 +1,5 @@
+export * from './color'
 export * from './images'
 export * from './nav'
+export * from './spacing'
+export * from './typography'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 /**
  * Helper component tor create a Dummy Stack to access {navigation} object on *.story.tsx files
@@ -11,9 +11,9 @@ import { createStackNavigator } from '@react-navigation/stack'
  * ```
  */
 
-const StoryBookStack = createStackNavigator()
+const StoryBookStack = createNativeStackNavigator()
 
-export const reactNavigationDecorator = (story) => {
+export const reactNavigationDecorator = (story: any) => {
   const Screen = () => story()
   return (
     <NavigationContainer independent={true}>
