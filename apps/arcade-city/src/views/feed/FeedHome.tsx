@@ -41,12 +41,12 @@ export const FeedHome = observer(({ navigation }: RootTabScreenProps<'FeedHome'>
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 20 }}
       />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         activeOpacity={ACTIVE_OPACITY}
         style={styles.floatingButton}
         onPress={clickNewRequest}>
         <AntDesign name='plus' size={26} color='white' />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   )
 })
