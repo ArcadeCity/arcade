@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Linking, StyleSheet, View } from 'react-native'
+import { Button } from 'views/shared'
 import { spacing, Text } from '@arcadecity/ui'
 
 export default function ModalScreen() {
@@ -11,7 +12,27 @@ export default function ModalScreen() {
       />
       <Text
         preset='description'
-        text='Your requests are sent to the public Nostr network and will be visible to all Nostr clients.'
+        text="Your requests are sent to the public Nostr network and will be visible to all Nostr clients. Don't use your home address!"
+      />
+      <Text
+        preset='description'
+        text='We would appreciate your feedback on the flow of requesting a ride. How would you improve it?'
+      />
+      <Text
+        preset='description'
+        text='Feel free to email us ideas at cityhall@arcade.city, tweet at us @ArcadeCityHall, or post on our public roadmap.'
+      />
+
+      <Button
+        onPress={() => Linking.openURL('https://twitter.com/ArcadeCityHall')}
+        style={{ marginVertical: spacing[3] }}
+        text='@ArcadeCityHall on Twitter'
+      />
+      <Button
+        onPress={() => Linking.openURL('https://roadmap.arcade.city')}
+        preset='purpleglow'
+        style={{ marginVertical: spacing[3] }}
+        text='Open Roadmap'
       />
     </View>
   )
@@ -20,7 +41,6 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing[4],
   },
