@@ -17,7 +17,8 @@
   ],
   "resolutions": {
     "react": "18.0.0",
-    "react-dom": "18.0.0"
+    "react-dom": "18.0.0",
+    "@noble/hashes": "1.1.2"
   },
   "scripts": {
     "ac": "yarn workspace @arcadecity/arcade-city run ios",
