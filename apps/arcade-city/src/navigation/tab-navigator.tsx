@@ -83,6 +83,25 @@ export function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
+        name='WalletHome'
+        component={AccountHome}
+        options={{
+          title: 'Account',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name='wallet' color={color} focused={focused} />
+          ),
+          headerStyle: {
+            backgroundColor: color.tabbar,
+            borderBottomWidth: 2,
+            borderBottomColor: palette.portGore,
+          },
+          headerTitleStyle: {
+            color: color.text,
+            fontFamily: typography.secondary,
+          },
+        }}
+      />
+      <BottomTab.Screen
         name='AccountHome'
         component={AccountHome}
         options={{
