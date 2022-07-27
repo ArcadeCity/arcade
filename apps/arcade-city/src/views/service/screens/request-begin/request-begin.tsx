@@ -3,18 +3,20 @@
  * choosing appropriate choices from a list of nearby addresses.
  */
 
-import React, { useEffect, useState } from 'react'
-import { Platform, TouchableOpacity, View } from 'react-native'
-import { observer } from 'mobx-react-lite'
-import { useForm } from 'react-hook-form'
+import { translate } from 'i18n'
 import { useDebounce } from 'lib/hooks'
+import { observer } from 'mobx-react-lite'
+import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Platform, TouchableOpacity, View } from 'react-native'
 import { useStores } from 'stores'
 import { ModalName } from 'stores/modal-store'
 import { Icon, Screen, Text, TextField } from 'views/shared' // TextFieldNew as TextField
 import { palette } from 'views/theme'
-import { translate } from 'i18n'
+import { useNavigation } from '@react-navigation/native'
 
 export const RequestBegin: React.FC<{}> = observer(() => {
+  const navigation = useNavigation()
   // State
   const { authStore, modalStore, serviceStore } = useStores()
   const service: 'ride' | 'delivery' | 'other' = modalStore.props.serviceType
@@ -37,6 +39,8 @@ export const RequestBegin: React.FC<{}> = observer(() => {
   useEffect(() => {
     if (activeRequest?.hasBothAddresses) {
       modalStore?.setName(ModalName.REQUEST_CONFIRM)
+      navigation.goBack()
+      navigation.navigate('RequestConfirm')
     }
   }, [activeRequest?.hasBothAddresses])
 
@@ -98,16 +102,14 @@ export const RequestBegin: React.FC<{}> = observer(() => {
     <Screen
       key={`${activeRequest}-${authStore?.locale}`}
       preset='fixedStack'
-      style={{ paddingTop: android ? 20 : 50, paddingHorizontal: 40 }}
-    >
+      style={{ paddingTop: android ? 20 : 50, paddingHorizontal: 40 }}>
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: 15,
-        }}
-      >
+        }}>
         <Text
           tx={promptTx}
           preset='title3'
@@ -115,11 +117,7 @@ export const RequestBegin: React.FC<{}> = observer(() => {
         />
       </View>
 
-      <Text
-        preset='sectionHeader'
-        tx={pickupTx}
-        style={{ marginTop: 10 }}
-      />
+      <Text preset='sectionHeader' tx={pickupTx} style={{ marginTop: 10 }} />
       <TextField
         defaultValue={activeRequest?.pickup?.prettyName}
         selectTextOnFocus={true}
@@ -134,11 +132,7 @@ export const RequestBegin: React.FC<{}> = observer(() => {
         }}
       />
 
-      <Text
-        preset='sectionHeader'
-        tx={dropoffTx}
-        style={{ marginTop: 10 }}
-      />
+      <Text preset='sectionHeader' tx={dropoffTx} style={{ marginTop: 10 }} />
       <TextField
         defaultValue={activeRequest?.drop?.prettyName}
         selectTextOnFocus={true}
@@ -163,16 +157,9 @@ export const RequestBegin: React.FC<{}> = observer(() => {
                 alignItems: 'center',
               }}
               key={result.id}
-              onPress={() =>
-                serviceStore?.selectAddress(result, lastAddressChanged)
-              }
-            >
+              onPress={() => serviceStore?.selectAddress(result, lastAddressChanged)}>
               <Icon name='mapActive' />
-              <Text
-                preset='descriptionSlim'
-                text={result.place_name}
-                style={{ marginLeft: 15 }}
-              />
+              <Text preset='descriptionSlim' text={result.place_name} style={{ marginLeft: 15 }} />
             </TouchableOpacity>
           ))}
       </View>

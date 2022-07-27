@@ -2543,12 +2543,7 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.3-canary.2.tgz#8f8ecda404d7ed1b8e239540e455536e3f2af170"
   integrity sha512-uCg3nX1PW1TRD0PuBZdrFG2Nxl85CRkpQK55xboZIQFQNxxpCMFB/fumeEIQOzQuWZmJ2iJ0pl2sa3zgMISzfw==
 
-"@noble/hashes@^0.5.5", "@noble/hashes@^0.5.7":
-  version "0.5.9"
-  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-0.5.9.tgz#9f3051a4cc6f7c168022b3b7fbbe9fe2a35cccf0"
-  integrity sha512-7lN1Qh6d8DUGmfN36XRsbN/WcGIPNtTGhkw26vWId/DlCIGsYJJootTtPGghTLcn/AaXPx2Q0b3cacrwXa7OVw==
-
-"@noble/hashes@~1.1.1":
+"@noble/hashes@1.1.2", "@noble/hashes@^0.5.5", "@noble/hashes@^0.5.7", "@noble/hashes@~1.1.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.2.tgz#e9e035b9b166ca0af657a7848eb2718f0f22f183"
   integrity sha512-KYRCASVTv6aeUi1tsF8/vpyR7zpfs3FUzy2Jqm+MU+LmUKhQ0y2FpfwqkCcxSg2ua4GALJd8k2R76WxwZGbQpA==

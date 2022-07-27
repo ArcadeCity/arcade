@@ -22,6 +22,7 @@ export type RootStackParamList = {
   Modal: undefined
   NewRequest: undefined
   RequestBegin: undefined
+  RequestConfirm: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -13,23 +13,19 @@ export const searchForAddress = async (self: ServiceStore, searchString: string)
   const root = getRoot(self) as RootStore
   const userCoords = root.authStore.coords
 
-  console.log('Attempting to search for address:', searchString)
-
   const res: any = await self.env.mapbox.getAddressFromLocation(searchString, userCoords)
-  console.log(res)
+
+  display({
+    name: 'searchForAddress',
+    preview: `Mapbox response!`,
+    value: res,
+  })
+
+  try {
+    self.setAddressSearchResults(res?.features)
+  } catch (e: any) {
+    log(e && e.message)
+  }
+
+  return true
 }
-
-//   // display({
-//   //   name: 'searchForAddress',
-//   //   preview: `Mapbox response!`,
-//   //   value: res,
-//   // })
-
-//   // try {
-//   //   self.setAddressSearchResults(res?.features)
-//   // } catch (e) {
-//   //   log(e && e.message)
-//   // }
-
-//   return true
-// }
