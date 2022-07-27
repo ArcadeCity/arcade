@@ -34,7 +34,7 @@
         "backgroundColor": "#1c133a"
       },
       "package": "arcade.city.mobile",
-      "versionCode": 6000009
+      "versionCode": 6000010
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
