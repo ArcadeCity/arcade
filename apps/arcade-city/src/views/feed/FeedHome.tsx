@@ -15,9 +15,6 @@ export const FeedHome = observer(({ navigation }: RootTabScreenProps<'FeedHome'>
   const { relayStore } = useStores()
   useEffect(() => {
     relayStore.initRideRequestDemo()
-    Alert.alert(
-      "Help test ride requests! Requests will be sent to the public Nostr network. Don't use your home address :)"
-    )
   }, [])
 
   // const events: any[] = []

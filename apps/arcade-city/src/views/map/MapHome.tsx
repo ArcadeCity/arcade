@@ -1,9 +1,15 @@
 import * as React from 'react'
-import { StyleSheet } from 'react-native'
+import { Alert, StyleSheet } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { ServiceOverlay } from './service-overlay'
 
 export const MapHome = () => {
+  React.useEffect(() => {
+    Alert.alert(
+      "Help test ride requests! Requests will be sent to the public Nostr network. Don't use your home address :)"
+    )
+  }, [])
+
   return (
     <>
       <ServiceOverlay />
