@@ -6,12 +6,8 @@ import { withEnvironment, withRootStore } from 'stores/_extensions'
 import { Coords } from 'stores/service-store'
 import * as actions from './auth-actions'
 import {
-  AccessTokensModel,
-  AuthedPlayer,
-  AuthedPlayerModel,
-  GeoModel,
-  OnboardingModel,
-  PermissionsModel,
+  AccessTokensModel, AuthedPlayer, AuthedPlayerModel, GeoModel, OnboardingModel,
+  PermissionsModel
 } from './auth-models'
 
 export const AuthStoreModel = types
@@ -37,19 +33,14 @@ export const AuthStoreModel = types
       await actions.checkUserOnboarded(self as AuthStore),
     fetchNearbyWorldcities: async (): Promise<boolean> =>
       await actions.fetchNearbyWorldcities(self as AuthStore),
-    getLocation: async (): Promise<boolean> =>
-      await actions.getLocation(self as AuthStore),
-    enterCode: async (): Promise<boolean> =>
-      await actions.enterCode(self as AuthStore),
+    getLocation: async (): Promise<boolean> => await actions.getLocation(self as AuthStore),
+    enterCode: async (): Promise<boolean> => await actions.enterCode(self as AuthStore),
     login: async (): Promise<boolean> => await actions.login(self as AuthStore),
     loginServer: async (token: string): Promise<boolean> =>
       await actions.loginServer(self as AuthStore, token),
-    logout: async (): Promise<boolean> =>
-      await actions.logout(self as AuthStore),
-    onboardPlayer: async (): Promise<boolean> =>
-      await actions.onboardPlayer(self as AuthStore),
-    saveBio: async (bio: string): Promise<boolean> =>
-      await actions.saveBio(self as AuthStore, bio),
+    logout: async (): Promise<boolean> => await actions.logout(self as AuthStore),
+    onboardPlayer: async (): Promise<boolean> => await actions.onboardPlayer(self as AuthStore),
+    saveBio: async (bio: string): Promise<boolean> => await actions.saveBio(self as AuthStore, bio),
     saveOnboarded: async (onboarded: boolean): Promise<boolean> =>
       await actions.saveOnboarded(self as AuthStore, onboarded),
     saveProfession: async (profession: string): Promise<boolean> =>
@@ -62,8 +53,7 @@ export const AuthStoreModel = types
       await actions.saveUsername(self as AuthStore, username),
     submitFeedback: async (feedback: string): Promise<boolean> =>
       await actions.submitFeedback(self as AuthStore, feedback),
-    verifyEmail: async (): Promise<boolean> =>
-      await actions.verifyEmail(self as AuthStore),
+    verifyEmail: async (): Promise<boolean> => await actions.verifyEmail(self as AuthStore),
     setApiToken(token: string) {
       self.tokens.api = token
       const env = getEnv(self)
@@ -195,11 +185,7 @@ export const AuthStoreModel = types
     //   return (!!self.player && self?.player?.invites) || 0
     // },
     get isServiceProvider(): boolean {
-      return (
-        !!self.player &&
-        !!self.player.profession &&
-        self.player.profession !== 'Rider'
-      )
+      return !!self.player && !!self.player.profession && self.player.profession !== 'Rider'
     },
     get onboarded(): boolean {
       return (!!self.player && self?.player?.onboarded) || false
@@ -208,7 +194,7 @@ export const AuthStoreModel = types
       return self.player?.profession ?? ''
     },
     get username(): string {
-      return self.player?.username ?? `Anon${self.player?.id}`
+      return self.player?.username ?? `Anon`
     },
     get canEnterCity(): boolean {
       const authed = !!self.tokens.api
@@ -223,13 +209,7 @@ export const AuthStoreModel = types
         locationStatus = ''
       }
       const locationEnabled = locationStatus === 'granted'
-      return (
-        !!profession &&
-        !!bio &&
-        !!locationEnabled &&
-        authed &&
-        !!hasUserAcceptedTerms
-      )
+      return !!profession && !!bio && !!locationEnabled && authed && !!hasUserAcceptedTerms
     },
     get canEnterCity_old(): boolean {
       return (
@@ -255,5 +235,4 @@ type AuthStoreType = Instance<typeof AuthStoreModel>
 export interface AuthStore extends AuthStoreType {}
 type AuthStoreSnapshotType = SnapshotOut<typeof AuthStoreModel>
 export interface AuthStoreSnapshot extends AuthStoreSnapshotType {}
-export const createAuthStoreDefaultModel = () =>
-  types.optional(AuthStoreModel, {})
+export const createAuthStoreDefaultModel = () => types.optional(AuthStoreModel, {})
