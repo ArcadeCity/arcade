@@ -7,7 +7,8 @@ export const MapHome = () => {
   return (
     <>
       <ServiceOverlay />
-      <WebView style={styles.container} source={{ uri: 'https://map.arcade.city' }} />
+      <WebView style={styles.container} source={{ uri: 'https://map-demo.arcade.city' }} />
+      {/* <WebView style={styles.container} source={{ uri: 'https://map.arcade.city' }} /> */}
     </>
   )
 }
