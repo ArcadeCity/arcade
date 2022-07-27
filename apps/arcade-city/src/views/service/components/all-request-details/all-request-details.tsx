@@ -1,20 +1,19 @@
+import { translate } from 'i18n'
+import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
 import {
-  Alert,
-  ScrollView,
-  View,
-  ViewStyle,
-  TouchableOpacity,
+  Alert, ScrollView, TouchableOpacity, View, ViewStyle
 } from 'react-native'
-import { observer } from 'mobx-react-lite'
 import { useStores } from 'stores'
 import { ModalName } from 'stores/modal-store'
-import { Button, Icon, Text } from 'views/shared'
-import { ALL_REQUEST_DETAILS_CONTAINER, SPACED_ROW } from '../../styles'
 import { Coords } from 'stores/service-store'
-import { translate } from 'i18n'
+import { Button, Icon, Text } from 'views/shared'
+import { useNavigation } from '@react-navigation/native'
+import { ALL_REQUEST_DETAILS_CONTAINER, SPACED_ROW } from '../../styles'
 
 export const AllRequestDetails: React.FC<{}> = observer(() => {
+  const navigation = useNavigation()
+
   // State
   const [submitted, setSubmitted] = useState(false)
   const { authStore, modalStore, serviceStore } = useStores()
@@ -22,8 +21,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
   if (!activeRequest) return null
 
   // UI
-  const payingWithIcon =
-    activeRequest.paymentMethod === 'cash' ? 'dollar' : 'payment'
+  const payingWithIcon = activeRequest.paymentMethod === 'cash' ? 'dollar' : 'payment'
   const payingWithText =
     activeRequest.paymentMethod === 'cash'
       ? translate('service.cash')
@@ -36,7 +34,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
     activeRequest.removeAddressesOfServiceTypeExcept(type, '')
   }
 
-  const clickedSend = () => {
+  const clickedSend = async () => {
     if (!pickup?.coords?.latitude || !pickup?.coords?.longitude) return
     const coords: Coords = {
       latitude: pickup.coords.latitude,
@@ -50,7 +48,10 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
     }
 
     setSubmitted(true)
-    serviceStore.confirmRequest()
+    const confirmed = await serviceStore.confirmRequest()
+    if (confirmed) {
+      navigation.goBack()
+    }
   }
 
   return (
@@ -60,10 +61,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
     >
       <View>
         {/* Pickup address */}
-        <TouchableOpacity
-          style={{ ...ROW, marginTop: 4 }}
-          onPress={() => resetAddress('pickup')}
-        >
+        <TouchableOpacity style={{ ...ROW, marginTop: 4 }} onPress={() => resetAddress('pickup')}>
           <View style={ICON_CONTAINER}>
             <Icon name='mapActive' />
           </View>
@@ -90,10 +88,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
           {/* Sending request to */}
           <TouchableOpacity
             style={{ flex: 1, flexDirection: 'row', ...MARGINTOP }}
-            onPress={() =>
-              Alert.alert(translate('service.upcomingFeatureRequestDrivers'))
-            }
-          >
+            onPress={() => Alert.alert(translate('service.upcomingFeatureRequestDrivers'))}>
             <View style={{ flexDirection: 'row' }}>
               <View style={ICON_CONTAINER}>
                 <Icon name='guildsActive' />
@@ -108,10 +103,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
           {/* When */}
           <TouchableOpacity
             style={{ flex: 1, flexDirection: 'row', ...MARGINTOP }}
-            onPress={() =>
-              Alert.alert(translate('service.placeholderSchedule'))
-            }
-          >
+            onPress={() => Alert.alert(translate('service.placeholderSchedule'))}>
             <View style={{ flexDirection: 'row' }}>
               <View style={ICON_CONTAINER}>
                 <Icon fontAwesome='calendar' />
@@ -128,8 +120,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
           {/* Fare */}
           <TouchableOpacity
             style={{ flex: 1, flexDirection: 'row', ...MARGINTOP }}
-            onPress={() => Alert.alert(translate('service.placeholderFare'))}
-          >
+            onPress={() => Alert.alert(translate('service.placeholderFare'))}>
             <View style={ICON_CONTAINER}>
               <Icon name='dollar' />
             </View>
@@ -145,12 +136,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
               ...NEWROW,
               flex: 1,
             }}
-            onPress={() =>
-              Alert.alert(
-                translate('service.placeholderPayments')
-              )
-            }
-          >
+            onPress={() => Alert.alert(translate('service.placeholderPayments'))}>
             <View style={{ flexDirection: 'row' }}>
               <View style={ICON_CONTAINER}>
                 <Icon name={payingWithIcon} />
@@ -164,10 +150,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
         </View>
 
         {/* Details */}
-        <TouchableOpacity
-          style={ROW}
-          onPress={() => modalStore.setName(ModalName.ADD_DETAILS)}
-        >
+        <TouchableOpacity style={ROW} onPress={() => modalStore.setName(ModalName.ADD_DETAILS)}>
           <View style={ICON_CONTAINER}>
             <Icon name='inboxActive' />
           </View>
@@ -175,9 +158,7 @@ export const AllRequestDetails: React.FC<{}> = observer(() => {
             <Text preset='sectionHeader' tx='service.details' />
             <Text
               preset='bold'
-              text={
-                details && details.length > 0 ? details : translate('service.detailsTapToAdd')
-              }
+              text={details && details.length > 0 ? details : translate('service.detailsTapToAdd')}
             />
           </View>
         </TouchableOpacity>
