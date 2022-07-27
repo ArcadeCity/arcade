@@ -4,6 +4,8 @@
     "strict": true,
     "baseUrl": "./",
     "paths": {
+      "i18n": ["src/i18n"],
+      "i18n/*": ["src/i18n/*"],
       "lib": ["src/lib"],
       "lib/*": ["src/lib/*"],
       "navigation": ["src/navigation"],
@@ -11,7 +13,10 @@
       "services/*": ["src/services/*"],
       "stores/*": ["src/stores/*"],
       "stores": ["src/stores"],
+      "storybook": ["storybook"],
+      "storybook/*": ["storybook/*"],
       "views/*": ["src/views/*"]
     }
-  }
+  },
+  "include": ["src/**/*"]
 }

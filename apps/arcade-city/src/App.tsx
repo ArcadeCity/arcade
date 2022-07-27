@@ -1,3 +1,4 @@
+import 'lib/ignore-warnings'
 import 'text-encoding-polyfill'
 import { StatusBar } from 'expo-status-bar'
 import { delay } from 'lib/delay'

@@ -20,10 +20,12 @@ module.exports = function (api) {
             '.stories.tsx',
           ],
           alias: {
+            i18n: './src/i18n',
             lib: './src/lib',
             navigation: './src/navigation',
             services: './src/services',
             stores: './src/stores',
+            storybook: './storybook',
             views: './src/views',
           },
         },

@@ -2,6 +2,7 @@ import React from 'react'
 import NotFoundScreen from 'views/error/NotFoundScreen'
 import ModalScreen from 'views/modal/ModalScreen'
 import { NewRequestScreen } from 'views/ride/NewRequestScreen'
+import { RequestBegin, RequestConfirm } from 'views/service'
 import { color, typography } from '@arcadecity/ui'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { BottomTabNavigator } from './tab-navigator'
@@ -20,14 +21,26 @@ export function RootNavigator() {
       <Stack.Screen name='NotFound' component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen
-          name='Modal'
-          component={ModalScreen}
-          options={{ ...modalOptions, title: 'Info' }}
+          name='RequestBegin'
+          component={RequestBegin}
+          options={{ ...modalOptions, title: 'New Request' }}
         />
+        <Stack.Screen
+          name='RequestConfirm'
+          component={RequestConfirm}
+          options={{ ...modalOptions, title: 'Confirm Request' }}
+        />
+        {/* Nostr demo modal  */}
         <Stack.Screen
           name='NewRequest'
           component={NewRequestScreen}
           options={{ ...modalOptions, title: 'New Request' }}
+        />
+        {/* Blank demo modal */}
+        <Stack.Screen
+          name='Modal'
+          component={ModalScreen}
+          options={{ ...modalOptions, title: 'Info' }}
         />
       </Stack.Group>
     </Stack.Navigator>
