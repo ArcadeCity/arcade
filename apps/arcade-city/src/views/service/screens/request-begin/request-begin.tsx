@@ -12,7 +12,7 @@ import { Platform, TouchableOpacity, View } from 'react-native'
 import { useStores } from 'stores'
 import { ModalName } from 'stores/modal-store'
 import { Icon, Screen, Text, TextField } from 'views/shared' // TextFieldNew as TextField
-import { palette } from 'views/theme'
+import { palette, typography } from 'views/theme'
 import { useNavigation } from '@react-navigation/native'
 
 export const RequestBegin: React.FC<{}> = observer(() => {
@@ -102,7 +102,7 @@ export const RequestBegin: React.FC<{}> = observer(() => {
     <Screen
       key={`${activeRequest}-${authStore?.locale}`}
       preset='fixedStack'
-      style={{ paddingTop: android ? 20 : 50, paddingHorizontal: 40 }}>
+      style={{ paddingTop: android ? 20 : 40, paddingHorizontal: 40 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -113,7 +113,7 @@ export const RequestBegin: React.FC<{}> = observer(() => {
         <Text
           tx={promptTx}
           preset='title3'
-          style={{ marginBottom: 0, marginLeft: 45, marginTop: 0 }}
+          style={{ marginBottom: 0, marginLeft: 0, marginTop: 0, fontFamily: typography.secondary }}
         />
       </View>
 

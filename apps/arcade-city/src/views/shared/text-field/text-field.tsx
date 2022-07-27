@@ -2,12 +2,7 @@ import { translate, TxKeyPath } from 'i18n'
 import { flatten } from 'ramda'
 import React from 'react'
 import {
-  StyleProp,
-  TextInput,
-  TextInputProps,
-  TextStyle,
-  View,
-  ViewStyle,
+  StyleProp, TextInput, TextInputProps, TextStyle, View, ViewStyle
 } from 'react-native'
 import { color, palette, spacing, typography } from 'views/theme'
 import { Text } from '../text/text'
@@ -79,9 +74,7 @@ export function TextField(props: TextFieldProps) {
 
   const containerStyles = flatten([CONTAINER, PRESETS[preset], styleOverride])
   const inputStyles = flatten([INPUT, inputStyleOverride])
-  const actualPlaceholder = placeholderTx
-    ? translate(placeholderTx)
-    : placeholder
+  const actualPlaceholder = placeholderTx ? translate(placeholderTx) : placeholder
 
   return (
     <View style={containerStyles}>
@@ -120,9 +113,9 @@ const INPUT: TextStyle = {
   fontFamily: typography.primary,
   color: color.secondary,
   fontSize: 20,
-  lineHeight: 30,
+  // lineHeight: 30,
   height: 50,
   backgroundColor: color.field,
   paddingLeft: spacing[4],
-  paddingVertical: spacing[3],
+  // paddingVertical: spacing[3],
 }
