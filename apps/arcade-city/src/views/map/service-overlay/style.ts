@@ -13,7 +13,7 @@ export const CONTAINER: ViewStyle = {
 export const DRIVEROVERLAY: ViewStyle = {
   ...CONTAINER,
   bottom: 30,
-  backgroundColor: color.background,
+  backgroundColor: 'rgba(18,11,41,0.8)', // color.background,
   borderRadius: 8,
   padding: 20,
   shadowOpacity: 0.8,
