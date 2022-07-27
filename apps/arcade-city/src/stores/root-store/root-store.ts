@@ -5,6 +5,7 @@ import { ModalStoreModel } from 'stores/modal-store'
 import { PlayerStoreModel } from 'stores/player-store'
 import { RelayStoreModel } from 'stores/relay-store'
 import { ServiceStoreModel } from 'stores/service-store'
+import { WalletStoreModel } from 'stores/wallet-store'
 
 /**
  * A RootStore model.
@@ -18,6 +19,7 @@ export const RootStoreModel = types
     playerStore: types.optional(PlayerStoreModel, {} as any),
     relayStore: types.optional(RelayStoreModel, {} as any),
     serviceStore: types.optional(ServiceStoreModel, {} as any),
+    walletStore: types.optional(WalletStoreModel, {} as any),
   })
   .actions((self) => ({
     reset() {
