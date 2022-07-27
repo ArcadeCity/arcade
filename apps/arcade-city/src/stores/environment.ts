@@ -1,3 +1,4 @@
+import { Mapbox } from '../services/mapbox'
 import { Nostr } from '../services/nostr'
 
 let ReactotronDev: any
@@ -18,6 +19,11 @@ export class Environment {
       this.reactotron = new ReactotronDev()
     }
     this.nostr = new Nostr()
+    this.mapbox = new Mapbox({
+      accessToken:
+        'pk.eyJ1IjoiYWNsaW9ucyIsImEiOiJjbDYzeW05ZXcweTBnM2VwOHgwNnJqbTl0In0.NU8Dl1oGf5gweLrieic6jg',
+      baseUrl: 'https://api.mapbox.com/geocoding/v5/mapbox.places/',
+    })
   }
 
   async setup() {
@@ -27,6 +33,11 @@ export class Environment {
     }
     this.nostr.setup()
   }
+
+  /**
+   * Mapbox
+   */
+  mapbox: Mapbox
 
   /**
    * Our wrapper for Nostr
