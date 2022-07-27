@@ -1,7 +1,7 @@
-import { usePlayerResolver } from 'lib/hooks'
+// import { usePlayerResolver } from 'lib/hooks'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect } from 'react'
-import { useWindowDimensions, View, ViewStyle } from 'react-native'
+import { FlatList, useWindowDimensions, View, ViewStyle } from 'react-native'
 // import { usePlayerResolver } from 'lib/hooks'
 import { useStores } from 'stores'
 import { Chatroom } from 'stores/chat-store'
@@ -10,7 +10,7 @@ import { Loading } from 'views/loading'
 import { Screen } from 'views/shared'
 import { spacing } from 'views/theme'
 import { useNavigation } from '@react-navigation/native'
-import { FlashList } from '@shopify/flash-list'
+// import { FlashList } from '@shopify/flash-list'
 import { ChatroomDetail } from '../../components'
 
 export const ChatHome: React.FC<{}> = observer(() => {
@@ -27,15 +27,15 @@ export const ChatHome: React.FC<{}> = observer(() => {
   const chatrooms = chatStore.chatrooms
   if (!chatrooms) return <></>
 
-  const { loadedAllPlayers } = usePlayerResolver({ chatrooms })
+  const loadedAllPlayers = false
+  // const { loadedAllPlayers } = usePlayerResolver({ chatrooms })
   if (!loadedAllPlayers) return <Loading message='Loading' />
 
   const chatroomsArray: any[] = []
   chatrooms.forEach((chatroom: Chatroom) => {
     if (chatroom.messages.length === 0 && chatroom.type === 'direct') return
     if (chatroom.type === 'request') return // TODO
-    const lastMessage: any =
-      chatroom.messages[chatroom.messages.length - 1] ?? null
+    const lastMessage: any = chatroom.messages[chatroom.messages.length - 1] ?? null
     chatroomsArray.push({
       ...chatroom,
       lastMessage,
@@ -58,15 +58,12 @@ export const ChatHome: React.FC<{}> = observer(() => {
   return (
     <Screen preset='scrollStack'>
       <View style={{ ...CONTAINER, minHeight: height }}>
-        <FlashList
+        <FlatList
           data={sortedChatrooms}
           renderItem={({ item }: any) => (
-            <ChatroomDetail
-              chatroom={item}
-              setActiveChatroom={chatStore.setActiveChatroom}
-            />
+            <ChatroomDetail chatroom={item} setActiveChatroom={chatStore.setActiveChatroom} />
           )}
-          estimatedItemSize={25}
+          // estimatedItemSize={25}
         />
       </View>
     </Screen>

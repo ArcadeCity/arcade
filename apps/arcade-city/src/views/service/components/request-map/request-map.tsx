@@ -1,10 +1,11 @@
+import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 import { ViewStyle } from 'react-native'
-import { observer } from 'mobx-react-lite'
-import MapboxGL, { SymbolLayerStyle } from '@rnmapbox/maps'
+// import MapboxGL, { SymbolLayerStyle } from '@rnmapbox/maps'
 import { useStores } from 'stores'
 import { Loading } from 'views/loading'
-import * as MapStyles from 'views/map/components/mapbox/mapbox.styles'
+
+// import * as MapStyles from 'views/map/components/mapbox/mapbox.styles'
 
 export const RequestMap: React.FC<{}> = observer(() => {
   // UI
@@ -41,45 +42,46 @@ export const RequestMap: React.FC<{}> = observer(() => {
     paddingTop: 130,
   }
 
-  const thefuckinstyle: SymbolLayerStyle = {
-    iconImage: '{icon}',
-    iconSize: 0.1,
-    iconAnchor: 'bottom',
-  }
+  // const thefuckinstyle: SymbolLayerStyle = {
+  //   iconImage: '{icon}',
+  //   iconSize: 0.1,
+  //   iconAnchor: 'bottom',
+  // }
 
-  return (
-    <MapboxGL.MapView
-      style={CONTAINER}
-      styleURL={mapStyles.main}
-      rotateEnabled={false}
-      pitchEnabled={false}
-    >
-      <MapboxGL.Images
-        images={{
-          pickup: require('./marker.png'),
-          drop: require('./marker.png'),
-        }}
-      />
-      <MapboxGL.Camera
-        bounds={cameraBounds}
-        defaultSettings={{
-          centerCoordinate: [pickup?.coords.longitude, pickup?.coords.latitude],
-          zoomLevel: 16,
-        }}
-      />
-      {routeShape && (
-        <MapboxGL.ShapeSource id='route' shape={routeShape}>
-          <MapboxGL.LineLayer
-            id='routeFill'
-            style={MapStyles.mapLayers.route}
-          />
-        </MapboxGL.ShapeSource>
-      )}
-      <MapboxGL.ShapeSource id='pickupDrop' shape={pickupDropShape}>
-        <MapboxGL.SymbolLayer id='pickupDropImage' style={thefuckinstyle} />
-      </MapboxGL.ShapeSource>
-    </MapboxGL.MapView>
-  )
+  return <></>
+  // return (
+  //   <MapboxGL.MapView
+  //     style={CONTAINER}
+  //     styleURL={mapStyles.main}
+  //     rotateEnabled={false}
+  //     pitchEnabled={false}
+  //   >
+  //     <MapboxGL.Images
+  //       images={{
+  //         pickup: require('./marker.png'),
+  //         drop: require('./marker.png'),
+  //       }}
+  //     />
+  //     <MapboxGL.Camera
+  //       bounds={cameraBounds}
+  //       defaultSettings={{
+  //         centerCoordinate: [pickup?.coords.longitude, pickup?.coords.latitude],
+  //         zoomLevel: 16,
+  //       }}
+  //     />
+  //     {routeShape && (
+  //       <MapboxGL.ShapeSource id='route' shape={routeShape}>
+  //         <MapboxGL.LineLayer
+  //           id='routeFill'
+  //           style={MapStyles.mapLayers.route}
+  //         />
+  //       </MapboxGL.ShapeSource>
+  //     )}
+  //     <MapboxGL.ShapeSource id='pickupDrop' shape={pickupDropShape}>
+  //       <MapboxGL.SymbolLayer id='pickupDropImage' style={thefuckinstyle} />
+  //     </MapboxGL.ShapeSource>
+  //   </MapboxGL.MapView>
+  // )
 })
 
 const CONTAINER: ViewStyle = {
