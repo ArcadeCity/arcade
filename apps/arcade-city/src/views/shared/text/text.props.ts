@@ -1,7 +1,7 @@
-import { StyleProp, TextProps as TextProperties, TextStyle } from 'react-native'
+import { TxKeyPath } from 'i18n'
 import i18n from 'i18n-js'
+import { StyleProp, TextProps as TextProperties, TextStyle } from 'react-native'
 import { TextPresetNames } from './text.presets'
-// import { TxKeyPath } from '../../i18n'
 
 export interface TextProps extends TextProperties {
   /**
@@ -12,7 +12,7 @@ export interface TextProps extends TextProperties {
   /**
    * Text which is looked up via i18n.
    */
-  tx?: any // TxKeyPath
+  tx?: TxKeyPath
 
   /**
    * Optional options to pass to i18n. Useful for interpolation
