@@ -25,6 +25,7 @@ module.exports = function (api) {
             navigation: './src/navigation',
             services: './src/services',
             stores: './src/stores',
+            storybook: './storybook',
             views: './src/views',
           },
         },
