@@ -2,7 +2,8 @@ import { delay } from 'lib/delay'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect } from 'react'
 import {
-    ActivityIndicator, Linking, RefreshControl, useWindowDimensions, View
+  ActivityIndicator, FlatList, Linking, RefreshControl, useWindowDimensions,
+  View
 } from 'react-native'
 import { useStores } from 'stores'
 import { Loading } from 'views/loading'
@@ -12,7 +13,8 @@ import { spacing } from 'views/theme'
 import { PaymentDetail } from 'views/wallet/components/payment-detail'
 import { WalletDock } from 'views/wallet/components/wallet-dock'
 import { useNavigation } from '@react-navigation/native'
-import { FlashList } from '@shopify/flash-list'
+
+// import { FlashList } from '@shopify/flash-list'
 
 // import { Balances, Transactions, WalletDock } from 'views/wallet'
 
@@ -63,10 +65,7 @@ export const Wallet = observer(() => {
           <WalletDock />
         </View>
       }
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {refreshing && (
         <View
           style={{
@@ -74,8 +73,7 @@ export const Wallet = observer(() => {
             justifyContent: 'center',
             alignItems: 'center',
             marginTop: -50,
-          }}
-        >
+          }}>
           <ActivityIndicator style={{ marginRight: 10 }} />
           <Text text='Refreshing' preset='descriptionSlim' />
         </View>
@@ -93,16 +91,14 @@ export const Wallet = observer(() => {
           marginTop: spacing[4],
           marginBottom: spacing[2],
           // paddingTop: 25,
-        }}
-      >
+        }}>
         <View
           style={{
             height: 30,
             width: 30,
             marginRight: 5,
             marginTop: 3,
-          }}
-        >
+          }}>
           <SvgIcon />
         </View>
         <Text
@@ -112,8 +108,7 @@ export const Wallet = observer(() => {
             marginTop: 0,
             fontSize: 40,
             lineHeight: 44,
-          }}
-        >
+          }}>
           {balance} sats
         </Text>
       </View>
@@ -124,10 +119,10 @@ export const Wallet = observer(() => {
 
       <View style={{ minHeight: height, width: width }}>
         {payments && payments.length > 0 && (
-          <FlashList
+          <FlatList
             data={payments}
             renderItem={({ item }: any) => <PaymentDetail payment={item} />}
-            estimatedItemSize={100}
+            // estimatedItemSize={100}
           />
         )}
       </View>
