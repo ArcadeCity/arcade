@@ -7,9 +7,12 @@ import { useStores } from 'stores'
 import { ModalName } from 'stores/modal-store'
 import { Button, Icon, Text } from 'views/shared'
 import { typography } from '@arcadecity/ui'
+import { useNavigation } from '@react-navigation/native'
 import * as s from './style'
 
 export const ServiceOverlay = observer(() => {
+  const navigation = useNavigation()
+
   // State
   const { authStore, modalStore, serviceStore } = useStores()
   const username = authStore.username
@@ -18,7 +21,8 @@ export const ServiceOverlay = observer(() => {
   const [show, setShow] = useState(false)
   const openModal = (serviceType: string) => {
     serviceStore.setActiveRequest(undefined)
-    modalStore.openModal(ModalName.REQUEST_BEGIN, { serviceType })
+    navigation.navigate('Modal')
+    // modalStore.openModal(ModalName.REQUEST_BEGIN, { serviceType })
   }
 
   // Animation
