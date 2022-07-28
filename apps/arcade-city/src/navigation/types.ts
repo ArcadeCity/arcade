@@ -21,7 +21,7 @@ export type RootStackParamList = {
   // Modals
   Modal: undefined
   NewRequest: undefined
-  RequestBegin: undefined
+  RequestBegin: { serviceType: 'ride' | 'delivery' | 'other' }
   RequestConfirm: undefined
 }
 
