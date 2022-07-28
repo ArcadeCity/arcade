@@ -1,3 +1,7 @@
+import { Buffer } from 'buffer'
+import createHash from 'create-hash'
+import * as secp256k1 from '@alephium/noble-secp256k1'
+
 export const formatNotice = (message: string) => JSON.stringify(['NOTICE', message])
 
 export enum NostrKind {
@@ -69,4 +73,19 @@ export interface Filters {
   until?: number
   // Maximum number of events to be returned in the initial query
   limit?: number
+}
+
+export const getEventHash = (event: NostrEventToSerialize) => {
+  let eventHash = createHash('sha256')
+    .update(Buffer.from(serializeEvent(event)))
+    .digest()
+  return Buffer.from(eventHash).toString('hex')
+}
+
+export const serializeEvent = (event: NostrEventToSerialize) => {
+  return JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content])
+}
+
+export const signEvent = async (event: NostrEventToSign, key: string) => {
+  return Buffer.from(await secp256k1.schnorr.sign(getEventHash(event), key)).toString('hex')
 }
