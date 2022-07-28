@@ -5,6 +5,7 @@ import { LogBox } from 'react-native'
 
 if (__DEV__) {
   const ignoreWarns = [
+    'Constants.platform.ios.model',
     'No native splash screen registered',
     'An error occurred while getting app settings',
     'Non-serializable values were found in the navigation state.',
