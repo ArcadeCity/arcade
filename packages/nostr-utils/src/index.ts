@@ -1,3 +1,5 @@
+export const formatNotice = (message: string) => JSON.stringify(['NOTICE', message])
+
 export enum NostrKind {
   metadata = 0,
   text = 1,
