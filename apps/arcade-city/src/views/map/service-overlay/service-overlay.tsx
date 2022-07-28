@@ -21,7 +21,7 @@ export const ServiceOverlay = observer(() => {
   const [show, setShow] = useState(false)
   const openModal = (serviceType: string) => {
     serviceStore.setActiveRequest(undefined)
-    navigation.navigate('RequestBegin')
+    navigation.navigate('RequestBegin', { serviceType })
     // modalStore.openModal(ModalName.REQUEST_BEGIN, { serviceType })
   }
 
