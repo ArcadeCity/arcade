@@ -1,4 +1,4 @@
-import { createNewAccount } from './account'
+import { createNewAccount2 as createNewAccount } from './account'
 import {
   getEventHash, NostrEvent, NostrEventToSerialize, NostrEventToSign, signEvent
 } from './nip01'
@@ -26,16 +26,17 @@ export const createDemoRideRequest = async () => {
     }),
     pubkey,
   }
-  const id = getEventHash(nostrEventToSerialize)
-  const nostrEventToSign: NostrEventToSign = {
-    ...nostrEventToSerialize,
-    id,
-  }
-  const sig = await signEvent(nostrEventToSign, priv)
-  const nostrEvent: NostrEvent = {
-    ...nostrEventToSerialize,
-    id,
-    sig,
-  }
-  return nostrEvent
+  return { event: nostrEventToSerialize, priv }
+  // const id = getEventHash(nostrEventToSerialize)
+  // const nostrEventToSign: NostrEventToSign = {
+  //   ...nostrEventToSerialize,
+  //   id,
+  // }
+  // const sig = await signEvent(nostrEventToSign, priv)
+  // const nostrEvent: NostrEvent = {
+  //   ...nostrEventToSerialize,
+  //   id,
+  //   sig,
+  // }
+  // return nostrEvent
 }
