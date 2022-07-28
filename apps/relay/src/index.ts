@@ -1,19 +1,8 @@
 import WebSocket, { WebSocketServer } from 'ws'
+import { formatNotice } from '@arcadecity/nostr-utils'
 import { handler } from './handler'
 
 const wss = new WebSocketServer({ port: 8088 })
-
-const NOSTR = {
-  REQ: 'REQ',
-  EVENT: 'EVENT',
-  CLOSE: 'CLOSE',
-  NOTICE: 'NOTICE',
-}
-
-export const formatEvent = (subscriptionId: string, event: object) =>
-  JSON.stringify([NOSTR.EVENT, subscriptionId, event])
-
-export const formatNotice = (message) => JSON.stringify([NOSTR.NOTICE, message])
 
 // Open socket and pass event to the event handler
 wss.on('connection', (ws: WebSocket) => {
@@ -27,7 +16,7 @@ wss.on('connection', (ws: WebSocket) => {
       handler(ws, message)
     } catch (err) {
       console.error(err)
-      ws.send(formatNotice('[ERROR]: Failed to parse message as a string!'))
+      ws.send(formatNotice('ERROR: Failed to parse message'))
     }
   })
 })
