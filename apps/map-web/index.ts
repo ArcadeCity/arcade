@@ -11,7 +11,8 @@ const pool = relayPool()
 
 const mapView = store.getState().mapView
 
-pool.addRelay('wss://relay.damus.io', { read: true, write: false })
+// pool.addRelay('wss://relay.damus.io', { read: true, write: false })
+pool.addRelay('ws://localhost:8088', { read: true, write: false })
 
 // example callback function for a subscription
 function onEvent(event: NostrEvent) {
