@@ -12,7 +12,8 @@
     "turbo": "1.3.3"
   },
   "workspaces": [
-    "apps/*",
+    "apps/arcade-city",
+    "apps/relay",
     "packages/*"
   ],
   "resolutions": {

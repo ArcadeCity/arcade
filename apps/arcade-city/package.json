@@ -84,7 +84,9 @@
     "reactotron-react-js": "3.3.8",
     "reactotron-react-native": "5.0.2",
     "sentry-expo": "~5.0.0",
-    "text-encoding-polyfill": "0.6.7"
+    "text-encoding-polyfill": "0.6.7",
+    "websocket-polyfill": "0.0.3",
+    "zustand": "4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
