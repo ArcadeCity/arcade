@@ -4,6 +4,9 @@ import * as secp256k1 from '@alephium/noble-secp256k1'
 
 export const formatNotice = (message: string) => JSON.stringify(['NOTICE', message])
 
+export const formatEvent = (subscriptionId: string, event: object) =>
+  JSON.stringify(['EVENT', subscriptionId, event])
+
 export enum NostrKind {
   metadata = 0,
   text = 1,
@@ -89,3 +92,14 @@ export const serializeEvent = (event: NostrEventToSerialize) => {
 export const signEvent = async (event: NostrEventToSign, key: string) => {
   return Buffer.from(await secp256k1.schnorr.sign(getEventHash(event), key)).toString('hex')
 }
+
+export const normalizeEvent = (event: any) =>
+  ({
+    id: event.nid,
+    pubkey: event.pubkey,
+    created_at: event.created_at,
+    kind: event.kind,
+    tags: event.tags ?? [],
+    content: event.content,
+    sig: event.sig,
+  } as NostrEvent)

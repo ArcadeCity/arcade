@@ -1,5 +1,8 @@
 import * as edgedb from 'edgedb'
-import { Filters } from '@arcadecity/nostr-utils'
+import WebSocket from 'ws'
+import {
+  Filters, formatEvent, normalizeEvent, NostrEvent
+} from '@arcadecity/nostr-utils'
 import e from '../../dbschema/edgeql-js'
 
 const client = edgedb.createClient()
@@ -10,7 +13,7 @@ const client = edgedb.createClient()
  * websocket until the websocket is closed.
  */
 
-export const handleRequest = async (subId: string, filters: Filters) => {
+export const handleRequest = async (ws: WebSocket, subId: string, filters: Filters) => {
   console.log(`Handling request for subId ${subId} and filters:`, filters)
   if (!subId) {
     console.error('No subId provided')
@@ -24,6 +27,13 @@ export const handleRequest = async (subId: string, filters: Filters) => {
   }))
 
   const result = await query.run(client)
-  console.log('result:', result)
+
   console.log('result.length:', result.length)
+
+  result.forEach((event) => {
+    const normalizedEvent: NostrEvent = normalizeEvent(event)
+    const formattedEvent = formatEvent(subId, normalizedEvent)
+    ws.send(formattedEvent)
+    console.log('Sent:', formattedEvent)
+  })
 }

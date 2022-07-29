@@ -11,7 +11,7 @@ export const handler = (ws: WebSocket, message: string) => {
       case 'REQ':
         const subId = parsedMessage[1]
         const filters = parsedMessage[2] as Filters
-        handleRequest(subId, filters)
+        handleRequest(ws, subId, filters)
         break
       case 'EVENT':
         const event = parsedMessage[1] as NostrEvent
