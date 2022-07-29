@@ -17,8 +17,9 @@ export const handleRequest = async (subId: string, filters: Filters) => {
     return
   }
 
-  const query = e.select(e.Event, () => ({
+  const query = e.select(e.Event, (event) => ({
     ...e.Event['*'],
+    filter: filters.kinds ? e.op(event.kind, 'in', e.set(...filters.kinds)) : undefined,
     limit: filters.limit,
   }))
 
