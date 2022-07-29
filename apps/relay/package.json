@@ -1,0 +1,24 @@
+{
+  "name": "@arcadecity/relay",
+  "version": "0.0.0",
+  "description": "The Arcade relay",
+  "main": "dist/index.js",
+  "repository": "git@github.com:ArcadeCity/arcade.git",
+  "author": "Christopher David <chris@arcade.city>",
+  "license": "CC0-1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsc -w & nodemon dist/index.js",
+    "gen": "npx edgeql-js --target cjs"
+  },
+  "dependencies": {
+    "@arcadecity/nostr-utils": "*",
+    "edgedb": "0.21.1",
+    "ws": "8.8.1"
+  },
+  "devDependencies": {
+    "@types/ws": "8.5.3",
+    "nodemon": "2.0.19",
+    "typescript": "4.7.4"
+  }
+}
