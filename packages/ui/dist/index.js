@@ -1,9 +1,7 @@
 "use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -17,7 +15,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.tsx
@@ -34,7 +31,6 @@ module.exports = __toCommonJS(src_exports);
 
 // src/atoms/text/text.tsx
 var import_ramda = require("ramda");
-var React = __toESM(require("react"));
 var import_react_native2 = require("react-native");
 
 // src/theme/palette.ts
@@ -212,11 +208,7 @@ var Text = (props) => {
   const content = newText || children;
   const style = presets[preset] || presets.default;
   const styles = (0, import_ramda.flatten)([style, styleOverride]);
-  return /* @__PURE__ */ React.createElement(import_react_native2.Text, {
-    key: tx,
-    ...rest,
-    style: styles
-  }, content);
+  return <import_react_native2.Text key={tx} {...rest} style={styles}>{content}</import_react_native2.Text>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);

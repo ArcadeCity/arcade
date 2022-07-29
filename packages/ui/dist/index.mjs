@@ -1,6 +1,5 @@
 // src/atoms/text/text.tsx
 import { flatten } from "ramda";
-import * as React from "react";
 import { Text as ReactNativeText } from "react-native";
 
 // src/theme/palette.ts
@@ -178,11 +177,7 @@ var Text = (props) => {
   const content = newText || children;
   const style = presets[preset] || presets.default;
   const styles = flatten([style, styleOverride]);
-  return /* @__PURE__ */ React.createElement(ReactNativeText, {
-    key: tx,
-    ...rest,
-    style: styles
-  }, content);
+  return <ReactNativeText key={tx} {...rest} style={styles}>{content}</ReactNativeText>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
