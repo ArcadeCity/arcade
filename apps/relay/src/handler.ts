@@ -1,6 +1,7 @@
 import WebSocket from 'ws'
-import { formatNotice } from '@arcadecity/nostr-utils'
+import { Filters, formatNotice, NostrEvent } from '@arcadecity/nostr-utils'
 import { handleRequest } from './nip01'
+import { handleEvent } from './nip01/handleEvent'
 
 export const handler = (ws: WebSocket, message: string) => {
   try {
@@ -9,9 +10,12 @@ export const handler = (ws: WebSocket, message: string) => {
     switch (parsedMessage[0]) {
       case 'REQ':
         const subId = parsedMessage[1]
-        const filters = parsedMessage[2]
+        const filters = parsedMessage[2] as Filters
         handleRequest(subId, filters)
         break
+      case 'EVENT':
+        const event = parsedMessage[1] as NostrEvent
+        handleEvent(event)
       default:
         ws.send(formatNotice('Unknown message type'))
     }
