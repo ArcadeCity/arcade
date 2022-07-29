@@ -1,6 +1,6 @@
 module default {
   type Event {
-    required property id -> str;
+    required property nid -> str;
     required property pubkey -> str;
     required property created_at -> datetime;
     required property kind -> int32;
