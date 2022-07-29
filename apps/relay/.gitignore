@@ -1,3 +1,5 @@
 dist
 
+src/dbschema/edgeql-js
+
 dbschema/edgeql-js

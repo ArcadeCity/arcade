@@ -6,6 +6,6 @@
     "target": "es2018",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "dbschema/**/*"],
   "exclude": ["node_modules"]
 }

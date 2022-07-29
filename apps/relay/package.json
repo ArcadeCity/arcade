@@ -8,7 +8,8 @@
   "license": "CC0-1.0",
   "private": true,
   "scripts": {
-    "dev": "tsc -w & nodemon dist/index.js"
+    "dev": "tsc -w & nodemon dist/index.js",
+    "gen": "npx edgeql-js --target cjs"
   },
   "dependencies": {
     "@arcadecity/nostr-utils": "*",
