@@ -75,7 +75,7 @@ const publishOne = async () => {
   pool.publish(nostrEventToSerialize)
 }
 
-publishOne()
+// publishOne()
 
 const doit = (rideRequest: RideRequest) => {
   stopAnimation()
