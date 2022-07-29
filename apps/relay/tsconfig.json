@@ -4,7 +4,9 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es2018",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true,
+    "downlevelIteration": true
   },
   "include": ["src/**/*", "dbschema/**/*"],
   "exclude": ["node_modules"]
