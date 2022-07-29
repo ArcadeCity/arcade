@@ -82,7 +82,7 @@ export function BottomTabNavigator() {
           ),
         })}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name='WalletHome'
         component={AccountHome}
         options={{
@@ -100,8 +100,8 @@ export function BottomTabNavigator() {
             fontFamily: typography.secondary,
           },
         }}
-      />
-      <BottomTab.Screen
+      /> */}
+      {/* <BottomTab.Screen
         name='AccountHome'
         component={AccountHome}
         options={{
@@ -119,7 +119,7 @@ export function BottomTabNavigator() {
             fontFamily: typography.secondary,
           },
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   )
 }

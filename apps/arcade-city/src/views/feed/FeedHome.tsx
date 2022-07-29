@@ -3,7 +3,9 @@ import { values } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { RootTabScreenProps } from 'navigation/types'
 import React, { useEffect } from 'react'
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  Alert, FlatList, StyleSheet, TouchableOpacity, View
+} from 'react-native'
 import { useStores } from 'stores'
 import { RideRequest } from 'views/ride/RideRequest'
 import { ACTIVE_OPACITY, palette } from '@arcadecity/ui'
@@ -41,12 +43,12 @@ export const FeedHome = observer(({ navigation }: RootTabScreenProps<'FeedHome'>
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 20 }}
       />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         activeOpacity={ACTIVE_OPACITY}
         style={styles.floatingButton}
         onPress={clickNewRequest}>
         <AntDesign name='plus' size={26} color='white' />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   )
 })

@@ -24,7 +24,7 @@ export const confirmRequest = async (self: ServiceStore) => {
         lat: request.drop?.coords?.latitude,
         lng: request.drop?.coords?.longitude,
       },
-      name: 'ArcadeTesto',
+      name: 'Anon',
       amount: 1337,
       expires: dateTimeInSeconds - 1,
     }),

@@ -22,6 +22,6 @@ export const initRideRequestDemo = async (self: RelayStore) => {
     })
     self.addRequest(rideRequestModel)
   }
-  self.env.nostr.subscribeToRides(cb, 5)
+  self.env.nostr.subscribeToRides(cb, 10)
   return true
 }

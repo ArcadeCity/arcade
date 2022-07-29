@@ -23,7 +23,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "arcade.city.mobile",
-      "buildNumber": "48",
+      "buildNumber": "53",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -34,7 +34,7 @@
         "backgroundColor": "#1c133a"
       },
       "package": "arcade.city.mobile",
-      "versionCode": 6000009
+      "versionCode": 6000012
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
