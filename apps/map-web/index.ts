@@ -15,8 +15,7 @@ const pool = relayPool()
 
 const mapView = store.getState().mapView
 
-// pool.addRelay('wss://relay.damus.io')
-pool.addRelay('ws://localhost:8088')
+pool.addRelay('wss://relay.arcade.city')
 
 // example callback function for a subscription
 function onEvent(event: NostrEvent) {
@@ -32,7 +31,7 @@ pool.sub({
   cb: onEvent,
   filter: {
     kinds: [60],
-    limit: 50,
+    limit: 5,
   },
 })
 
@@ -74,9 +73,10 @@ const publishOne = async () => {
   // const { event, priv } = await createDemoRideRequest()
   // pool.setPrivateKey(priv)
   pool.publish(nostrEventToSerialize)
+  console.log('sent...?')
 }
 
-// publishOne()
+publishOne()
 
 const doit = (rideRequest: RideRequest) => {
   stopAnimation()
