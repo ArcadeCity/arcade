@@ -1,10 +1,8 @@
-import * as edgedb from 'edgedb'
-import { NostrEvent } from '@arcadecity/nostr-utils'
-import e from '../../dbschema/edgeql-js'
-
-const client = edgedb.createClient()
+import { e, edgedbClient } from '../edgedb'
+import { NostrEvent } from '../nostr-utils'
 
 export const handleEvent = async (event: NostrEvent) => {
+  console.log('In handleEvent')
   const query = e.insert(e.Event, {
     nid: event.id,
     pubkey: event.pubkey,
@@ -14,6 +12,6 @@ export const handleEvent = async (event: NostrEvent) => {
     content: event.content,
     sig: event.sig,
   })
-  const savedEvent = await query.run(client)
+  const savedEvent = await query.run(edgedbClient)
   console.log(`Saved event with id ${savedEvent.id}`)
 }

@@ -1,11 +1,25 @@
-import WebSocket, { WebSocketServer } from 'ws'
-import { formatNotice } from '@arcadecity/nostr-utils'
+import express from 'express'
+import WebSocket from 'ws'
 import { handler } from './handler'
+import { formatNotice } from './nostr-utils'
 
-const wss = new WebSocketServer({ port: 8088 })
+const app = express()
+const port = process.env.PORT || 3000
+
+const server = app.listen(port, function () {
+  console.log('Server running at http://127.0.0.1:' + port + '!!!!!!!')
+})
+
+const wsServer = new WebSocket.Server({ noServer: true })
+
+server.on('upgrade', (request, socket, head) => {
+  wsServer.handleUpgrade(request, socket, head, (socket) => {
+    wsServer.emit('connection', socket, request)
+  })
+})
 
 // Open socket and pass event to the event handler
-wss.on('connection', (ws: WebSocket) => {
+wsServer.on('connection', (ws: WebSocket) => {
   console.log('Client connected')
   ws.on('error', (error) => {
     console.error(`ws error: ${error}`)
@@ -19,4 +33,8 @@ wss.on('connection', (ws: WebSocket) => {
       ws.send(formatNotice('ERROR: Failed to parse message'))
     }
   })
+})
+
+app.get('/', function (req, res) {
+  res.send('Hello world')
 })

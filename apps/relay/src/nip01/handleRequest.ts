@@ -1,11 +1,8 @@
-import * as edgedb from 'edgedb'
 import WebSocket from 'ws'
+import { e, edgedbClient } from '../edgedb'
 import {
   Filters, formatEvent, normalizeEvent, NostrEvent
-} from '@arcadecity/nostr-utils'
-import e from '../../dbschema/edgeql-js'
-
-const client = edgedb.createClient()
+} from '../nostr-utils'
 
 /**
  * Upon receiving a REQ message, the relay SHOULD query its internal database and return events that
@@ -26,7 +23,7 @@ export const handleRequest = async (ws: WebSocket, subId: string, filters: Filte
     limit: filters.limit,
   }))
 
-  const result = await query.run(client)
+  const result = await query.run(edgedbClient)
 
   console.log('result.length:', result.length)
 
