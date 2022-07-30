@@ -70,10 +70,7 @@ const publishOne = async () => {
     }),
     pubkey,
   }
-  // const { event, priv } = await createDemoRideRequest()
-  // pool.setPrivateKey(priv)
   pool.publish(nostrEventToSerialize)
-  console.log('sent...?')
 }
 
 publishOne()
