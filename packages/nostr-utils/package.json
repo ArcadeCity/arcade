@@ -5,7 +5,6 @@
   "types": "./dist/index.d.ts",
   "description": "Nostr utils",
   "license": "CC0-1.0",
-  "private": true,
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --external react-native",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react-native",
