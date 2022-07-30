@@ -15,11 +15,11 @@ const pool = relayPool()
 
 const mapView = store.getState().mapView
 
-// pool.addRelay('wss://relay.damus.io', { read: true, write: false })
-pool.addRelay('ws://localhost:8088')
+pool.addRelay('wss://relay.arcade.city')
 
 // example callback function for a subscription
 function onEvent(event: NostrEvent) {
+  // console.log('Received event:', event)
   const rideRequest = normalizeRideRequestEvent(event)
   if (rideRequest) {
     store.getState().addRequest(rideRequest)
@@ -31,7 +31,7 @@ pool.sub({
   cb: onEvent,
   filter: {
     kinds: [60],
-    limit: 50,
+    limit: 5,
   },
 })
 
@@ -42,8 +42,6 @@ export const createNewAccount = () => {
   let pubkey = getPublicKey(Buffer.from(priv, 'hex'))
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
-  console.log('so we set priv key maybe to ', priv)
-  // pool.addRelay('wss://relay.damus.io')
   return { pubkey, priv }
 }
 
@@ -70,8 +68,6 @@ const publishOne = async () => {
     }),
     pubkey,
   }
-  // const { event, priv } = await createDemoRideRequest()
-  // pool.setPrivateKey(priv)
   pool.publish(nostrEventToSerialize)
 }
 

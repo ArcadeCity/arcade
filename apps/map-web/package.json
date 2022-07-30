@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "description": "Generated with generator-harp.gl 0.28.0",
   "scripts": {
+    "dev": "npm run start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "webpack serve"
+    "start": "webpack serve",
+    "postinstall": "npx patch-package"
   },
   "author": "",
   "private": true,
