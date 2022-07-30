@@ -3,3 +3,8 @@ dist
 src/dbschema/edgeql-js
 
 dbschema/edgeql-js
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
