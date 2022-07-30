@@ -42,8 +42,6 @@ export const createNewAccount = () => {
   let pubkey = getPublicKey(Buffer.from(priv, 'hex'))
   pool.setPrivateKey(priv)
   console.log(`Authed as ${pubkey}`)
-  console.log('so we set priv key maybe to ', priv)
-  // pool.addRelay('wss://relay.damus.io')
   return { pubkey, priv }
 }
 
