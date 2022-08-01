@@ -1,16 +1,28 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "incremental": true,
+    "baseUrl": "./src/",
     "rootDir": "src",
-    "lib": ["ESNext"],
-    "target": "ES6",
-    "module": "ES6",
-    "strict": true,
+    "downlevelIteration": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "es6",
+    "target": "es6",
     "esModuleInterop": true,
+    "jsx": "preserve",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": false,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true
+    "resolveJsonModule": true,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "./lib/esm",
+    "declaration": true,
+    "sourceMap": true
   },
-  "include": ["src"],
-  "$schema": "https://json.schemastore.org/tsconfig"
+  "include": ["src"]
 }
