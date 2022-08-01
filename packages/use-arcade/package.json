@@ -1,0 +1,27 @@
+{
+  "name": "@arcadecity/use-arcade",
+  "version": "0.0.1",
+  "description": "React hooks for Arcade",
+  "license": "CC0-1.0",
+  "scripts": {
+    "lint": "eslint ./src --max-warnings 0 --cache",
+    "lint:fix": "yarn lint --fix",
+    "tsc": "tsc"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "4.6.0",
+    "@typescript-eslint/parser": "4.6.0",
+    "babel-eslint": "10.1.0",
+    "eslint": "7.12.1",
+    "eslint-config-react-app": "6.0.0",
+    "eslint-plugin-flowtype": "5.2.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-jsx-a11y": "6.4.1",
+    "eslint-plugin-react": "7.21.5",
+    "eslint-plugin-react-hooks": "4.2.0",
+    "eslint-plugin-prettier": "3.1.4",
+    "eslint-config-prettier": "6.15.0",
+    "prettier": "2.1.2",
+    "typescript": "4.0.5"
+  }
+}
