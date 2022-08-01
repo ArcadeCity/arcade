@@ -1,2 +1,4 @@
 export { useArcadeRelay } from './hooks/useArcadeRelay'
-export { useBoolean, UseBoolean, UseBooleanActions } from './hooks/useBoolean'
+export { useBoolean } from './hooks/useBoolean'
+
+export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
