@@ -4,6 +4,7 @@ import {
   NostrEvent,
   NostrEventToSerialize,
   NostrEventToSign,
+  NostrKind,
   signEvent,
 } from '../nostr'
 
@@ -13,7 +14,7 @@ export const createDemoChannel = async () => {
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
   const nostrEventToSerialize: NostrEventToSerialize = {
     created_at: dateTimeInSeconds,
-    kind: 60,
+    kind: NostrKind.channelcreate,
     tags: [],
     content: JSON.stringify({
       image: 'http://placekitten.com/g/200/200',
