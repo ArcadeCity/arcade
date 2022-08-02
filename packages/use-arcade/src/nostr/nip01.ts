@@ -4,8 +4,7 @@ import * as secp256k1 from '@alephium/noble-secp256k1'
 
 export const formatNotice = (message: string) => JSON.stringify(['NOTICE', message])
 
-export const formatEvent = (subscriptionId: string, event: object) =>
-  JSON.stringify(['EVENT', subscriptionId, event])
+export const formatEvent = (event: object) => JSON.stringify(['EVENT', event])
 
 export enum NostrKind {
   metadata = 0,

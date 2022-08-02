@@ -15,7 +15,7 @@ export const App = () => {
 
   useEffect(() => {
     if (!state.ready) return
-    // actions.initialSubscribe()
+    actions.initialSubscribe()
   }, [state.ready])
 
   if (!isLoadingComplete) {

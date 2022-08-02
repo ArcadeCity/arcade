@@ -8,7 +8,7 @@ import {
   signEvent,
 } from '../nostr'
 
-export const createDemoChannel = async () => {
+export const createDemoChannelEvent = async () => {
   const { pubkey, privkey } = createNewAccount()
   const date = new Date()
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
@@ -34,6 +34,5 @@ export const createDemoChannel = async () => {
     id,
     sig,
   }
-  console.log(nostrEvent)
   return nostrEvent
 }

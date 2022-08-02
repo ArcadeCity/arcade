@@ -1,7 +1,7 @@
 import { SetStateAction, useEffect, useRef, useState } from 'react'
-import { NostrEvent } from '../nostr'
+import { formatEvent, NostrEvent, NostrKind } from '../nostr'
 import { addEvent } from '../store'
-import { createDemoChannel } from '../demo/createDemoChannel'
+import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 
 export type UseArcadeRelayState = {
   isPaused: boolean
@@ -16,12 +16,15 @@ export type UseArcadeRelayActions = {
 
 type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 
+const subId = Math.random().toString().slice(2)
+
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
   const ws = useRef<WebSocket | null>(null)
 
   useEffect(() => {
+    // ws.current = new WebSocket('wss://relay.damus.io')
     ws.current = new WebSocket('wss://relay.arcade.city')
     ws.current.onopen = () => {
       console.log('ws opened')
@@ -51,13 +54,24 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   }, [isPaused])
 
   const initialSubscribe = () => {
-    if (!ws.current) return
-    if (ws.current.readyState !== WebSocket.OPEN) {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
       console.log('Not ready.')
       setReady(false)
       return
     }
-    ws.current.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
+    ws.current.send(JSON.stringify(['REQ', 'abfffasdf32f32f', { kinds: [40] }]))
+  }
+
+  const createDemoChannel = async () => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      console.log('Not ready.')
+      setReady(false)
+      return
+    }
+    const event = await createDemoChannelEvent()
+    const formattedEvent = formatEvent(event)
+    ws.current.send(formattedEvent)
+    console.log('Sent')
   }
 
   const state: UseArcadeRelayState = { isPaused, ready }

@@ -11,8 +11,18 @@ export const store = proxy<Store>({
 })
 
 export const addEvent = (event: NostrEvent) => {
-  store.events.set(event.id, event)
-  console.log(`Stored event ${event.id}`)
+  try {
+    store.events.set(event.id, event)
+    console.log(`Stored event kind ${event.kind} - id ${event.id}`)
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+export const useChannelsCreated = () => {
+  const snapshot = useSnapshot(store)
+  const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
+  return eventArray.filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
 }
 
 export const useRideRequests = () => {
