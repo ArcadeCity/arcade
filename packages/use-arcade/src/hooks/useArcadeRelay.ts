@@ -6,7 +6,10 @@ export const useArcadeRelay = () => {
 
   useEffect(() => {
     ws.current = new WebSocket('wss://relay.arcade.city')
-    ws.current.onopen = () => console.log('ws opened')
+    ws.current.onopen = () => {
+      console.log('ws opened. attempting subscribe')
+      ws.current?.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
+    }
     ws.current.onclose = () => console.log('ws closed')
 
     const wsCurrent = ws.current
@@ -22,7 +25,7 @@ export const useArcadeRelay = () => {
     ws.current.onmessage = (e) => {
       if (isPaused) return
       const message = JSON.parse(e.data)
-      console.log('e', message)
+      console.log(message)
     }
   }, [isPaused])
 
