@@ -1,5 +1,6 @@
 import { Channel, useChannelsCreated } from '@arcadecity/use-arcade'
 import { FlatList, StyleSheet, Text } from 'react-native'
+import { ChannelPreview } from './ChannelPreview'
 
 export const ChannelList = () => {
   const channels: Channel[] = useChannelsCreated()
@@ -15,9 +16,7 @@ export const ChannelList = () => {
 
 const keyExtractor = (item: Channel) => item.id
 
-const renderItem = ({ item }: { item: Channel }) => (
-  <Text style={{ color: '#EEECFB' }}>{item.name}</Text>
-)
+const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={item} />
 
 const styles = StyleSheet.create({
   flatList: { flex: 1 },
