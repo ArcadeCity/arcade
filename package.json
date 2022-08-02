@@ -12,8 +12,8 @@
     "turbo": "1.3.3"
   },
   "workspaces": [
+    "apps/arcade-chat",
     "apps/arcade-city",
-    "apps/nostr-client",
     "packages/use-arcade"
   ],
   "resolutions": {
