@@ -1,15 +1,15 @@
 import 'websocket-polyfill'
 import { SetStateAction, useEffect, useRef, useState } from 'react'
-import WebSocket from 'ws'
 
-type VoidFunction = () => void
+export type UseArcadeRelayState = {
+  isPaused: boolean
+}
 
 export type UseArcadeRelayActions = {
   setPause: React.Dispatch<SetStateAction<boolean>>
-  doSomething: VoidFunction
 }
 
-type UseArcadeRelayFunction = () => [any, boolean, UseArcadeRelayActions]
+type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const [isPaused, setPause] = useState<boolean>(false)
@@ -17,10 +17,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
 
   useEffect(() => {
     ws.current = new WebSocket('wss://relay.arcade.city')
-    // ws.current.onopen = () => {
-    //   console.log('ws opened. attempting subscribe')
-    //   ws.current?.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
-    // }
+    ws.current.onopen = () => console.log('ws opened')
     ws.current.onclose = () => console.log('ws closed')
 
     const wsCurrent = ws.current
@@ -33,15 +30,15 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   useEffect(() => {
     if (!ws.current) return
 
-    ws.current.onmessage = (e: any) => {
+    ws.current.onmessage = (e) => {
       if (isPaused) return
       const message = JSON.parse(e.data)
       console.log(message)
     }
   }, [isPaused])
 
-  const doSomething = () => {}
-  const actions: UseArcadeRelayActions = { setPause, doSomething }
+  const state: UseArcadeRelayState = { isPaused }
+  const actions: UseArcadeRelayActions = { setPause }
 
-  return [ws, isPaused, actions]
+  return [state, actions]
 }

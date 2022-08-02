@@ -14,16 +14,16 @@
     "lint": "eslint ./src --max-warnings 0 --cache",
     "lint:fix": "yarn lint --fix",
     "tsc": "tsc",
-    "test": "jest --detectOpenHandles --runInBand",
+    "test": "jest",
     "test:watch": "yarn test --watch",
-    "build": "microbundle --no-compress"
+    "build": "microbundle --no-compress",
+    "dev": "microbundle watch --no-compress"
   },
   "devDependencies": {
     "@testing-library/react": "13.3.0",
     "@testing-library/react-hooks": "8.0.1",
     "@types/jest": "26.0.15",
     "@types/react": "18.0.15",
-    "@types/ws": "8.5.3",
     "@typescript-eslint/eslint-plugin": "4.6.0",
     "@typescript-eslint/parser": "4.6.0",
     "babel-eslint": "10.1.0",
@@ -51,7 +51,5 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
-  "dependencies": {
-    "ws": "8.8.1"
-  }
+  "dependencies": {}
 }
