@@ -1,6 +1,7 @@
 import { SetStateAction, useEffect, useRef, useState } from 'react'
 import { NostrEvent } from '../nostr'
 import { addEvent } from '../store'
+import { createDemoChannel } from '../demo/createDemoChannel'
 
 export type UseArcadeRelayState = {
   isPaused: boolean
@@ -8,8 +9,8 @@ export type UseArcadeRelayState = {
 }
 
 export type UseArcadeRelayActions = {
+  createDemoChannel: () => void
   initialSubscribe: () => void
-  createDemoChatroom: () => void
   setPause: React.Dispatch<SetStateAction<boolean>>
 }
 
@@ -59,12 +60,8 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
   }
 
-  const createDemoChatroom = () => {
-    console.log('Creating demo chatroom . . . ')
-  }
-
   const state: UseArcadeRelayState = { isPaused, ready }
-  const actions: UseArcadeRelayActions = { createDemoChatroom, initialSubscribe, setPause }
+  const actions: UseArcadeRelayActions = { createDemoChannel, initialSubscribe, setPause }
 
   return [state, actions]
 }

@@ -2,7 +2,6 @@
  * NIP 06: Key derivation from mnemonic seed
  * https://github.com/nostr-protocol/nips/blob/master/06.md
  */
-
 import { Buffer } from 'buffer'
 import { HDKey } from '@scure/bip32'
 import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from '@scure/bip39'
