@@ -59,7 +59,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       setReady(false)
       return
     }
-    ws.current.send(JSON.stringify(['REQ', 'abfffasdf32f32f', { kinds: [40] }]))
+    ws.current.send(JSON.stringify(['REQ', subId, { kinds: [NostrKind.channelcreate] }]))
   }
 
   const createDemoChannel = async () => {
