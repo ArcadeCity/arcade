@@ -1,17 +1,18 @@
-import { StyleSheet } from 'react-native'
-import { useRideRequests } from '@arcadecity/use-arcade'
-import EditScreenInfo from '../components/EditScreenInfo'
+import { Button, StyleSheet } from 'react-native'
+import { useArcadeRelay, useRideRequests } from '@arcadecity/use-arcade'
 import { Text, View } from '../components/Themed'
 import { RootTabScreenProps } from '../types'
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
   const rideRequests = useRideRequests()
-  console.log(rideRequests.length)
+  // useArcadeRelay()
+  // const createChannel = () => {
+  //   console.log('create channel')
+  // }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor='#eee' darkColor='rgba(255,255,255,0.1)' />
-      <EditScreenInfo path='/screens/TabOneScreen.tsx' />
+      <Text style={styles.title}>{rideRequests.length} requests</Text>
+      {/* <Button onPress={createChannel} title='Create Channel' /> */}
     </View>
   )
 }
