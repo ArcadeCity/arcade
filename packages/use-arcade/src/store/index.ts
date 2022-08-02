@@ -1,6 +1,6 @@
-import { NostrEvent, NostrKind } from 'types'
 import { proxy, useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
+import { NostrEvent, NostrKind } from '../nostr'
 
 interface Store {
   events: Map<string, NostrEvent>

@@ -1,7 +1,6 @@
-import 'websocket-polyfill'
 import { SetStateAction, useEffect, useRef, useState } from 'react'
+import { NostrEvent } from '../nostr'
 import { addEvent } from '../store'
-import { NostrEvent } from '../types'
 
 export type UseArcadeRelayState = {
   isPaused: boolean
@@ -58,6 +57,8 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     }
     ws.current.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
   }
+
+  // const createDemoChatroom = () => {}
 
   const state: UseArcadeRelayState = { isPaused, ready }
   const actions: UseArcadeRelayActions = { initialSubscribe, setPause }

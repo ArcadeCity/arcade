@@ -1,3 +1,4 @@
+import 'text-encoding-polyfill'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -13,7 +14,8 @@ export const App = () => {
 
   useEffect(() => {
     if (!state.ready) return
-    actions.initialSubscribe()
+    // actions.initialSubscribe()
+    // actions.createDemoChatroom()
   }, [state.ready])
 
   if (!isLoadingComplete) {

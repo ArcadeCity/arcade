@@ -1,28 +1,11 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "baseUrl": "./src/",
-    "rootDir": "src",
-    "downlevelIteration": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "ESNext",
-    "target": "ESNext",
+    "outDir": "dist",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "jsx": "preserve",
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": false,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "emitDecoratorMetadata": true,
-    "outDir": "./lib/esm",
-    "declaration": true,
-    "sourceMap": true
+    "target": "es2018",
+    "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "../../node_modules"]
 }
