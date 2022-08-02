@@ -39,7 +39,7 @@ export function BottomTabNavigator() {
           title: 'Map',
           // headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name='globe-americas' color={color} focused={focused} />
+            <TabBarIcon name='list-ul' color={color} focused={focused} />
           ),
           headerShown: false,
           headerStyle: {
@@ -59,7 +59,7 @@ export function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'FeedHome'>) => ({
           title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name='list-ul' color={color} focused={focused} />
+            <TabBarIcon name='user-alt' color={color} focused={focused} />
           ),
           headerStyle: {
             backgroundColor: color.tabbar,
