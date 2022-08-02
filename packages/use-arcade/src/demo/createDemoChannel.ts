@@ -17,7 +17,7 @@ export const createDemoChannel = async () => {
     tags: [],
     content: JSON.stringify({
       image: 'http://placekitten.com/g/200/200',
-      name: 'DemoChannel' + Math.floor(Math.random() * 100),
+      name: 'DemoChannel' + Math.floor(Math.random() * 10000),
       type: 'demo',
     }),
     pubkey,
@@ -33,5 +33,6 @@ export const createDemoChannel = async () => {
     id,
     sig,
   }
+  console.log(nostrEvent)
   return nostrEvent
 }

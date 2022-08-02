@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { getPublicKey } from './keys'
 import { generateSeedWords, privateKeyFromSeed, seedFromWords } from './nip06'
 

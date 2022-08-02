@@ -34,7 +34,7 @@ export const App = () => {
             flex: 1,
             justifyContent: 'center',
           }}>
-          <Button title='CREATE DEMO CHATROOM' onPress={actions.createDemoChatroom} />
+          <Button title='CREATE DEMO CHANNEL' onPress={actions.createDemoChannel} />
         </View>
       </SafeAreaProvider>
     )
