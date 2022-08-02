@@ -12,9 +12,8 @@ export const App = () => {
   const [state, actions] = useArcadeRelay()
 
   useEffect(() => {
-    if (state.ready) {
-      actions.initialSubscribe()
-    }
+    if (!state.ready) return
+    actions.initialSubscribe()
   }, [state.ready])
 
   if (!isLoadingComplete) {

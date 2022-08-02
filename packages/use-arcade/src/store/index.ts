@@ -12,9 +12,11 @@ export const store = proxy<Store>({
 
 export const addEvent = (event: NostrEvent) => {
   store.events.set(event.id, event)
+  console.log(`Stored event ${event.id}`)
 }
 
 export const useRideRequests = () => {
   const snapshot = useSnapshot(store)
-  return Array.from(snapshot.events.values()).filter((event) => event.kind === NostrKind.riderequest)
+  const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
+  return eventArray.filter((event: NostrEvent) => event.kind === NostrKind.riderequest)
 }
