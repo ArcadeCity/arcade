@@ -10,7 +10,7 @@ node_modules
 # builds
 build
 dist
-types
+/types
 .rpt2_cache
 
 # misc

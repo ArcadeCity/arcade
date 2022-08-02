@@ -51,5 +51,7 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "valtio": "1.6.3"
+  }
 }
