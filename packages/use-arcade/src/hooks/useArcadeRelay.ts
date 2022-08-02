@@ -9,6 +9,7 @@ export type UseArcadeRelayState = {
 
 export type UseArcadeRelayActions = {
   initialSubscribe: () => void
+  createDemoChatroom: () => void
   setPause: React.Dispatch<SetStateAction<boolean>>
 }
 
@@ -58,10 +59,12 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.send(JSON.stringify(['REQ', Math.random().toString().slice(2), { kind: 60 }]))
   }
 
-  // const createDemoChatroom = () => {}
+  const createDemoChatroom = () => {
+    console.log('Creating demo chatroom . . . ')
+  }
 
   const state: UseArcadeRelayState = { isPaused, ready }
-  const actions: UseArcadeRelayActions = { initialSubscribe, setPause }
+  const actions: UseArcadeRelayActions = { createDemoChatroom, initialSubscribe, setPause }
 
   return [state, actions]
 }
