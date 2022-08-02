@@ -2,7 +2,7 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import TabOneScreen from '../screens/TabOneScreen'
 import { ChannelScreen } from '../screens/ChannelScreen'
-import { stackOptions } from './root-navigator'
+import { stackOptions } from './stackOptions'
 
 const Stack = createNativeStackNavigator()
 

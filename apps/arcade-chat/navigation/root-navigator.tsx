@@ -6,6 +6,7 @@ import { BottomTabNavigator } from './tab-navigator'
 import { RootStackParamList } from './types'
 import ModalScreen from '../screens/ModalScreen'
 import { typography } from '@arcadecity/ui'
+import { stackOptions } from './stackOptions'
 // import { ChannelList } from '../components/ChannelList'
 
 /**
@@ -33,14 +34,4 @@ export function RootNavigator() {
       </Stack.Group>
     </Stack.Navigator>
   )
-}
-
-export const stackOptions = {
-  headerStyle: {
-    backgroundColor: '#2D2252', //  color.tabbar,
-  },
-  headerTitleStyle: {
-    color: '#EEECFB', // color.text,
-    fontFamily: typography.secondary,
-  },
 }
