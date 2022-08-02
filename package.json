@@ -14,13 +14,15 @@
   "workspaces": [
     "apps/arcade-chat",
     "apps/arcade-city",
+    "packages/ui",
     "packages/use-arcade"
   ],
   "resolutions": {
     "@expo/config-plugins": "^5.0.0",
     "@noble/hashes": "1.1.2",
     "react": "18.0.0",
-    "react-dom": "18.0.0"
+    "react-dom": "18.0.0",
+    "react-native": "0.69.3"
   },
   "scripts": {
     "ac": "yarn workspace @arcadecity/arcade-chat run ios",
