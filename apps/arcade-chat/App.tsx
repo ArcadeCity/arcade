@@ -24,7 +24,7 @@ export const App = () => {
     return (
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
-        <StatusBar />
+        <StatusBar style='light' />
         <View
           style={{
             position: 'absolute',
