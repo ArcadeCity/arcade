@@ -9,6 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { RootTabParamList, RootTabScreenProps } from './types'
 import TabOneScreen from '../screens/TabOneScreen'
 import TabTwoScreen from '../screens/TabTwoScreen'
+import { ChatNavigator } from './chat-navigator'
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -33,13 +34,14 @@ export function BottomTabNavigator() {
       }}>
       <BottomTab.Screen
         name='MapHome'
-        component={TabOneScreen}
+        component={ChatNavigator}
         options={{
           title: 'Map',
           // headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='globe-americas' color={color} focused={focused} />
           ),
+          headerShown: false,
           headerStyle: {
             backgroundColor: color.tabbar,
             borderBottomWidth: 2,

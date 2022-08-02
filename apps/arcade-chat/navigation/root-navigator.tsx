@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { BottomTabNavigator } from './tab-navigator'
 import { RootStackParamList } from './types'
 import ModalScreen from '../screens/ModalScreen'
+import { typography } from '@arcadecity/ui'
 // import { ChannelList } from '../components/ChannelList'
 
 /**
@@ -27,19 +28,19 @@ export function RootNavigator() {
         <Stack.Screen
           name='Modal'
           component={ModalScreen}
-          options={{ ...modalOptions, title: 'Info' }}
+          options={{ ...stackOptions, title: 'Info' }}
         />
       </Stack.Group>
     </Stack.Navigator>
   )
 }
 
-const modalOptions = {
+export const stackOptions = {
   headerStyle: {
     backgroundColor: '#2D2252', //  color.tabbar,
   },
   headerTitleStyle: {
     color: '#EEECFB', // color.text,
-    // fontFamily: typography.secondary,
+    fontFamily: typography.secondary,
   },
 }
