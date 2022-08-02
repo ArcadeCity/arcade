@@ -12,7 +12,9 @@
     "turbo": "1.3.3"
   },
   "workspaces": [
-    "apps/arcade-city"
+    "apps/arcade-city",
+    "apps/nostr-client",
+    "packages/use-arcade"
   ],
   "resolutions": {
     "@expo/config-plugins": "^5.0.0",
