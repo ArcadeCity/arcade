@@ -8,7 +8,7 @@ export const MessageList = () => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: color.palette.purple,
+    backgroundColor: color.background,
     flex: 1,
     width: '100%',
   },

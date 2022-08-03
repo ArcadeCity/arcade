@@ -25,7 +25,7 @@ export const App = () => {
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
         <StatusBar style='light' />
-        <View
+        {/* <View
           style={{
             position: 'absolute',
             bottom: 95,
@@ -35,7 +35,7 @@ export const App = () => {
             justifyContent: 'center',
           }}>
           <Button title='CREATE DEMO CHANNEL' onPress={actions.createDemoChannel} />
-        </View>
+        </View> */}
       </SafeAreaProvider>
     )
   }
