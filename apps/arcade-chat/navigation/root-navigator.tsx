@@ -29,7 +29,7 @@ export function RootNavigator() {
         <Stack.Screen
           name='Modal'
           component={ModalScreen}
-          options={{ ...stackOptions, title: 'Info' }}
+          options={{ ...stackOptions, title: 'Update Channel Metadata' }}
         />
       </Stack.Group>
     </Stack.Navigator>

@@ -43,8 +43,8 @@ export const ChatNavigator = () => {
           headerLeft: () => <NavButton onPress={navigation.goBack} />,
           headerRight: () => (
             <Pressable
-              onPress={demoUpdateMetadata}
-              // onPress={() => navigation.navigate('Modal')}
+              // onPress={demoUpdateMetadata}
+              onPress={() => navigation.navigate('Modal')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}>

@@ -72,8 +72,14 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.onmessage = (e) => {
       if (isPaused) return
       const message = JSON.parse(e.data)
-      const event = message[2]
-      addEvent(event)
+      switch (message[0]) {
+        case 'EVENT':
+          const event = message[2]
+          addEvent(event)
+          break
+        default:
+          console.log('Unhandled:', message)
+      }
     }
   }, [isPaused])
 

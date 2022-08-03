@@ -6,6 +6,7 @@ export { useBoolean } from './hooks/useBoolean'
 export * from './hooks'
 
 export { Channel, ChannelMetadata, Message, setActiveChannelId, store, useRideRequests } from './store'
+export { updateChannelMetadata } from './store/updateChannelMetadata'
 
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 
