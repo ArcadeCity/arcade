@@ -23,12 +23,9 @@ export const ChatNavigator = () => {
   const context = useContext(ArcadeContext)
   const demoUpdateMetadata = async () => {
     if (!activeChannelId) return
-    console.log('Lets try this')
     const metadataEvent = await updateDemoChannelMetadata(activeChannelId)
     console.log(metadataEvent)
     const formattedEvent = formatEvent(metadataEvent)
-    console.log('trying to send:', formattedEvent)
-
     context.ws.send(formattedEvent)
   }
   return (

@@ -7,7 +7,7 @@ import { RootStackScreenProps } from '../types'
 
 export const ChannelScreen = ({ navigation }: RootStackScreenProps<'channel'>) => {
   const metadata = useChannelMetadata()
-  console.log(metadata)
+  // console.log(metadata)
   useEffect(() => {
     navigation.setOptions({ title: metadata.name })
   }, [metadata])
