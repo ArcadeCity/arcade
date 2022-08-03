@@ -4,6 +4,7 @@ import { ChannelMetadata, store } from '../store'
 import { isArrayInArray } from '../utilts'
 import { useActiveChannelId } from './useActiveChannelId'
 import { useChannel } from './useChannel'
+import { useDebounce } from './useDebounce'
 
 export const useChannelMetadata: (channelIdProvided?: string | undefined) => ChannelMetadata = (
   channelIdProvided: string | undefined = undefined,
@@ -12,8 +13,9 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
   const channelId = channelIdProvided ?? activeChannelId
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
+  const debouncedEventArray = useDebounce(eventArray, 500)
   const channel = useChannel(channelId)
-  const channelMetadataEvents = eventArray
+  const channelMetadataEvents = debouncedEventArray
     .filter((event: NostrEvent) => event.kind === NostrKind.channelmetadata)
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
