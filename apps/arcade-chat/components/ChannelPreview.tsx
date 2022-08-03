@@ -6,7 +6,6 @@ import { Text, TouchableOpacity } from 'react-native'
 export const ChannelPreview = ({ channel }: { channel: Channel }) => {
   const navigation = useNavigation()
   const navToIt = useCallback(() => {
-    console.log('Navigating to channel:', channel.id)
     setActiveChannelId(channel.id)
     navigation.navigate('channel', { channelId: channel.id })
   }, [channel.id])

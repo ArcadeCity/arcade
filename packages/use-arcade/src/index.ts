@@ -5,6 +5,7 @@ export { useBoolean } from './hooks/useBoolean'
 
 export {
   Channel,
+  Message,
   setActiveChannelId,
   store,
   useActiveChannelId,
