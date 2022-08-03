@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import TabOneScreen from '../screens/TabOneScreen'
 import { ChannelScreen } from '../screens/ChannelScreen'
@@ -8,18 +8,28 @@ import { NavButton } from '../components/nav-button'
 import { Pressable } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { palette } from '@arcadecity/ui'
-import { updateDemoChannelMetadata, useActiveChannelId } from '@arcadecity/use-arcade'
+import {
+  ArcadeContext,
+  formatEvent,
+  updateDemoChannelMetadata,
+  useActiveChannelId,
+} from '@arcadecity/use-arcade'
 
 const Stack = createNativeStackNavigator()
 
 export const ChatNavigator = () => {
   const navigation = useNavigation()
   const activeChannelId = useActiveChannelId()
+  const context = useContext(ArcadeContext)
   const demoUpdateMetadata = async () => {
     if (!activeChannelId) return
     console.log('Lets try this')
     const metadataEvent = await updateDemoChannelMetadata(activeChannelId)
     console.log(metadataEvent)
+    const formattedEvent = formatEvent(metadataEvent)
+    console.log('trying to send:', formattedEvent)
+
+    context.ws.send(formattedEvent)
   }
   return (
     <Stack.Navigator initialRouteName='chathome'>
