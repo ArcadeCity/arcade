@@ -1,7 +1,7 @@
 import { color, palette } from '@arcadecity/ui'
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import { useContext, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { ArcadeContext, useActiveChannelId, UseArcadeRelayActions } from '@arcadecity/use-arcade'
 
 export const MessageInput = () => {
@@ -9,6 +9,7 @@ export const MessageInput = () => {
   const context = useContext(ArcadeContext)
   const activeChannelId = useActiveChannelId()
   const actions = context.actions as UseArcadeRelayActions
+  const inputBoxRef = useRef<TextInput | null>(null)
   const submitInput = () => {
     if (text.length < 1) {
       Alert.alert('Message too short', 'What is that, a message for ants?')
@@ -18,6 +19,8 @@ export const MessageInput = () => {
       Alert.alert('Error getting channel ID')
       return
     }
+    inputBoxRef.current?.clear()
+    setText('')
     actions.sendChannelMessage(activeChannelId, text)
   }
   return (
@@ -28,6 +31,7 @@ export const MessageInput = () => {
             autoCorrect={false}
             multiline
             onChangeText={(text: string) => setText(text)}
+            ref={inputBoxRef}
             spellCheck={false}
             style={styles.inputBox}
           />
