@@ -25,7 +25,7 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
         ...parsedEvent,
       } as ChannelMetadata
     })
-    .sort((a, b) => a.created_at - b.created_at)
+    .sort((a, b) => b.created_at - a.created_at)
   // If there's a channel metadata event for the channel, return it.
   if (channelMetadataEvents.length > 0) {
     console.log('channelMetadataEvent! returning', channelMetadataEvents[0])
