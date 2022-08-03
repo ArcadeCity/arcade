@@ -24,7 +24,6 @@ export const ChatNavigator = () => {
   const demoUpdateMetadata = async () => {
     if (!activeChannelId) return
     const metadataEvent = await updateDemoChannelMetadata(activeChannelId)
-    console.log(metadataEvent)
     const formattedEvent = formatEvent(metadataEvent)
     context.ws.send(formattedEvent)
   }
