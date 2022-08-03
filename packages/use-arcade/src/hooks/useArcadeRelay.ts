@@ -39,8 +39,8 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     if (!context) {
       throw new Error('Missing Arcade context')
     }
-    // ws.current = new WebSocket('wss://relay.damus.io')
-    ws.current = new WebSocket('wss://relay.arcade.city')
+    ws.current = new WebSocket('wss://relay.damus.io')
+    // ws.current = new WebSocket('wss://relay.arcade.city')
     ws.current.onopen = () => {
       console.log('ws opened')
       setReady(true)
