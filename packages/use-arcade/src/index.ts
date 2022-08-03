@@ -16,3 +16,5 @@ export { Channel, ChannelMetadata, Message, setActiveChannelId, store, useRideRe
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 
 export { NostrEvent, NostrKind } from './nostr'
+
+export { updateDemoChannelMetadata } from './demo/updateDemoChannelMetadata'

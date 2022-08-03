@@ -8,13 +8,18 @@ import { NavButton } from '../components/nav-button'
 import { Pressable } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { palette } from '@arcadecity/ui'
+import { updateDemoChannelMetadata, useActiveChannelId } from '@arcadecity/use-arcade'
 
 const Stack = createNativeStackNavigator()
 
 export const ChatNavigator = () => {
   const navigation = useNavigation()
-  const demoUpdateMetadata = () => {
+  const activeChannelId = useActiveChannelId()
+  const demoUpdateMetadata = async () => {
+    if (!activeChannelId) return
     console.log('Lets try this')
+    const metadataEvent = await updateDemoChannelMetadata(activeChannelId)
+    console.log(metadataEvent)
   }
   return (
     <Stack.Navigator initialRouteName='chathome'>
