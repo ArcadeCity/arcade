@@ -38,16 +38,16 @@ const styles = StyleSheet.create({
   channelPreview: {
     color: palette.blueBell,
     fontFamily: typography.primary,
+    fontSize: 12,
     paddingHorizontal: spacing[2],
-    paddingTop: 3,
+    paddingTop: 4,
   },
   container: {
     borderBottomWidth: 1,
     borderBottomColor: color.line,
     flex: 1,
     flexDirection: 'row',
-    paddingHorizontal: 8,
-    paddingVertical: 12,
+    padding: spacing[3],
   },
   contentContainer: { flex: 1 },
   row: {
