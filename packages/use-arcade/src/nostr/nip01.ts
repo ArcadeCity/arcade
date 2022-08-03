@@ -15,7 +15,7 @@ export enum NostrKind {
   boost = 6,
   like = 7,
   channelcreate = 40,
-  channeljoin = 41,
+  channelmetadata = 41,
   channelmessage = 42,
   riderequest = 60,
 }

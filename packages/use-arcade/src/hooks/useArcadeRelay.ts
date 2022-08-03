@@ -76,7 +76,11 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       return
     }
     ws.current.send(
-      JSON.stringify(['REQ', subId, { kinds: [NostrKind.channelcreate, NostrKind.channelmessage] }]),
+      JSON.stringify([
+        'REQ',
+        subId,
+        { kinds: [NostrKind.channelcreate, NostrKind.channelmetadata, NostrKind.channelmessage] },
+      ]),
     )
   }
 
