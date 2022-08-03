@@ -1,7 +1,7 @@
 import { color, palette, spacing, typography } from '@arcadecity/ui'
 import { Channel, setActiveChannelId, useLastChannelMessage } from '@arcadecity/use-arcade'
 import { useNavigation } from '@react-navigation/native'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ChannelAvatar } from './ChannelAvatar'
 
