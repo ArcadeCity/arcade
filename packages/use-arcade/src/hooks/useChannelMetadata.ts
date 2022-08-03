@@ -1,9 +1,14 @@
 import { useSnapshot } from 'valtio'
 import { NostrEvent } from '../nostr'
 import { ChannelMetadata, store } from '../store'
+import { useActiveChannelId } from './useActiveChannelId'
 import { useChannel } from './useChannel'
 
-export const useChannelMetadata: (channelId: string) => ChannelMetadata = (channelId: string) => {
+export const useChannelMetadata: (channelIdProvided?: string | undefined) => ChannelMetadata = (
+  channelIdProvided: string | undefined = undefined,
+) => {
+  const activeChannelId = useActiveChannelId()
+  const channelId = channelIdProvided ?? activeChannelId
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
   const channel = useChannel(channelId)

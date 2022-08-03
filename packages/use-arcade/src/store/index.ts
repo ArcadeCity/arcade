@@ -25,11 +25,6 @@ export const addEvent = (event: NostrEvent) => {
   }
 }
 
-export const useActiveChannelId: () => string | null = () => {
-  const snapshot = useSnapshot(store)
-  return snapshot.activeChannelId
-}
-
 export const useRideRequests = () => {
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]

@@ -1,4 +1,6 @@
+export * from './useActiveChannelId'
 export * from './useArcadeRelay'
-export * from './useChannelsCreated'
 export * from './useChannelMessages'
+export * from './useChannelMetadata'
+export * from './useChannelsCreated'
 export * from './useLastChannelMessage'
