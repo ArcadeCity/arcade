@@ -1,7 +1,7 @@
-import { color } from '@arcadecity/ui'
+import { color, palette, spacing, typography } from '@arcadecity/ui'
 import { Channel, setActiveChannelId } from '@arcadecity/use-arcade'
 import { useNavigation } from '@react-navigation/native'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ChannelAvatar } from './ChannelAvatar'
 
@@ -11,6 +11,8 @@ export const ChannelPreview = ({ channel }: { channel: Channel }) => {
     setActiveChannelId(channel.id)
     navigation.navigate('channel', { channelId: channel.id })
   }, [channel.id])
+
+  // const latestMessageForChannel = useLastChannelMessage(channel.id)
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -19,13 +21,26 @@ export const ChannelPreview = ({ channel }: { channel: Channel }) => {
       style={styles.container}>
       <ChannelAvatar channel={channel} />
       <View style={styles.contentContainer}>
-        <Text style={{ color: '#EEECFB', padding: 10 }}>{channel.name}</Text>
+        <Text style={styles.channelName}>{channel.name}</Text>
+        <Text style={styles.channelPreview}>Demo message</Text>
       </View>
     </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
+  channelName: {
+    color: palette.moonRaker,
+    fontFamily: typography.secondary,
+    paddingHorizontal: spacing[2],
+    paddingTop: 1,
+  },
+  channelPreview: {
+    color: palette.blueBell,
+    fontFamily: typography.primary,
+    paddingHorizontal: spacing[2],
+    paddingTop: 3,
+  },
   container: {
     borderBottomWidth: 1,
     borderBottomColor: color.line,
