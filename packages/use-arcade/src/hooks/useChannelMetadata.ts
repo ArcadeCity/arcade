@@ -1,10 +1,12 @@
 import { useSnapshot } from 'valtio'
 import { NostrEvent } from '../nostr'
 import { ChannelMetadata, store } from '../store'
+import { useChannel } from './useChannel'
 
 export const useChannelMetadata: (channelId: string) => ChannelMetadata = (channelId: string) => {
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
+  const channel = useChannel(channelId)
   const channelMetadataEvents = eventArray
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
@@ -17,7 +19,16 @@ export const useChannelMetadata: (channelId: string) => ChannelMetadata = (chann
       } as ChannelMetadata
     })
     .sort((a, b) => a.created_at - b.created_at)
-  return channelMetadataEvents[0]
+  // If there's a channel metadata event for the channel, return it.
+  if (channelMetadataEvents.length > 0) {
+    return channelMetadataEvents[0]
+  } else {
+    // Otherwise use data from the channel creation event
+    return {
+      ...channel,
+      channelId: channelId,
+    } as ChannelMetadata
+  }
 }
 
 function isArrayInArray(arr: string[], item: any[]) {
