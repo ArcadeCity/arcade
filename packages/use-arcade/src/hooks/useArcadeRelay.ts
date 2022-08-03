@@ -1,4 +1,4 @@
-import { SetStateAction, useContext, useEffect, useRef, useState } from 'react'
+import { SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   createNewAccount,
   formatEvent,
@@ -35,10 +35,8 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const [ready, setReady] = useState<boolean>(false)
   const ws = useRef<WebSocket | null>(null)
 
-  useEffect(() => {
-    if (!context) {
-      throw new Error('Missing Arcade context')
-    }
+  const connect = useCallback(() => {
+    console.log('Connecting...')
     ws.current = new WebSocket('wss://relay.damus.io')
     // ws.current = new WebSocket('wss://relay.arcade.city')
     ws.current.onopen = () => {
@@ -48,6 +46,9 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.onclose = () => {
       console.log('ws closed')
       setReady(false)
+      setTimeout(() => {
+        connect()
+      }, 1000)
     }
 
     const wsCurrent = ws.current
@@ -57,6 +58,13 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       wsCurrent.close()
     }
   }, [context])
+
+  useEffect(() => {
+    if (!context) {
+      throw new Error('Missing Arcade context')
+    }
+    connect()
+  }, [connect, context])
 
   useEffect(() => {
     if (!ws.current) return
