@@ -13,9 +13,8 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
   const channelId = channelIdProvided ?? activeChannelId
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
-  const debouncedEventArray = useDebounce(eventArray, 500)
   const channel = useChannel(channelId)
-  const channelMetadataEvents = debouncedEventArray
+  const channelMetadataEvents = eventArray
     .filter((event: NostrEvent) => event.kind === NostrKind.channelmetadata)
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
@@ -29,8 +28,9 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
     })
     .sort((a, b) => b.created_at - a.created_at)
   // If there's a channel metadata event for the channel, return it.
-  if (channelMetadataEvents.length > 0) {
-    return channelMetadataEvents[0]
+  const debouncedChannelMetadataEvents = useDebounce(channelMetadataEvents, 500)
+  if (debouncedChannelMetadataEvents.length > 0) {
+    return debouncedChannelMetadataEvents[0]
   } else {
     // Otherwise use data from the channel creation event
     return {
