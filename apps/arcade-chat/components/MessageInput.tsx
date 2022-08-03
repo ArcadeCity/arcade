@@ -1,16 +1,31 @@
 import { color, palette } from '@arcadecity/ui'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
+import { useState } from 'react'
 
 export const MessageInput = () => {
+  const [text, setText] = useState('')
+  const submitInput = () => {
+    if (text.length < 2) return
+    console.log('submitting', text)
+  }
   return (
     <View style={styles.container}>
       <View style={styles.composerContainer}>
         <View style={styles.inputContainer}>
-          <TextInput autoCorrect={false} spellCheck={false} style={styles.inputBox} multiline />
-          <View style={styles.sendButtonContainer}>
+          <TextInput
+            autoCorrect={false}
+            multiline
+            onChangeText={(text: string) => setText(text)}
+            spellCheck={false}
+            style={styles.inputBox}
+          />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={submitInput}
+            style={styles.sendButtonContainer}>
             <FontAwesome name='send' size={24} color={palette.blueBell} />
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -49,11 +64,6 @@ const styles = StyleSheet.create({
     paddingRight: 6,
   },
   sendButtonContainer: {
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // paddingBottom: 10,
-    // paddingLeft: 10,
-    // backgroundColor: 'red',
     marginLeft: 14,
   },
 })
