@@ -3,18 +3,13 @@ export { ArcadeContext } from './context'
 export { useArcadeRelay, UseArcadeRelayActions } from './hooks/useArcadeRelay'
 export { useBoolean } from './hooks/useBoolean'
 
-export { useChannelMessages, useLastChannelMessage } from './hooks'
+export * from './hooks'
 
-export {
-  Channel,
-  Message,
-  setActiveChannelId,
-  store,
-  useActiveChannelId,
-  useChannelsCreated,
-  useRideRequests,
-} from './store'
+export { Channel, ChannelMetadata, Message, setActiveChannelId, store, useRideRequests } from './store'
+export { updateChannelMetadata } from './store/updateChannelMetadata'
 
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 
-export { NostrEvent, NostrKind } from './nostr'
+export { formatEvent, NostrEvent, NostrKind } from './nostr'
+
+export { updateDemoChannelMetadata } from './demo/updateDemoChannelMetadata'

@@ -1,4 +1,4 @@
-import { SetStateAction, useContext, useEffect, useRef, useState } from 'react'
+import { SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   createNewAccount,
   formatEvent,
@@ -35,10 +35,8 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const [ready, setReady] = useState<boolean>(false)
   const ws = useRef<WebSocket | null>(null)
 
-  useEffect(() => {
-    if (!context) {
-      throw new Error('Missing Arcade context')
-    }
+  const connect = useCallback(() => {
+    console.log('Connecting...')
     ws.current = new WebSocket('wss://relay.damus.io')
     // ws.current = new WebSocket('wss://relay.arcade.city')
     ws.current.onopen = () => {
@@ -48,6 +46,9 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.onclose = () => {
       console.log('ws closed')
       setReady(false)
+      setTimeout(() => {
+        connect()
+      }, 1000)
     }
 
     const wsCurrent = ws.current
@@ -59,13 +60,26 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   }, [context])
 
   useEffect(() => {
+    if (!context) {
+      throw new Error('Missing Arcade context')
+    }
+    connect()
+  }, [connect, context])
+
+  useEffect(() => {
     if (!ws.current) return
 
     ws.current.onmessage = (e) => {
       if (isPaused) return
       const message = JSON.parse(e.data)
-      const event = message[2]
-      addEvent(event)
+      switch (message[0]) {
+        case 'EVENT':
+          const event = message[2]
+          addEvent(event)
+          break
+        default:
+          console.log('Unhandled:', message)
+      }
     }
   }, [isPaused])
 
@@ -76,7 +90,11 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       return
     }
     ws.current.send(
-      JSON.stringify(['REQ', subId, { kinds: [NostrKind.channelcreate, NostrKind.channelmessage] }]),
+      JSON.stringify([
+        'REQ',
+        subId,
+        { kinds: [NostrKind.channelcreate, NostrKind.channelmetadata, NostrKind.channelmessage] },
+      ]),
     )
   }
 
@@ -129,7 +147,7 @@ const createMessageEvent = async (channelId: string, message: string) => {
   const nostrEventToSerialize: NostrEventToSerialize = {
     created_at: dateTimeInSeconds,
     kind: NostrKind.channelmessage,
-    tags: [],
+    tags: [['#e', channelId]],
     content: JSON.stringify({
       channelId,
       text: message,

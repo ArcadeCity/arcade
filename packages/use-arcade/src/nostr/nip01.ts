@@ -15,7 +15,7 @@ export enum NostrKind {
   boost = 6,
   like = 7,
   channelcreate = 40,
-  channeljoin = 41,
+  channelmetadata = 41,
   channelmessage = 42,
   riderequest = 60,
 }
@@ -37,7 +37,7 @@ export interface NostrEvent {
    * ["p", <32-bytes hex of the key>, <recommended relay URL>],
    * ... // other kinds of tags may be included later
    */
-  tags: string[]
+  tags: string[][]
   // <arbitrary string>
   content: string
   // <64-bytes signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
@@ -49,7 +49,7 @@ export interface NostrEventToSerialize {
   created_at: number
   kind: NostrKind
   pubkey: string
-  tags: string[]
+  tags: string[][]
 }
 
 export interface NostrEventToSign {
@@ -58,7 +58,7 @@ export interface NostrEventToSign {
   created_at: number
   kind: NostrKind
   pubkey: string
-  tags: string[]
+  tags: string[][]
 }
 
 export interface Filters {

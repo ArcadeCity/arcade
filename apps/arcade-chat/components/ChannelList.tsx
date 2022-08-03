@@ -1,5 +1,5 @@
 import { Channel, useChannelsCreated } from '@arcadecity/use-arcade'
-import { FlatList, StyleSheet, Text } from 'react-native'
+import { FlatList, StyleSheet } from 'react-native'
 import { ChannelPreview } from './ChannelPreview'
 
 export const ChannelList = () => {

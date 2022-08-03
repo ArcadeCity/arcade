@@ -1,5 +1,10 @@
 import { color, palette, spacing, typography } from '@arcadecity/ui'
-import { Channel, setActiveChannelId, useLastChannelMessage } from '@arcadecity/use-arcade'
+import {
+  Channel,
+  setActiveChannelId,
+  useChannelMetadata,
+  useLastChannelMessage,
+} from '@arcadecity/use-arcade'
 import { useNavigation } from '@react-navigation/native'
 import { useCallback } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -11,18 +16,18 @@ export const ChannelPreview = ({ channel }: { channel: Channel }) => {
     setActiveChannelId(channel.id)
     navigation.navigate('channel', { channelId: channel.id })
   }, [channel.id])
-
   const lastMessage = useLastChannelMessage(channel.id)
   const lastMessageText = lastMessage?.text ?? '-'
+  const metadata = useChannelMetadata(channel.id)
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       key={channel.id}
       onPress={navToIt}
       style={styles.container}>
-      <ChannelAvatar channel={channel} />
+      <ChannelAvatar metadata={metadata} />
       <View style={styles.contentContainer}>
-        <Text style={styles.channelName}>{channel.name}</Text>
+        <Text style={styles.channelName}>{metadata.name}</Text>
         <Text style={styles.channelPreview}>{lastMessageText}</Text>
       </View>
     </TouchableOpacity>

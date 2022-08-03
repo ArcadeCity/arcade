@@ -25,27 +25,6 @@ export const addEvent = (event: NostrEvent) => {
   }
 }
 
-export const useActiveChannelId: () => string | null = () => {
-  const snapshot = useSnapshot(store)
-  return snapshot.activeChannelId
-}
-
-export const useChannelsCreated: () => Channel[] = () => {
-  const snapshot = useSnapshot(store)
-  const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
-  return eventArray
-    .filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
-    .map((event: NostrEvent) => {
-      const parsedEvent = JSON.parse(event.content)
-      const cleanedEvent = Object.assign({}, event)
-      delete cleanedEvent.content
-      return {
-        ...cleanedEvent,
-        ...parsedEvent,
-      } as Channel
-    })
-}
-
 export const useRideRequests = () => {
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
@@ -53,13 +32,18 @@ export const useRideRequests = () => {
 }
 
 export interface Channel extends NostrEvent {
-  image: string
+  about: string
   name: string
-  type: string
+  picture: string
+  type: string // maybe 'public', 'private', 'geohash', 'geocoords'
+}
+
+export interface ChannelMetadata extends Channel {
+  channelId: string // TODO: Change this to a tag referencing channel_create_event
 }
 
 export interface Message extends NostrEvent {
-  channelId: string
+  channelId: string // TODO: Change this to a tag referencing channel_create_event
   text: string
-  type: string
+  type: string // text, image, etc...
 }

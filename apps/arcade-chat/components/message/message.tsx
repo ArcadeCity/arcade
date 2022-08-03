@@ -15,10 +15,9 @@ interface Props {
 
 export const MessagePreview: React.FC<Props> = ({ message, preset }) => {
   const text = message.text
-  const username = `Anon-${message.pubkey.trim().substr(0, 5)}`
+  const username = `Anon-${message.pubkey.slice(0, 5)}`
   const date = message.created_at * 1000
-  const twohundy = Math.round(200 + Math.random() * 5)
-  const photo = `https://placekitten.com/200/${twohundy.toString()}`
+  const photo = `https://placekitten.com/200/201`
 
   const delivered = true
   const messagePreset: any = messagePresets[preset]
