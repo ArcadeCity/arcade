@@ -127,13 +127,14 @@ export const normalizeEvent = (event: any) =>
   } as NostrEvent)
 
 const createMessageEvent = async (channelId: string, message: string) => {
+  console.log('creating message event w channelId', channelId)
   const { pubkey, privkey } = createNewAccount()
   const date = new Date()
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
   const nostrEventToSerialize: NostrEventToSerialize = {
     created_at: dateTimeInSeconds,
     kind: NostrKind.channelmessage,
-    tags: [],
+    tags: [['#e', channelId]],
     content: JSON.stringify({
       channelId,
       text: message,
