@@ -12,18 +12,20 @@
     "turbo": "1.3.3"
   },
   "workspaces": [
+    "apps/arcade-chat",
     "apps/arcade-city",
-    "apps/nostr-client",
+    "packages/ui",
     "packages/use-arcade"
   ],
   "resolutions": {
     "@expo/config-plugins": "^5.0.0",
     "@noble/hashes": "1.1.2",
     "react": "18.0.0",
-    "react-dom": "18.0.0"
+    "react-dom": "18.0.0",
+    "react-native": "0.69.3"
   },
   "scripts": {
-    "ac": "yarn workspace @arcadecity/arcade-city run ios",
+    "ac": "yarn workspace @arcadecity/arcade-chat run ios",
     "dev": "turbo run dev",
     "dev:ac": "yarn turbo run ios --parallel --no-cache --scope=@arcadecity/arcade-city",
     "dev:ac:web": "yarn turbo run web --parallel --no-cache --scope=@arcadecity/arcade-city",
