@@ -1,13 +1,24 @@
 import { color, palette } from '@arcadecity/ui'
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { ArcadeContext, useActiveChannelId, UseArcadeRelayActions } from '@arcadecity/use-arcade'
 
 export const MessageInput = () => {
   const [text, setText] = useState('')
+  const context = useContext(ArcadeContext)
+  const activeChannelId = useActiveChannelId()
+  const actions = context.actions as UseArcadeRelayActions
   const submitInput = () => {
-    if (text.length < 2) return
-    console.log('submitting', text)
+    if (text.length < 1) {
+      Alert.alert('Message too short', 'What is that, a message for ants?')
+      return
+    }
+    if (!activeChannelId) {
+      Alert.alert('Error getting channel ID')
+      return
+    }
+    actions.sendChannelMessage(activeChannelId, text)
   }
   return (
     <View style={styles.container}>

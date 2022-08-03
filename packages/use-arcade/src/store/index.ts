@@ -3,12 +3,18 @@ import { proxyMap } from 'valtio/utils'
 import { NostrEvent, NostrKind } from '../nostr'
 
 interface Store {
+  activeChannelId: string | null
   events: Map<string, NostrEvent>
 }
 
 export const store = proxy<Store>({
+  activeChannelId: null,
   events: proxyMap(),
 })
+
+export const setActiveChannelId = (channelId: string | null) => {
+  store.activeChannelId = channelId
+}
 
 export const addEvent = (event: NostrEvent) => {
   try {
@@ -17,6 +23,11 @@ export const addEvent = (event: NostrEvent) => {
   } catch (e) {
     console.log(e.message)
   }
+}
+
+export const useActiveChannelId: () => string | null = () => {
+  const snapshot = useSnapshot(store)
+  return snapshot.activeChannelId
 }
 
 export const useChannelsCreated: () => Channel[] = () => {

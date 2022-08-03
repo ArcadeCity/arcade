@@ -1,7 +1,16 @@
-export { useArcadeRelay } from './hooks/useArcadeRelay'
+export { ArcadeContext } from './context'
+
+export { useArcadeRelay, UseArcadeRelayActions } from './hooks/useArcadeRelay'
 export { useBoolean } from './hooks/useBoolean'
 
-export { Channel, store, useChannelsCreated, useRideRequests } from './store'
+export {
+  Channel,
+  setActiveChannelId,
+  store,
+  useActiveChannelId,
+  useChannelsCreated,
+  useRideRequests,
+} from './store'
 
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 

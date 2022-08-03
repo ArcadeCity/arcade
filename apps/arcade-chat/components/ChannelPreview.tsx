@@ -1,4 +1,4 @@
-import { Channel } from '@arcadecity/use-arcade'
+import { Channel, setActiveChannelId } from '@arcadecity/use-arcade'
 import { useNavigation } from '@react-navigation/native'
 import { useCallback } from 'react'
 import { Text, TouchableOpacity } from 'react-native'
@@ -7,6 +7,7 @@ export const ChannelPreview = ({ channel }: { channel: Channel }) => {
   const navigation = useNavigation()
   const navToIt = useCallback(() => {
     console.log('Navigating to channel:', channel.id)
+    setActiveChannelId(channel.id)
     navigation.navigate('channel', { channelId: channel.id })
   }, [channel.id])
   return (
