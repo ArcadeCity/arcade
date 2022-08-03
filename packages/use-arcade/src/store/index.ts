@@ -53,13 +53,18 @@ export const useRideRequests = () => {
 }
 
 export interface Channel extends NostrEvent {
-  image: string
+  about: string
   name: string
-  type: string
+  picture: string
+  type: string // maybe 'public', 'private', 'geohash', 'geocoords'
+}
+
+export interface ChannelMetadata extends Channel {
+  channelId: string // TODO: Change this to a tag referencing channel_create_event
 }
 
 export interface Message extends NostrEvent {
-  channelId: string
-  text: string
-  type: string
+  channelId: string // TODO: Change this to a tag referencing channel_create_event
+  content: string
+  type: string // text, image, etc...
 }
