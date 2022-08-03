@@ -11,7 +11,7 @@ export {
   useLastChannelMessage,
 } from './hooks'
 
-export { Channel, Message, setActiveChannelId, store, useRideRequests } from './store'
+export { Channel, ChannelMetadata, Message, setActiveChannelId, store, useRideRequests } from './store'
 
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 

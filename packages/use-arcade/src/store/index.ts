@@ -44,6 +44,6 @@ export interface ChannelMetadata extends Channel {
 
 export interface Message extends NostrEvent {
   channelId: string // TODO: Change this to a tag referencing channel_create_event
-  content: string
+  text: string
   type: string // text, image, etc...
 }
