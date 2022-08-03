@@ -3,13 +3,7 @@ export { ArcadeContext } from './context'
 export { useArcadeRelay, UseArcadeRelayActions } from './hooks/useArcadeRelay'
 export { useBoolean } from './hooks/useBoolean'
 
-export {
-  useActiveChannelId,
-  useChannelMessages,
-  useChannelMetadata,
-  useChannelsCreated,
-  useLastChannelMessage,
-} from './hooks'
+export * from './hooks'
 
 export { Channel, ChannelMetadata, Message, setActiveChannelId, store, useRideRequests } from './store'
 
