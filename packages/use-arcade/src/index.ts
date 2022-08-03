@@ -8,6 +8,7 @@ export {
   setActiveChannelId,
   store,
   useActiveChannelId,
+  useChannelMessages,
   useChannelsCreated,
   useRideRequests,
 } from './store'

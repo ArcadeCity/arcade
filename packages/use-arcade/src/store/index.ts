@@ -30,23 +30,36 @@ export const useActiveChannelId: () => string | null = () => {
   return snapshot.activeChannelId
 }
 
+export const useChannelMessages: (channelId: string) => Message[] = (channelId: string) => {
+  const snapshot = useSnapshot(store)
+  const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
+  return eventArray
+    .map((event: NostrEvent) => {
+      const parsedEvent = JSON.parse(event.content)
+      const cleanedEvent = Object.assign({}, event)
+      delete cleanedEvent.content
+      return {
+        ...cleanedEvent,
+        ...parsedEvent,
+      } as Message
+    })
+    .filter((message: Message) => message.channelId === channelId)
+}
+
 export const useChannelsCreated: () => Channel[] = () => {
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
-  return (
-    eventArray
-      .filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
-      // Loop over each event and JSON.parse the content
-      .map((event: NostrEvent) => {
-        const parsedEvent = JSON.parse(event.content)
-        const cleanedEvent = Object.assign({}, event)
-        delete cleanedEvent.content
-        return {
-          ...cleanedEvent,
-          ...parsedEvent,
-        } as Channel
-      })
-  )
+  return eventArray
+    .filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
+    .map((event: NostrEvent) => {
+      const parsedEvent = JSON.parse(event.content)
+      const cleanedEvent = Object.assign({}, event)
+      delete cleanedEvent.content
+      return {
+        ...cleanedEvent,
+        ...parsedEvent,
+      } as Channel
+    })
 }
 
 export const useRideRequests = () => {
@@ -58,5 +71,11 @@ export const useRideRequests = () => {
 export interface Channel extends NostrEvent {
   image: string
   name: string
+  type: string
+}
+
+export interface Message extends NostrEvent {
+  channelId: string
+  text: string
   type: string
 }
