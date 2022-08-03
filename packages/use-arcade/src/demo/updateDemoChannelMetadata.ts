@@ -25,7 +25,7 @@ export const updateDemoChannelMetadata = async (channelId: string) => {
   const nostrEventToSerialize: NostrEventToSerialize = {
     created_at: dateTimeInSeconds,
     kind: NostrKind.channelmetadata,
-    tags: [],
+    tags: [['#e', channelId]],
     content: JSON.stringify(channelMetadata),
     pubkey,
   }

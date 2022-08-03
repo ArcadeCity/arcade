@@ -127,7 +127,6 @@ export const normalizeEvent = (event: any) =>
   } as NostrEvent)
 
 const createMessageEvent = async (channelId: string, message: string) => {
-  console.log('creating message event w channelId', channelId)
   const { pubkey, privkey } = createNewAccount()
   const date = new Date()
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)

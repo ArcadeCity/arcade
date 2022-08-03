@@ -1,6 +1,7 @@
 import { useSnapshot } from 'valtio'
-import { NostrEvent } from '../nostr'
+import { NostrEvent, NostrKind } from '../nostr'
 import { ChannelMetadata, store } from '../store'
+import { isArrayInArray } from '../utilts'
 import { useActiveChannelId } from './useActiveChannelId'
 import { useChannel } from './useChannel'
 
@@ -13,6 +14,7 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
   const channel = useChannel(channelId)
   const channelMetadataEvents = eventArray
+    .filter((event: NostrEvent) => event.kind === NostrKind.channelmetadata)
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
       const parsedEvent = JSON.parse(event.content)
@@ -35,13 +37,4 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
       channelId: channelId,
     } as ChannelMetadata
   }
-}
-
-function isArrayInArray(arr: string[], item: any[]) {
-  var item_as_string = JSON.stringify(item)
-
-  var contains = arr.some(function (ele) {
-    return JSON.stringify(ele) === item_as_string
-  })
-  return contains
 }
