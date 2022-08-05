@@ -7,7 +7,8 @@ export default function AccountScreen() {
   console.log(account)
   return (
     <View style={styles.container}>
-      <Text text='Account' preset='title' />
+      {!account && <Text text='Loading' preset='title' />}
+      {account && <Text text='Account' preset='title' />}
     </View>
   )
 }
