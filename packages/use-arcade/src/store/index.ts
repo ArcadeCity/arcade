@@ -35,6 +35,11 @@ export const useRideRequests = () => {
   return eventArray.filter((event: NostrEvent) => event.kind === NostrKind.riderequest)
 }
 
+export interface Account {
+  keys: AccountKeys
+  metadata: AccountMetadata
+}
+
 export interface AccountKeys {
   mnemonic: string
   publicKey: string

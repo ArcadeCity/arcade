@@ -1,10 +1,10 @@
 import { color, Text } from '@arcadecity/ui'
-import { useAccountMetadata } from '@arcadecity/use-arcade'
+import { useAccount } from '@arcadecity/use-arcade'
 import { StyleSheet, View } from 'react-native'
 
 export default function AccountScreen() {
-  const accountMetadata = useAccountMetadata()
-  console.log(accountMetadata)
+  const account = useAccount()
+  console.log(account)
   return (
     <View style={styles.container}>
       <Text text='Account' preset='title' />

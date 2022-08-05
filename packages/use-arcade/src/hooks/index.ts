@@ -1,3 +1,5 @@
+export * from './useAccount'
+export * from './useAccountKeys'
 export * from './useAccountMetadata'
 export * from './useActiveChannelId'
 export * from './useArcadeRelay'
