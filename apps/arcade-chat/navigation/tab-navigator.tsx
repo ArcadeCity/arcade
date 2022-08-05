@@ -54,10 +54,10 @@ export function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name='FeedHome'
+        name='AccountHome'
         component={AccountScreen}
-        options={({ navigation }: RootTabScreenProps<'FeedHome'>) => ({
-          title: 'Feed',
+        options={({ navigation }: RootTabScreenProps<'AccountHome'>) => ({
+          title: 'Account',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name='user-alt' color={color} focused={focused} />
           ),
@@ -70,20 +70,20 @@ export function BottomTabNavigator() {
             color: color.text,
             fontFamily: typography.secondary,
           },
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name='info-circle'
-                size={25}
-                color={palette.moonRaker}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
+          // headerRight: () => (
+          //   <Pressable
+          //     onPress={() => navigation.navigate('Modal')}
+          //     style={({ pressed }) => ({
+          //       opacity: pressed ? 0.5 : 1,
+          //     })}>
+          //     <FontAwesome
+          //       name='info-circle'
+          //       size={25}
+          //       color={palette.moonRaker}
+          //       style={{ marginRight: 15 }}
+          //     />
+          //   </Pressable>
+          // ),
         })}
       />
       {/* <BottomTab.Screen
