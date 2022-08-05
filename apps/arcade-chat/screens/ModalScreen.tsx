@@ -7,8 +7,7 @@ import {
 } from '@arcadecity/use-arcade'
 import { useNavigation } from '@react-navigation/native'
 import { useContext, useRef, useState } from 'react'
-import { Button, StyleSheet, TextInput } from 'react-native'
-import { Text, View } from '../components/Themed'
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
 
 export default function ModalScreen() {
   const metadata = useChannelMetadata()

@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native'
-import { View } from '../components/Themed'
+import { StyleSheet, View } from 'react-native'
 import { RootTabScreenProps } from '../types'
 import { ChannelList } from '../components/ChannelList'
 
@@ -15,13 +14,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  separator: {
+    height: 1,
+    marginVertical: 30,
+    width: '80%',
+  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 })
