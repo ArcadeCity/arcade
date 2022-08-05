@@ -18,6 +18,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "bech32": "^2.0.0",
     "valtio": "1.6.3"
   },
   "devDependencies": {
