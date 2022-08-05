@@ -21,7 +21,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           TabTwo: {
             screens: {
-              TabTwoScreen: 'two',
+              AccountScreen: 'two',
             },
           },
         },

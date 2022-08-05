@@ -8,7 +8,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { RootTabParamList, RootTabScreenProps } from './types'
 import TabOneScreen from '../screens/TabOneScreen'
-import TabTwoScreen from '../screens/TabTwoScreen'
+import AccountScreen from '../screens/AccountScreen'
 import { ChatNavigator } from './chat-navigator'
 
 /**
@@ -55,7 +55,7 @@ export function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name='FeedHome'
-        component={TabTwoScreen}
+        component={AccountScreen}
         options={({ navigation }: RootTabScreenProps<'FeedHome'>) => ({
           title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
