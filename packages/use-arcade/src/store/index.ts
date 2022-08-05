@@ -3,11 +3,13 @@ import { proxyMap } from 'valtio/utils'
 import { NostrEvent, NostrKind } from '../nostr'
 
 interface Store {
+  accountMetadata: AccountMetadata | null
   activeChannelId: string | null
   events: Map<string, NostrEvent>
 }
 
 export const store = proxy<Store>({
+  accountMetadata: null,
   activeChannelId: null,
   events: proxyMap(),
 })
@@ -46,4 +48,10 @@ export interface Message extends NostrEvent {
   channelId: string // TODO: Change this to a tag referencing channel_create_event
   text: string
   type: string // text, image, etc...
+}
+
+export interface AccountMetadata {
+  name: string
+  about: string
+  picture: string
 }

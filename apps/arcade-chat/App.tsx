@@ -13,10 +13,10 @@ export const App = () => {
   const colorScheme = useColorScheme()
   const [state, actions] = useArcadeRelay()
 
-  useEffect(() => {
-    if (!state.ready) return
-    actions.initialSubscribe()
-  }, [state.ready])
+  // useEffect(() => {
+  //   if (!state.ready) return
+  //   actions.initialSubscribe()
+  // }, [state.ready])
 
   if (!isLoadingComplete) {
     return null
