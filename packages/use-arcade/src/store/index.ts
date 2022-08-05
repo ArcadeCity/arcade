@@ -3,11 +3,15 @@ import { proxyMap } from 'valtio/utils'
 import { NostrEvent, NostrKind } from '../nostr'
 
 interface Store {
+  accountKeys: AccountKeys | null
+  accountMetadata: AccountMetadata | null
   activeChannelId: string | null
   events: Map<string, NostrEvent>
 }
 
 export const store = proxy<Store>({
+  accountKeys: null,
+  accountMetadata: null,
   activeChannelId: null,
   events: proxyMap(),
 })
@@ -29,6 +33,23 @@ export const useRideRequests = () => {
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
   return eventArray.filter((event: NostrEvent) => event.kind === NostrKind.riderequest)
+}
+
+export interface Account {
+  keys: AccountKeys
+  metadata: AccountMetadata
+}
+
+export interface AccountKeys {
+  mnemonic: string
+  publicKey: string
+  privateKey: string
+}
+
+export interface AccountMetadata {
+  name: string
+  about: string
+  picture: string
 }
 
 export interface Channel extends NostrEvent {
