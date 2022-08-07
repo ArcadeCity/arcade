@@ -1,10 +1,31 @@
 import { color, Text } from '@arcadecity/ui'
 import { hexToNpub, hexToNsec, useAccount } from '@arcadecity/use-arcade'
-import { StyleSheet, View } from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 
 export default function AccountScreen() {
   const account = useAccount()
-  console.log(account)
+  if (!account) return <></>
+
+  const npubkey = hexToNpub(account.keys.publicKey)
+  const nseckey = hexToNpub(account.keys.privateKey)
+  const mnemonic = account.keys.mnemonic
+
+  const copyPublicKey = async () => {
+    await Clipboard.setStringAsync(npubkey)
+    Alert.alert('Public key copied to clipboard!')
+  }
+
+  const copyPrivateKey = async () => {
+    await Clipboard.setStringAsync(nseckey)
+    Alert.alert('Private key copied to clipboard!')
+  }
+
+  const copyMnemonic = async () => {
+    await Clipboard.setStringAsync(mnemonic)
+    Alert.alert('Private key copied to clipboard!')
+  }
+
   return (
     <View style={styles.container}>
       {!account && <Text text='Loading' preset='title' />}
@@ -17,12 +38,18 @@ export default function AccountScreen() {
             style={{ marginBottom: 40 }}
           />
           <View>
-            <Text text='Public key' preset='header' />
-            <Text text={hexToNpub(account.keys.publicKey)} preset='description' />
-            <Text text='Private key' preset='header' />
-            <Text text={hexToNsec(account.keys.privateKey)} preset='description' />
-            <Text text='Mnemonic' preset='header' />
-            <Text text={account.keys.mnemonic} preset='description' />
+            <TouchableOpacity activeOpacity={0.8} onPress={copyPublicKey}>
+              <Text text='Public key' preset='header' />
+              <Text text={npubkey} preset='description' />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={copyPrivateKey}>
+              <Text text='Private key' preset='header' />
+              <Text text={nseckey} preset='description' />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={copyMnemonic}>
+              <Text text='Mnemonic' preset='header' />
+              <Text text={mnemonic} preset='description' />
+            </TouchableOpacity>
           </View>
         </>
       )}
