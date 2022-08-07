@@ -5,7 +5,7 @@ import { useAccountKeys } from './useAccountKeys'
 import { useAccountMetadata } from './useAccountMetadata'
 import * as SecureStore from 'expo-secure-store'
 
-export const useAccount: () => Account | null = () => {
+export const useAccount: () => [Account, any] = () => {
   const [loading, setLoading] = useState(true)
   const keys = useAccountKeys()
   const metadata = useAccountMetadata()
@@ -51,10 +51,24 @@ export const useAccount: () => Account | null = () => {
       // Now check if we have keys in device storage.
       checkForKeys()
     } else if (keys) {
-      console.log('We got keys! Pub:', keys.publicKey)
+      // console.log('We got keys! Pub:', keys.publicKey)
+      setLoading(false)
       return
     }
   }, [keys])
 
-  return loading ? null : account
+  const accountActions = {
+    logout: async () => {
+      store.accountKeys = null
+      store.accountMetadata = null
+      const storeAvailable = await SecureStore.isAvailableAsync()
+      if (storeAvailable) {
+        await SecureStore.deleteItemAsync('ARCADE_NPUB')
+        await SecureStore.deleteItemAsync('ARCADE_NSEC')
+        await SecureStore.deleteItemAsync('ARCADE_MNEMONIC')
+      }
+    },
+  }
+
+  return loading ? [null, null] : [account, accountActions]
 }

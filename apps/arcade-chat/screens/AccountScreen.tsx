@@ -4,11 +4,11 @@ import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 
 export default function AccountScreen() {
-  const account = useAccount()
-  if (!account) return <></>
+  const [account, accountActions] = useAccount()
+  if (!account || !account.keys || !account.keys.publicKey) return <></>
 
   const npubkey = hexToNpub(account.keys.publicKey)
-  const nseckey = hexToNpub(account.keys.privateKey)
+  const nseckey = hexToNsec(account.keys.privateKey)
   const mnemonic = account.keys.mnemonic
 
   const copyPublicKey = async () => {
@@ -26,6 +26,12 @@ export default function AccountScreen() {
     Alert.alert('Private key copied to clipboard!')
   }
 
+  const logout = async () => {
+    console.log('Logging out...')
+    await accountActions.logout()
+    console.log('Logged out!')
+  }
+
   return (
     <View style={styles.container}>
       {!account && <Text text='Loading' preset='title' />}
@@ -37,7 +43,7 @@ export default function AccountScreen() {
             preset='description'
             style={{ marginBottom: 40 }}
           />
-          <View>
+          <View style={{ flexDirection: 'column', width: '100%' }}>
             <TouchableOpacity activeOpacity={0.8} onPress={copyPublicKey}>
               <Text text='Public key' preset='header' />
               <Text text={npubkey} preset='description' />
@@ -49,6 +55,9 @@ export default function AccountScreen() {
             <TouchableOpacity activeOpacity={0.8} onPress={copyMnemonic}>
               <Text text='Mnemonic' preset='header' />
               <Text text={mnemonic} preset='description' />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={logout}>
+              <Text text='Logout/Reset' preset='header' />
             </TouchableOpacity>
           </View>
         </>
