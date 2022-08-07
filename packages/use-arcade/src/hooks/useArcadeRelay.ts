@@ -12,6 +12,7 @@ import {
 import { addEvent } from '../store'
 import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 import { ArcadeContext } from '../context'
+import { useAccount } from './useAccount'
 
 export type UseArcadeRelayState = {
   isPaused: boolean
@@ -30,6 +31,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
+  useAccount()
   const context = useContext(ArcadeContext)
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
