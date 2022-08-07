@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createNewAccount } from '../nostr'
+import { createNewAccount, getKeysForMnemonic, getKeysForNsec } from '../nostr'
 import { Account, AccountKeys, store } from '../store'
 import { useAccountKeys } from './useAccountKeys'
 import { useAccountMetadata } from './useAccountMetadata'
@@ -46,7 +46,7 @@ export const useAccount: () => [Account, any] = () => {
   }
 
   useEffect(() => {
-    if (!keys || !keys.privateKey || !keys.publicKey || !keys.mnemonic) {
+    if (!keys || !keys.privateKey || !keys.publicKey) {
       // So the store has no keys. Maybe we tried rehydrating (unimpl.)
       // Now check if we have keys in device storage.
       checkForKeys()
@@ -58,6 +58,33 @@ export const useAccount: () => [Account, any] = () => {
   }, [keys])
 
   const accountActions = {
+    login: async ({ mnemonic, nsec }) => {
+      if (mnemonic) {
+        console.log('LOGGING IN WITH MNEMONIC', mnemonic)
+        const { privateKey, publicKey } = getKeysForMnemonic(mnemonic)
+        const newAccountKeys: AccountKeys = { mnemonic, privateKey, publicKey }
+        store.accountKeys = newAccountKeys
+        const storeAvailable = await SecureStore.isAvailableAsync()
+        if (storeAvailable) {
+          await SecureStore.setItemAsync('ARCADE_NPUB', newAccountKeys.publicKey)
+          await SecureStore.setItemAsync('ARCADE_NSEC', newAccountKeys.privateKey)
+          await SecureStore.setItemAsync('ARCADE_MNEMONIC', newAccountKeys.mnemonic)
+        }
+      }
+      if (nsec) {
+        console.log('LOGGING IN WITH NSEC', nsec)
+        const { privateKey, publicKey } = getKeysForNsec(nsec)
+        const newAccountKeys: AccountKeys = { mnemonic, privateKey, publicKey }
+        console.log('newAccountKeys', newAccountKeys)
+        store.accountKeys = newAccountKeys
+        const storeAvailable = await SecureStore.isAvailableAsync()
+        if (storeAvailable) {
+          await SecureStore.setItemAsync('ARCADE_NPUB', newAccountKeys.publicKey)
+          await SecureStore.setItemAsync('ARCADE_NSEC', newAccountKeys.privateKey)
+          await SecureStore.setItemAsync('ARCADE_MNEMONIC', newAccountKeys.mnemonic)
+        }
+      }
+    },
     logout: async () => {
       store.accountKeys = null
       store.accountMetadata = null

@@ -1,9 +1,11 @@
-import { color, Text } from '@arcadecity/ui'
+import { color, palette, Text } from '@arcadecity/ui'
 import { hexToNpub, hexToNsec, useAccount } from '@arcadecity/use-arcade'
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
+import { useState } from 'react'
 
 export default function AccountScreen() {
+  const [loginAs, setLoginAs] = useState('')
   const [account, accountActions] = useAccount()
   if (!account || !account.keys || !account.keys.publicKey) return <></>
 
@@ -23,7 +25,18 @@ export default function AccountScreen() {
 
   const copyMnemonic = async () => {
     await Clipboard.setStringAsync(mnemonic)
-    Alert.alert('Private key copied to clipboard!')
+    Alert.alert('Seed phrase copied to clipboard!')
+  }
+
+  const login = () => {
+    console.log('logging in as', loginAs)
+    if (loginAs.split(' ').length === 12) {
+      accountActions.login({ mnemonic: loginAs })
+    } else if (loginAs.startsWith('nsec')) {
+      accountActions.login({ nsec: loginAs })
+    } else {
+      accountActions.login({ nsec: hexToNsec(loginAs) })
+    }
   }
 
   const logout = async () => {
@@ -52,10 +65,30 @@ export default function AccountScreen() {
               <Text text='Private key' preset='header' />
               <Text text={nseckey} preset='description' />
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.8} onPress={copyMnemonic}>
-              <Text text='Mnemonic' preset='header' />
-              <Text text={mnemonic} preset='description' />
+            {mnemonic && (
+              <TouchableOpacity activeOpacity={0.8} onPress={copyMnemonic}>
+                <Text text='Seed phrase' preset='header' />
+                <Text text={mnemonic} preset='description' />
+              </TouchableOpacity>
+            )}
+
+            <TextInput
+              onChangeText={(text) => setLoginAs(text)}
+              placeholder='Enter hex, nsec, or seed phrase'
+              placeholderTextColor={palette.blueBell}
+              style={{
+                backgroundColor: color.field,
+                borderRadius: 20,
+                color: color.text,
+                padding: 16,
+                marginVertical: 30,
+              }}
+            />
+
+            <TouchableOpacity activeOpacity={0.8} onPress={login} style={{ marginBottom: 30 }}>
+              <Text text='Login' preset='header' />
             </TouchableOpacity>
+
             <TouchableOpacity activeOpacity={0.8} onPress={logout}>
               <Text text='Logout/Reset' preset='header' />
             </TouchableOpacity>
