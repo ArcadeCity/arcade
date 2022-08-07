@@ -10,6 +10,6 @@ export { updateChannelMetadata } from './store/updateChannelMetadata'
 
 export type { UseBoolean, UseBooleanActions } from './hooks/useBoolean'
 
-export { formatEvent, hexToNpub, hexToNsec, NostrEvent, NostrKind } from './nostr'
+export { formatEvent, getKeysForMnemonic, hexToNpub, hexToNsec, NostrEvent, NostrKind } from './nostr'
 
 export { updateDemoChannelMetadata } from './demo/updateDemoChannelMetadata'

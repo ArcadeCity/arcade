@@ -10,7 +10,7 @@ import {
 import { ChannelMetadata } from '../store'
 
 export const updateDemoChannelMetadata = async (channelId: string) => {
-  const { pubkey, privkey } = createNewAccount()
+  const { publicKey: pubkey, privateKey: privkey } = createNewAccount()
   const date = new Date()
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
   const twohundy = Math.round(200 + Math.random() * 5)

@@ -12,6 +12,7 @@ import {
 import { addEvent } from '../store'
 import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 import { ArcadeContext } from '../context'
+import { useAccount } from './useAccount'
 
 export type UseArcadeRelayState = {
   isPaused: boolean
@@ -30,6 +31,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
+  useAccount()
   const context = useContext(ArcadeContext)
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
@@ -142,7 +144,7 @@ export const normalizeEvent = (event: any) =>
   } as NostrEvent)
 
 const createMessageEvent = async (channelId: string, message: string) => {
-  const { pubkey, privkey } = createNewAccount()
+  const { publicKey: pubkey, privateKey: privkey } = createNewAccount()
   const date = new Date()
   const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
   const nostrEventToSerialize: NostrEventToSerialize = {
