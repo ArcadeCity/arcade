@@ -1,6 +1,14 @@
 import { color, palette, Text } from '@arcadecity/ui'
 import { hexToNpub, hexToNsec, useAccount } from '@arcadecity/use-arcade'
-import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useState } from 'react'
 
@@ -46,17 +54,30 @@ export default function AccountScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {!account && <Text text='Loading' preset='title' />}
       {account && (
         <>
-          <Text text='Account' preset='title' style={{ marginTop: -40 }} />
-          <Text
-            text='Testing bech32/bip39 key generation'
-            preset='description'
-            style={{ marginBottom: 40 }}
-          />
           <View style={{ flexDirection: 'column', width: '100%' }}>
+            <View style={{ flexDirection: 'row', marginBottom: 50 }}>
+              <Image
+                source={{ uri: account.metadata.picture }}
+                style={{ width: 60, height: 60, borderRadius: 30 }}
+              />
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  marginLeft: 20,
+                }}
+              >
+                <Text text={account.metadata.name} preset='header' />
+                <Text text={account.metadata.about} preset='descriptionSlim' />
+              </View>
+            </View>
+
+            {/* <Text text={account.metadata.picture} preset='description' /> */}
+
             <TouchableOpacity activeOpacity={0.8} onPress={copyPublicKey}>
               <Text text='Public key' preset='header' />
               <Text text={npubkey} preset='description' />
@@ -95,7 +116,7 @@ export default function AccountScreen() {
           </View>
         </>
       )}
-    </View>
+    </ScrollView>
   )
 }
 
@@ -104,8 +125,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: color.background,
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 20,
+    paddingTop: 30,
   },
   separator: {
     height: 1,
