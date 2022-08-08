@@ -9,7 +9,7 @@ import {
   NostrKind,
   signEvent,
 } from '../nostr'
-import { addEvent } from '../store'
+import { AccountMetadata, addEvent } from '../store'
 import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 import { ArcadeContext } from '../context'
 import { useAccount } from './useAccount'
@@ -24,6 +24,7 @@ export type UseArcadeRelayActions = {
   initialSubscribe: () => void
   sendChannelMessage: (channelId: string, message: string) => void
   setPause: React.Dispatch<SetStateAction<boolean>>
+  updateMetadata: (metadata: AccountMetadata) => Promise<void>
 }
 
 type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
@@ -31,7 +32,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
-  useAccount()
+  const [account] = useAccount()
   const context = useContext(ArcadeContext)
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
@@ -80,6 +81,9 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
           const event = message[2]
           addEvent(event)
           break
+        case 'EOSE':
+          console.log('End of subscribed events.')
+          break
         default:
           console.log('Unhandled:', message)
       }
@@ -88,7 +92,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
 
   const initialSubscribe = () => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
-      console.log('Not ready.')
+      console.log('Not ready for initialSubscribe.')
       setReady(false)
       return
     }
@@ -96,10 +100,42 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       JSON.stringify([
         'REQ',
         subId,
-        { kinds: [NostrKind.channelcreate, NostrKind.channelmetadata, NostrKind.channelmessage] },
+        {
+          kinds: [
+            // NostrKind.metadata,
+            NostrKind.channelcreate,
+            NostrKind.channelmetadata,
+            NostrKind.channelmessage,
+          ],
+        },
       ]),
     )
   }
+
+  const waitThenGrabUserMetadata = useCallback(async () => {
+    await delay(1000)
+    console.log(`Requesting metadata for ${account.keys.publicKey}`)
+    ws.current.send(
+      JSON.stringify([
+        'REQ',
+        subId,
+        {
+          kinds: [NostrKind.metadata],
+          // authors: ['1fc9b7a85047fcb4f4875b4489a61b5ea15010633afebe01a2015a410fe65c9a'],
+          authors: [account.keys.publicKey],
+        },
+      ]),
+    )
+  }, [account?.keys?.publicKey])
+
+  useEffect(() => {
+    if (!account?.keys?.publicKey) {
+      console.log('no pubkey, returning')
+      return
+    }
+
+    waitThenGrabUserMetadata()
+  }, [account?.keys?.publicKey, waitThenGrabUserMetadata])
 
   const createDemoChannel = async () => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
@@ -125,9 +161,55 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.send(formattedEvent)
   }
 
+  const updateMetadata = async (metadata: AccountMetadata) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      console.log('Not ready.')
+      setReady(false)
+      return
+    }
+    // console.log('UPDATING W METADATA', metadata)
+    const event = await createMetadataEvent(metadata)
+    const formattedEvent = formatEvent(event)
+    // console.log('trying to send:', formattedEvent)
+    ws.current.send(formattedEvent)
+    console.log('Sent:', formattedEvent)
+  }
+
   const state: UseArcadeRelayState = { isPaused, ready }
-  const actions: UseArcadeRelayActions = { createDemoChannel, initialSubscribe, sendChannelMessage, setPause }
+  const actions: UseArcadeRelayActions = {
+    createDemoChannel,
+    initialSubscribe,
+    sendChannelMessage,
+    setPause,
+    updateMetadata,
+  }
   context.actions = actions
+
+  const createMetadataEvent = async (metadata: AccountMetadata) => {
+    const pubkey = account.keys.publicKey
+    const privkey = account.keys.privateKey
+    const date = new Date()
+    const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
+    const nostrEventToSerialize: NostrEventToSerialize = {
+      created_at: dateTimeInSeconds,
+      kind: NostrKind.metadata,
+      tags: [],
+      content: JSON.stringify(metadata),
+      pubkey,
+    }
+    const id = getEventHash(nostrEventToSerialize)
+    const nostrEventToSign: NostrEventToSign = {
+      ...nostrEventToSerialize,
+      id,
+    }
+    const sig = await signEvent(nostrEventToSign, privkey)
+    const nostrEvent: NostrEvent = {
+      ...nostrEventToSerialize,
+      id,
+      sig,
+    }
+    return nostrEvent
+  }
 
   return [state, actions]
 }
@@ -171,3 +253,5 @@ const createMessageEvent = async (channelId: string, message: string) => {
   }
   return nostrEvent
 }
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
