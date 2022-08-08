@@ -27,7 +27,6 @@ export default function AccountScreen() {
   const actions = context.actions as UseArcadeRelayActions
   if (!account || !account.keys || !account.keys.publicKey) return <></>
 
-  console.log('hex pubkey:', account.keys.publicKey)
   const npubkey = hexToNpub(account.keys.publicKey)
   const nseckey = hexToNsec(account.keys.privateKey)
   const mnemonic = account.keys.mnemonic
@@ -89,7 +88,7 @@ export default function AccountScreen() {
       {account && (
         <>
           <View style={{ flexDirection: 'column', width: '100%' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 50 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 20 }}>
               <Image
                 source={{ uri: account.metadata.picture }}
                 style={{ width: 60, height: 60, borderRadius: 30 }}
@@ -106,7 +105,19 @@ export default function AccountScreen() {
               </View>
             </View>
 
-            {/* <Text text={account.metadata.picture} preset='description' /> */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={changeProfile}
+              style={{
+                backgroundColor: palette.electricIndigo,
+                alignSelf: 'center',
+                marginBottom: 30,
+                padding: 20,
+                borderRadius: 10,
+              }}
+            >
+              <Text text='Set random profile' preset='header' />
+            </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.8} onPress={copyPublicKey}>
               <Text text='Public key' preset='header' />
@@ -135,14 +146,6 @@ export default function AccountScreen() {
                 marginVertical: 30,
               }}
             />
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={changeProfile}
-              style={{ marginBottom: 30 }}
-            >
-              <Text text='Change profile info' preset='header' />
-            </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.8} onPress={login} style={{ marginBottom: 30 }}>
               <Text text='Login' preset='header' />
