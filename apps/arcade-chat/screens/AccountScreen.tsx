@@ -21,6 +21,18 @@ export default function AccountScreen() {
   const nseckey = hexToNsec(account.keys.privateKey)
   const mnemonic = account.keys.mnemonic
 
+  const changeProfile = () => {
+    const newUsername = `ArcadeAnon-${Math.random().toString(36).substring(2, 6)}`
+    const newAbout = Math.random().toString(36).substring(2, 16)
+    const newNumber = Math.floor(Math.random() * 99) + 1
+    const newGender = Math.floor(Math.random() * 2)
+    const newPicture = `https://randomuser.me/api/portraits/${
+      newGender ? 'men' : 'women'
+    }/${newNumber}.jpg`
+
+    console.log(newUsername, newAbout, newPicture)
+  }
+
   const copyPublicKey = async () => {
     await Clipboard.setStringAsync(npubkey)
     Alert.alert('Public key copied to clipboard!')
@@ -105,6 +117,14 @@ export default function AccountScreen() {
                 marginVertical: 30,
               }}
             />
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={changeProfile}
+              style={{ marginBottom: 30 }}
+            >
+              <Text text='Change profile info' preset='header' />
+            </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.8} onPress={login} style={{ marginBottom: 30 }}>
               <Text text='Login' preset='header' />
