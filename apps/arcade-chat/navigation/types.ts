@@ -18,6 +18,7 @@ export type RootStackParamList = {
   NotFound: undefined
   // Modals
   Modal: undefined
+  CreateChannel: undefined
   NewRequest: undefined
   RequestBegin: { serviceType: 'ride' | 'delivery' | 'other' }
   RequestConfirm: undefined

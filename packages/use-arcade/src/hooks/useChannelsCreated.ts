@@ -10,6 +10,10 @@ export const useChannelsCreated: () => Channel[] = () => {
     .map((event: NostrEvent) => {
       const parsedEvent = JSON.parse(event.content)
       const cleanedEvent = Object.assign({}, event)
+      if (parsedEvent.image) {
+        parsedEvent.picture = parsedEvent.image
+      }
+      delete parsedEvent.image
       delete cleanedEvent.content
       return {
         ...cleanedEvent,

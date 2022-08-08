@@ -7,6 +7,7 @@ import { RootStackParamList } from './types'
 import ModalScreen from '../screens/ModalScreen'
 import { typography } from '@arcadecity/ui'
 import { stackOptions } from './stackOptions'
+import { CreateChannelModal } from '../screens/CreateChannelModal'
 // import { ChannelList } from '../components/ChannelList'
 
 /**
@@ -30,6 +31,11 @@ export function RootNavigator() {
           name='Modal'
           component={ModalScreen}
           options={{ ...stackOptions, title: 'Update Channel Metadata' }}
+        />
+        <Stack.Screen
+          name='CreateChannel'
+          component={CreateChannelModal}
+          options={{ ...stackOptions, title: 'Create Channel' }}
         />
       </Stack.Group>
     </Stack.Navigator>

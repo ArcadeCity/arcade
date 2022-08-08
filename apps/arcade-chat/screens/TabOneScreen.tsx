@@ -7,7 +7,7 @@ import { useCallback } from 'react'
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
   const clickNewChannel = useCallback(() => {
-    console.log('click new channel')
+    navigation.navigate('CreateChannel')
   }, [])
   return (
     <View style={styles.container}>
