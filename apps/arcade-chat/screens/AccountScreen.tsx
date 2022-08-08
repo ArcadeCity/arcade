@@ -1,5 +1,5 @@
 import { color, palette, Text } from '@arcadecity/ui'
-import { hexToNpub, hexToNsec, useAccount } from '@arcadecity/use-arcade'
+import { AccountMetadata, hexToNpub, hexToNsec, store, useAccount } from '@arcadecity/use-arcade'
 import {
   Alert,
   Image,
@@ -30,8 +30,15 @@ export default function AccountScreen() {
       newGender ? 'men' : 'women'
     }/${newNumber}.jpg`
 
-    console.log(newUsername, newAbout, newPicture)
+    const metadata: AccountMetadata = {
+      name: newUsername,
+      about: newAbout,
+      picture: newPicture,
+    }
+    store.accountMetadata = metadata
   }
+
+  console.log(account)
 
   const copyPublicKey = async () => {
     await Clipboard.setStringAsync(npubkey)
