@@ -31,7 +31,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
-  useAccount()
+  const [account] = useAccount()
   const context = useContext(ArcadeContext)
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
@@ -88,7 +88,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
 
   const initialSubscribe = () => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
-      console.log('Not ready.')
+      console.log('Not ready for initialSubscribe.')
       setReady(false)
       return
     }
@@ -96,10 +96,41 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       JSON.stringify([
         'REQ',
         subId,
-        { kinds: [NostrKind.channelcreate, NostrKind.channelmetadata, NostrKind.channelmessage] },
+        {
+          kinds: [
+            // NostrKind.metadata,
+            NostrKind.channelcreate,
+            NostrKind.channelmetadata,
+            NostrKind.channelmessage,
+          ],
+        },
       ]),
     )
   }
+
+  const waitThenGrabUserMetadata = useCallback(async () => {
+    await delay(1000)
+    console.log(`Requesting metadata for ${account.keys.publicKey}`)
+    ws.current.send(
+      JSON.stringify([
+        'REQ',
+        subId,
+        {
+          kinds: [NostrKind.metadata],
+          authors: [account.keys.publicKey],
+        },
+      ]),
+    )
+  }, [account?.keys?.publicKey])
+
+  useEffect(() => {
+    if (!account?.keys?.publicKey) {
+      console.log('no pubkey, returning')
+      return
+    }
+
+    waitThenGrabUserMetadata()
+  }, [account?.keys?.publicKey, waitThenGrabUserMetadata])
 
   const createDemoChannel = async () => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
@@ -171,3 +202,5 @@ const createMessageEvent = async (channelId: string, message: string) => {
   }
   return nostrEvent
 }
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
