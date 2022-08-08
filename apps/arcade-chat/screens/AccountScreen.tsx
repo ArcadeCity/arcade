@@ -1,5 +1,13 @@
 import { color, palette, Text } from '@arcadecity/ui'
-import { AccountMetadata, hexToNpub, hexToNsec, store, useAccount } from '@arcadecity/use-arcade'
+import {
+  AccountMetadata,
+  ArcadeContext,
+  hexToNpub,
+  hexToNsec,
+  store,
+  useAccount,
+  UseArcadeRelayActions,
+} from '@arcadecity/use-arcade'
 import {
   Alert,
   Image,
@@ -10,18 +18,21 @@ import {
   View,
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 
 export default function AccountScreen() {
   const [loginAs, setLoginAs] = useState('')
   const [account, accountActions] = useAccount()
+  const context = useContext(ArcadeContext)
+  const actions = context.actions as UseArcadeRelayActions
   if (!account || !account.keys || !account.keys.publicKey) return <></>
 
+  console.log('hex pubkey:', account.keys.publicKey)
   const npubkey = hexToNpub(account.keys.publicKey)
   const nseckey = hexToNsec(account.keys.privateKey)
   const mnemonic = account.keys.mnemonic
 
-  const changeProfile = () => {
+  const changeProfile = async () => {
     const newUsername = `ArcadeAnon-${Math.random().toString(36).substring(2, 6)}`
     const newAbout = Math.random().toString(36).substring(2, 16)
     const newNumber = Math.floor(Math.random() * 99) + 1
@@ -35,10 +46,10 @@ export default function AccountScreen() {
       about: newAbout,
       picture: newPicture,
     }
+
+    await actions.updateMetadata(metadata)
     store.accountMetadata = metadata
   }
-
-  console.log(account)
 
   const copyPublicKey = async () => {
     await Clipboard.setStringAsync(npubkey)

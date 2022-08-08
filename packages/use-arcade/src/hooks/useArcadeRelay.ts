@@ -9,7 +9,7 @@ import {
   NostrKind,
   signEvent,
 } from '../nostr'
-import { addEvent } from '../store'
+import { AccountMetadata, addEvent } from '../store'
 import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 import { ArcadeContext } from '../context'
 import { useAccount } from './useAccount'
@@ -24,6 +24,7 @@ export type UseArcadeRelayActions = {
   initialSubscribe: () => void
   sendChannelMessage: (channelId: string, message: string) => void
   setPause: React.Dispatch<SetStateAction<boolean>>
+  updateMetadata: (metadata: AccountMetadata) => Promise<void>
 }
 
 type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
@@ -44,7 +45,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.onopen = () => {
       console.log('ws opened')
       setReady(true)
-      initialSubscribe()
+      // initialSubscribe()
     }
     ws.current.onclose = () => {
       console.log('ws closed')
@@ -117,6 +118,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
         subId,
         {
           kinds: [NostrKind.metadata],
+          // authors: ['1fc9b7a85047fcb4f4875b4489a61b5ea15010633afebe01a2015a410fe65c9a'],
           authors: [account.keys.publicKey],
         },
       ]),
@@ -156,9 +158,55 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.send(formattedEvent)
   }
 
+  const updateMetadata = async (metadata: AccountMetadata) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      console.log('Not ready.')
+      setReady(false)
+      return
+    }
+    // console.log('UPDATING W METADATA', metadata)
+    const event = await createMetadataEvent(metadata)
+    const formattedEvent = formatEvent(event)
+    // console.log('trying to send:', formattedEvent)
+    ws.current.send(formattedEvent)
+    console.log('Sent:', formattedEvent)
+  }
+
   const state: UseArcadeRelayState = { isPaused, ready }
-  const actions: UseArcadeRelayActions = { createDemoChannel, initialSubscribe, sendChannelMessage, setPause }
+  const actions: UseArcadeRelayActions = {
+    createDemoChannel,
+    initialSubscribe,
+    sendChannelMessage,
+    setPause,
+    updateMetadata,
+  }
   context.actions = actions
+
+  const createMetadataEvent = async (metadata: AccountMetadata) => {
+    const pubkey = account.keys.publicKey
+    const privkey = account.keys.privateKey
+    const date = new Date()
+    const dateTimeInSeconds = Math.floor(date.getTime() / 1000)
+    const nostrEventToSerialize: NostrEventToSerialize = {
+      created_at: dateTimeInSeconds,
+      kind: NostrKind.metadata,
+      tags: [],
+      content: JSON.stringify(metadata),
+      pubkey,
+    }
+    const id = getEventHash(nostrEventToSerialize)
+    const nostrEventToSign: NostrEventToSign = {
+      ...nostrEventToSerialize,
+      id,
+    }
+    const sig = await signEvent(nostrEventToSign, privkey)
+    const nostrEvent: NostrEvent = {
+      ...nostrEventToSerialize,
+      id,
+      sig,
+    }
+    return nostrEvent
+  }
 
   return [state, actions]
 }
