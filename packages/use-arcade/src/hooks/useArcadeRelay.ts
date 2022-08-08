@@ -45,7 +45,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     ws.current.onopen = () => {
       console.log('ws opened')
       setReady(true)
-      // initialSubscribe()
+      initialSubscribe()
     }
     ws.current.onclose = () => {
       console.log('ws closed')
@@ -80,6 +80,9 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
         case 'EVENT':
           const event = message[2]
           addEvent(event)
+          break
+        case 'EOSE':
+          console.log('End of subscribed events.')
           break
         default:
           console.log('Unhandled:', message)
