@@ -16,6 +16,7 @@ const withTM = require('next-transpile-modules')([
   // '@motify/core',
   // '@motify/components',
   'app',
+  '@arcadecity/ui',
 ])
 
 module.exports = withPlugins(

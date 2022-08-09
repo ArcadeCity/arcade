@@ -1,5 +1,5 @@
 {
-  "name": "next-app",
+  "name": "@arcadecity/next",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,7 +12,8 @@
     "@expo/next-adapter": "4.0.10",
     "app": "*",
     "next": "12.2.2",
-    "raf": "^3.4.1"
+    "raf": "^3.4.1",
+    "ui": "*"
   },
   "devDependencies": {
     "@types/node": "17.0.21",
