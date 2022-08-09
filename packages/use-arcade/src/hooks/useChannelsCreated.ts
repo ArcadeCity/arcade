@@ -17,6 +17,7 @@ export const useChannelsCreated: () => Channel[] = () => {
 
   return eventArray
     .filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
+
     .map((event: NostrEvent) => {
       const parsedEvent = JSON.parse(event.content)
       const cleanedEvent = Object.assign({}, event)
@@ -30,8 +31,10 @@ export const useChannelsCreated: () => Channel[] = () => {
         ...parsedEvent,
       } as Channel
     })
-    .sort(
-      (a: Channel, b: Channel) =>
-        snapshot.lastMessages.get(b.id)?.created_at - snapshot.lastMessages.get(a.id)?.created_at,
-    )
+    .filter((channel: Channel) => !!channel.about)
+    .sort((a: Channel, b: Channel) => b.created_at - a.created_at)
+  // .sort(
+  //   (a: Channel, b: Channel) =>
+  //     snapshot.lastMessages.get(b.id)?.created_at - snapshot.lastMessages.get(a.id)?.created_at,
+  // )
 }
