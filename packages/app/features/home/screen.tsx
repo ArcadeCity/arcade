@@ -38,8 +38,13 @@ export function HomeScreen() {
         backgroundColor: color.background,
       }}>
       <View>
-        <TouchableOpacity activeOpacity={0.8} onPress={createChannel}>
-          <P sx={{ color: palette.blueBell, textAlign: 'center' }}>Create demo channel</P>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={createChannel}
+          style={{ backgroundColor: palette.electricIndigo, borderRadius: 10, marginVertical: 20 }}>
+          <P sx={{ color: palette.moonRaker, fontWeight: 'bold', textAlign: 'center' }}>
+            Create demo channel
+          </P>
         </TouchableOpacity>
         <H1 sx={{ color: color.text, fontWeight: '800' }}>Channels: {channels.length}</H1>
         {channels.map((channel) => (
