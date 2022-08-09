@@ -7,12 +7,14 @@ interface Store {
   accountMetadata: AccountMetadata | null
   activeChannelId: string | null
   events: Map<string, NostrEvent>
+  lastMessages: Map<string, Message>
 }
 
 export const store = proxy<Store>({
   accountKeys: null,
   accountMetadata: null,
   activeChannelId: null,
+  lastMessages: proxyMap(),
   events: proxyMap(),
 })
 
