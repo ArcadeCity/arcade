@@ -3,7 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "esnext",
-    "strict": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
