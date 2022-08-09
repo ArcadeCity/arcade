@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: SolitoAppProps) {
       <Head>
         <title>Arcade Chat</title>
         <meta name='description' content='Connect freely' />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel='icon' href='/favicon.png' />
       </Head>
       <Provider>
         <Component {...pageProps} />
