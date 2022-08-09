@@ -13,13 +13,14 @@ import { Button, StyleSheet, TextInput, TouchableOpacity, View } from 'react-nat
 export const CreateChannelModal = () => {
   const navigation = useNavigation()
   const [name, setName] = useState('')
+  const [about, setAbout] = useState('')
   const [picture, setPicture] = useState('')
   const inputBoxRef = useRef<TextInput | null>(null)
   const context = useContext(ArcadeContext)
   const actions = context.actions as UseArcadeRelayActions
   const createChannel = async () => {
     console.log(name, picture)
-    actions.createChannel(name, picture)
+    actions.createChannel(name, about, picture)
     navigation.goBack()
   }
   return (
@@ -30,6 +31,18 @@ export const CreateChannelModal = () => {
           autoCorrect={false}
           onChangeText={(text: string) => setName(text)}
           placeholder='Enter channel name'
+          placeholderTextColor={palette.blueBell}
+          ref={inputBoxRef}
+          spellCheck={false}
+          style={styles.inputBox}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text text='About' preset='header' />
+        <TextInput
+          autoCorrect={false}
+          onChangeText={(text: string) => setAbout(text)}
+          placeholder='Enter about'
           placeholderTextColor={palette.blueBell}
           ref={inputBoxRef}
           spellCheck={false}

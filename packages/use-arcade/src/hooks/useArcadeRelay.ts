@@ -20,7 +20,7 @@ export type UseArcadeRelayState = {
 }
 
 export type UseArcadeRelayActions = {
-  createChannel: (name: string, picture: string) => void
+  createChannel: (name: string, about: string, picture: string) => void
   createDemoChannel: () => void
   initialSubscribe: () => void
   sendChannelMessage: (channelId: string, message: string) => void
@@ -177,14 +177,18 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     console.log('Sent:', formattedEvent)
   }
 
-  const createChannel = async (name: string, picture: string = 'https://placekitten.com/200/200') => {
+  const createChannel = async (
+    name: string,
+    about: string,
+    picture: string = 'https://placekitten.com/200/200',
+  ) => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
       console.log('Not ready.')
       setReady(false)
       return
     }
     // console.log('UPDATING W METADATA', metadata)
-    const event = await createChannelEvent(name, picture)
+    const event = await createChannelEvent(name, about, picture)
     const formattedEvent = formatEvent(event)
     // console.log('trying to send:', formattedEvent)
     ws.current.send(formattedEvent)
@@ -228,7 +232,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     return nostrEvent
   }
 
-  const createChannelEvent = async (name: string, picture: string) => {
+  const createChannelEvent = async (name: string, about, picture: string) => {
     const pubkey = account.keys.publicKey
     const privkey = account.keys.privateKey
     const date = new Date()
@@ -237,7 +241,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
       created_at: dateTimeInSeconds,
       kind: NostrKind.channelcreate,
       tags: [],
-      content: JSON.stringify({ name, picture }),
+      content: JSON.stringify({ name, about, picture }),
       pubkey,
     }
     const id = getEventHash(nostrEventToSerialize)
