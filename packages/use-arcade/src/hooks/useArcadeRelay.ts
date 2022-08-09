@@ -9,7 +9,7 @@ import {
   NostrKind,
   signEvent,
 } from '../nostr'
-import { AccountMetadata, addEvent } from '../store'
+import { Account, AccountMetadata, addEvent } from '../store'
 import { createDemoChannelEvent } from '../demo/createDemoChannelEvent'
 import { ArcadeContext } from '../context'
 import { useAccount } from './useAccount'
@@ -33,7 +33,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
-  const [account] = useAccount()
+  const [account] = useAccount() as [Account]
   const context = useContext(ArcadeContext)
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)

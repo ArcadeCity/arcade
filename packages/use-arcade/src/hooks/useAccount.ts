@@ -9,10 +9,10 @@ export const useAccount = () => {
   const [loading, setLoading] = useState(true)
   const keys = useAccountKeys()
   const metadata = useAccountMetadata()
-  const account: Account = {
+  const account = {
     keys,
     metadata,
-  }
+  } as Account
 
   const checkForKeys = async () => {
     const storeAvailable = await SecureStore.isAvailableAsync()
