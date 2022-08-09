@@ -18,8 +18,7 @@ export function HomeScreen() {
               target: '_blank',
               rel: 'noreferrer',
             }}
-            sx={{ color: 'blue' }}
-          >
+            sx={{ color: 'blue' }}>
             twitter
           </A>
           .
@@ -35,8 +34,7 @@ export function HomeScreen() {
           href='/user/satoshi'
           textProps={{
             style: sx({ fontSize: 16, fontWeight: 'bold', color: 'blue' }),
-          }}
-        >
+          }}>
           Regular Link
         </TextLink>
       </Row>

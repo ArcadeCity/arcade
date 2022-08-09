@@ -1,10 +1,13 @@
 import { useSx, View, H1, P, Row, A } from 'dripsy'
 import { TextLink } from 'solito/link'
 import { color } from '@arcadecity/ui'
+import { useArcadeRelay } from '@arcadecity/use-arcade/src/index'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 export function HomeScreen() {
   const sx = useSx()
+
+  useArcadeRelay()
 
   return (
     <View
