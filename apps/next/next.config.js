@@ -19,6 +19,7 @@ const withTM = require('next-transpile-modules')([
   // '@motify/core',
   // '@motify/components',
   'app',
+  'ui',
   // 'use-arcade',
   '@arcadecity/use-arcade',
   '@arcadecity/ui',

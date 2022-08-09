@@ -9,11 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@arcadecity/use-arcade": "*",
     "@expo/next-adapter": "4.0.10",
     "app": "*",
     "next": "12.2.2",
     "raf": "^3.4.1",
-    "@arcadecity/use-arcade": "*"
+    "ui": "*"
   },
   "devDependencies": {
     "@types/node": "17.0.21",

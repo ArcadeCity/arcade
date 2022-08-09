@@ -18,7 +18,9 @@
   "workspaces": [
     "apps/arcade-chat",
     "apps/next",
+    "apps/storybook-react",
     "packages/app",
+    "packages/tsconfig",
     "packages/ui",
     "packages/use-arcade"
   ],
@@ -30,6 +32,7 @@
     "react-native": "0.69.3"
   },
   "scripts": {
+    "web": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
     "ac": "yarn workspace @arcadecity/arcade-chat run ios",
     "dev": "turbo run dev",
     "dev:ac": "yarn turbo run ios --parallel --no-cache --scope=@arcadecity/arcade-city",
@@ -40,8 +43,7 @@
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
-    "postinstall": "npx patch-package",
-    "web": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next"
+    "postinstall": "npx patch-package"
   },
   "browser": {
     "_stream_transform": "readable-stream/transform",
