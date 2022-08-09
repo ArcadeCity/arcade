@@ -6,7 +6,9 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "app/*": ["./packages/app/*"]
+      "app/*": ["./packages/app/*"],
+      "ui": ["./packages/ui"],
+      "use-arcade": ["./packages/use-arcade"]
     }
   }
 }

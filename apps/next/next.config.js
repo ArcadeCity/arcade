@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   webpack5: true,
 }
 
@@ -16,6 +19,9 @@ const withTM = require('next-transpile-modules')([
   // '@motify/core',
   // '@motify/components',
   'app',
+  // 'use-arcade',
+  '@arcadecity/use-arcade',
+  '@arcadecity/ui',
 ])
 
 module.exports = withPlugins(

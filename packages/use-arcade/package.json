@@ -7,10 +7,11 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "private": true,
   "scripts": {
     "lint": "eslint ./src --max-warnings 0 --cache",
     "lint:fix": "yarn lint --fix",
-    "tsc": "tsc",
+    "tsc": "tsc --skipLibCheck",
     "test": "jest",
     "test:watch": "yarn test --watch",
     "build": "yarn clean && tsup src/index.ts --format cjs,esm --dts --external react-native",

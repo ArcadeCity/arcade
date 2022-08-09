@@ -4,7 +4,9 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es2018",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [],
+    "noImplicitAny": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "../../node_modules"]

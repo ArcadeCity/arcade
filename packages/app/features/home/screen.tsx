@@ -1,75 +1,64 @@
-import { Text, useSx, View, H1, P, Row, A } from 'dripsy'
+import { useSx, View, H1, P, Row, A, Image } from 'dripsy'
 import { TextLink } from 'solito/link'
-import { MotiLink } from 'solito/moti'
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { color, palette } from '@arcadecity/ui'
+import {
+  Channel,
+  useChannelsCreated,
+  useArcadeRelay,
+  ArcadeContext,
+  UseArcadeRelayActions,
+} from '@arcadecity/use-arcade/src/index'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { useContext, useEffect } from 'react'
+import { TouchableOpacity } from 'react-native'
 
 export function HomeScreen() {
   const sx = useSx()
 
+  useArcadeRelay()
+  const channels: Channel[] = useChannelsCreated()
+
+  useEffect(() => {
+    console.log(channels)
+  }, [channels])
+
+  const context = useContext(ArcadeContext) as any
+  const actions = context.actions as UseArcadeRelayActions
+  const createChannel = async () => {
+    // console.log(name, picture)
+    actions.createChannel('TestChannel1', 'Aboutsogood', 'https://placekitten.com/200/300')
+  }
+
   return (
     <View
-      sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', p: 16 }}
-    >
-      <H1 sx={{ fontWeight: '800' }}>Welcome to Solito.</H1>
-      <View sx={{ maxWidth: 600 }}>
-        <P sx={{ textAlign: 'center' }}>
-          Here is a basic starter to show you how you can navigate from one
-          screen to another. This screen uses the same code on Next.js and React
-          Native.
-        </P>
-        <P sx={{ textAlign: 'center' }}>
-          Solito is made by{' '}
-          <A
-            href="https://twitter.com/fernandotherojo"
-            // @ts-expect-error react-native-web only types
-            hrefAttrs={{
-              target: '_blank',
-              rel: 'noreferrer',
-            }}
-            sx={{ color: 'blue' }}
-          >
-            Fernando Rojo
-          </A>
-          .
-        </P>
-        <P sx={{ textAlign: 'center' }}>
-          Cross Platform Expo Vector Icon <Ionicons name="md-checkmark-circle" size={32} color="green" />
-        </P>
+      sx={{
+        flex: 1,
+        alignItems: 'center',
+        p: 16,
+        backgroundColor: color.background,
+      }}>
+      <View>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={createChannel}
+          style={{ backgroundColor: palette.electricIndigo, borderRadius: 10, marginVertical: 20 }}>
+          <P sx={{ color: palette.moonRaker, fontWeight: 'bold', textAlign: 'center' }}>
+            Create demo channel
+          </P>
+        </TouchableOpacity>
+        <H1 sx={{ color: color.text, fontWeight: '800' }}>Channels: {channels.length}</H1>
+        {channels.map((channel) => (
+          <Row key={channel.id} style={{ marginVertical: 10, alignItems: 'center' }}>
+            <Image
+              source={{ uri: channel.picture }}
+              style={{ width: 70, height: 70, borderRadius: 35, marginRight: 20 }}
+            />
+            <P sx={{ color: palette.blueBell, textAlign: 'center' }}>
+              {channel.name} - {channel.about}
+            </P>
+          </Row>
+        ))}
       </View>
-      <View sx={{ height: 32 }} />
-      <Row>
-        <TextLink
-          href="/user/fernando"
-          textProps={{
-            style: sx({ fontSize: 16, fontWeight: 'bold', color: 'blue' }),
-          }}
-        >
-          Regular Link
-        </TextLink>
-        <View sx={{ width: 32 }} />
-        <MotiLink
-          href="/user/fernando"
-          animate={({ hovered, pressed }) => {
-            'worklet'
-
-            return {
-              scale: pressed ? 0.95 : hovered ? 1.1 : 1,
-              rotateZ: pressed ? '0deg' : hovered ? '-3deg' : '0deg',
-            }
-          }}
-          transition={{
-            type: 'timing',
-            duration: 150,
-          }}
-        >
-          <Text
-            selectable={false}
-            sx={{ fontSize: 16, color: 'black', fontWeight: 'bold' }}
-          >
-            Moti Link
-          </Text>
-        </MotiLink>
-      </Row>
     </View>
   )
 }

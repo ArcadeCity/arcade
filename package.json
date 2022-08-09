@@ -41,7 +41,7 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
     "postinstall": "npx patch-package",
-    "web": "cd apps/next && yarn next"
+    "web": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next"
   },
   "browser": {
     "_stream_transform": "readable-stream/transform",
