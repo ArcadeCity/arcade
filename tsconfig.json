@@ -3,6 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "esnext",
-    "strict": true
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "app/*": ["./packages/app/*"]
+    }
   }
 }
