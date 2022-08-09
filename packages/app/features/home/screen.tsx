@@ -43,7 +43,7 @@ export function HomeScreen() {
         </TouchableOpacity>
         <H1 sx={{ color: color.text, fontWeight: '800' }}>Channels: {channels.length}</H1>
         {channels.map((channel) => (
-          <Row style={{ marginVertical: 10, alignItems: 'center' }}>
+          <Row key={channel.id} style={{ marginVertical: 10, alignItems: 'center' }}>
             <Image
               source={{ uri: channel.picture }}
               style={{ width: 70, height: 70, borderRadius: 35, marginRight: 20 }}
