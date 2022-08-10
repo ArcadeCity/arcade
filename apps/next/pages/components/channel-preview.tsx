@@ -1,3 +1,3 @@
-import { UserDetailScreen } from '@arcadecity/ui/src/library/index'
+import { ChannelPreviewScreen } from '@arcadecity/ui/src/library'
 
-export default UserDetailScreen
+export default ChannelPreviewScreen
