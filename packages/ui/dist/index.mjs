@@ -264,9 +264,9 @@ function ChannelPreviewScreen() {
 }
 
 // src/organisms/ChannelList.tsx
-import { Text as Text4 } from "react-native";
+import { Text as Text4 } from "dripsy";
 var ChannelList = () => {
-  return <Text4 sx={{ textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</Text4>;
+  return <Text4 sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</Text4>;
 };
 export {
   ACTIVE_OPACITY,
