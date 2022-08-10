@@ -12,7 +12,7 @@ export const useChannelMessages: (channelId: string) => Message[] = (channelId: 
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
       const parsedEvent = JSON.parse(event.content)
-      const cleanedEvent = Object.assign({}, event)
+      const cleanedEvent = Object.assign({}, event) as any
       delete cleanedEvent.content
       return {
         ...cleanedEvent,

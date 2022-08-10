@@ -10,8 +10,8 @@ export const useChannelsCreated: () => Channel[] = () => {
     .filter((event: NostrEvent) => event.kind === NostrKind.channelcreate)
 
     .map((event: NostrEvent) => {
-      const parsedEvent = JSON.parse(event.content)
-      const cleanedEvent = Object.assign({}, event)
+      const parsedEvent = JSON.parse(event.content) as any
+      const cleanedEvent = Object.assign({}, event) as any
       if (parsedEvent.image) {
         parsedEvent.picture = parsedEvent.image
       }

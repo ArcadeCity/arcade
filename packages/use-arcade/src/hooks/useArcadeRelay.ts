@@ -34,7 +34,7 @@ const subId = Math.random().toString().slice(2)
 
 export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const [account] = useAccount() as [Account]
-  const context = useContext(ArcadeContext)
+  const context = useContext(ArcadeContext) as any
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
   const ws = useRef<WebSocket | null>(null)
@@ -117,7 +117,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const waitThenGrabUserMetadata = useCallback(async () => {
     await delay(1000)
     console.log(`Requesting metadata for ${account.keys.publicKey}`)
-    ws.current.send(
+    ws?.current?.send(
       JSON.stringify([
         'REQ',
         subId + 'abcd',
