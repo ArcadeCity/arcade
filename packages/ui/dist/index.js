@@ -21,6 +21,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var src_exports = {};
 __export(src_exports, {
   ACTIVE_OPACITY: () => ACTIVE_OPACITY,
+  ChannelList: () => ChannelList,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   Text: () => Text,
   color: () => color,
@@ -294,9 +295,16 @@ function ChannelPreviewScreen() {
     <import_dripsy2.View style={{ height: 30 }} />
   </import_dripsy2.View>;
 }
+
+// src/organisms/ChannelList.tsx
+var import_react_native4 = require("react-native");
+var ChannelList = () => {
+  return <import_react_native4.Text sx={{ textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</import_react_native4.Text>;
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACTIVE_OPACITY,
+  ChannelList,
   ChannelPreviewScreen,
   Text,
   color,

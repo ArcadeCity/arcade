@@ -262,8 +262,15 @@ function ChannelPreviewScreen() {
     <View2 style={{ height: 30 }} />
   </View2>;
 }
+
+// src/organisms/ChannelList.tsx
+import { Text as Text4 } from "react-native";
+var ChannelList = () => {
+  return <Text4 sx={{ textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</Text4>;
+};
 export {
   ACTIVE_OPACITY,
+  ChannelList,
   ChannelPreviewScreen,
   Text,
   color,
