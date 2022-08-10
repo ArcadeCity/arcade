@@ -14,11 +14,9 @@ if (__DEV__) {
     'ViewPropTypes will be removed',
     'o is not a function',
     'Mapbox error MapLoad error',
-    'Story ids need to be unique',
     'Task orphaned',
     'Network request failed',
     '`new NativeEventEmitter', // https://stackoverflow.com/questions/69538962/new-nativeeventemitter-was-called-with-a-non-null-argument-without-the-requir
-    'Story with id',
     'Consecutive calls to connectUser is detected',
     // 'An error occurred while getting app settings: Error: Both secret and user tokens',
     // 'asmCrypto',

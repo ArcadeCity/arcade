@@ -17,7 +17,6 @@
   "workspaces": [
     "apps/arcade-chat",
     "apps/next",
-    "apps/storybook-react",
     "packages/app",
     "packages/tsconfig",
     "packages/ui",
@@ -38,7 +37,6 @@
     "dev:ac:web": "yarn turbo run web --parallel --no-cache --scope=@arcadecity/arcade-city",
     "dev:bullrun": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/bullrun-demo",
     "dev:next": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
-    "dev:next-storybook": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/storybook-react",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
