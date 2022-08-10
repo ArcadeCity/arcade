@@ -1,18 +1,19 @@
 import { DripsyProvider, makeTheme } from 'dripsy'
+import { palette } from '../../ui/src/index'
 
 const theme = makeTheme({
   // https://www.dripsy.xyz/usage/theming/create
   text: {
     a: {
-      color: '#fff',
+      color: palette.moonRaker,
     },
     p: {
-      color: '#fff',
+      color: palette.blueBell,
       fontSize: 16,
     },
     h1: {
-      color: '#fff',
-      fontSize: 36,
+      color: palette.moonRaker,
+      fontSize: 32,
     },
   },
 })
