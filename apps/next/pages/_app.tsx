@@ -4,6 +4,9 @@ import React from 'react'
 import type { SolitoAppProps } from 'solito'
 import 'raf/polyfill'
 
+import 'focus-visible'
+import '@/styles/tailwind.css'
+
 function MyApp({ Component, pageProps }: SolitoAppProps) {
   return (
     <>

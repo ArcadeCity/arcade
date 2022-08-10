@@ -17,7 +17,6 @@ module.exports = function (api) {
             '.jsx',
             '.js',
             '.json',
-            '.stories.tsx',
           ],
           alias: {
             i18n: './src/i18n',
@@ -25,7 +24,6 @@ module.exports = function (api) {
             navigation: './src/navigation',
             services: './src/services',
             stores: './src/stores',
-            storybook: './storybook',
             views: './src/views',
           },
         },

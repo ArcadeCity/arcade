@@ -4,7 +4,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    disableStaticImages: true,
+  },
   webpack5: true,
+  experimental: {
+    newNextLinkBehavior: true,
+    images: {
+      allowFutureImage: true,
+    },
+  },
 }
 
 const { withExpo } = require('@expo/next-adapter')
@@ -19,6 +28,7 @@ const withTM = require('next-transpile-modules')([
   // '@motify/core',
   // '@motify/components',
   'app',
+  'ui',
   // 'use-arcade',
   '@arcadecity/use-arcade',
   '@arcadecity/ui',
