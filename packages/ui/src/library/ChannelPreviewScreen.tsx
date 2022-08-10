@@ -1,4 +1,4 @@
-import { View, Text } from 'dripsy'
+import { H1, P, View, Text } from 'dripsy'
 import { TextLink } from 'solito/link'
 import { Channel } from '../../../use-arcade/src'
 import { ChannelPreview } from '../molecules/ChannelPreview'
@@ -21,15 +21,14 @@ export function ChannelPreviewScreen() {
   return (
     <View
       sx={{
+        alignItems: 'center',
         backgroundColor: color.background,
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingTop: 40,
       }}>
-      <Text sx={{ textAlign: 'center', mb: 16, fontWeight: 'bold' }}>{`Hello!`}</Text>
-      <TextLink href='/'>👈 Go Home</TextLink>
-      <TextLink href='/components'>👈 Components</TextLink>
-      <View style={{ height: 60 }} />
+      <H1>ChannelPreview</H1>
+
+      <View style={{ height: 20 }} />
       <ChannelPreview
         channel={dummyChannel}
         onPress={() => console.log('Pressed ChannelPreview')}

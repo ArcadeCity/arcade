@@ -1,7 +1,7 @@
-import { color, palette, spacing, typography } from '@arcadecity/ui'
+import { P, Text } from 'dripsy'
+import { color, palette, spacing } from '@arcadecity/ui'
 import { Channel } from '../../../use-arcade/src'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { ChannelAvatar } from './ChannelAvatar'
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface ChannelPreviewProps {
   channel: Channel
@@ -34,13 +34,13 @@ export const ChannelPreview = ({ channel, onPress }: ChannelPreviewProps) => {
 const styles = StyleSheet.create({
   channelName: {
     color: palette.moonRaker,
-    fontFamily: typography.secondary,
+    // fontFamily: typography.secondary,
     paddingHorizontal: spacing[2],
     paddingTop: 1,
   },
   channelPreview: {
     color: palette.blueBell,
-    fontFamily: typography.primary,
+    // fontFamily: typography.primary,
     fontSize: 12,
     paddingHorizontal: spacing[2],
     paddingTop: 4,
