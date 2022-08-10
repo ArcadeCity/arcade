@@ -18,7 +18,8 @@ export const ChannelPreview = ({ channel, onPress }: ChannelPreviewProps) => {
       activeOpacity={0.8}
       key={channel?.id ?? 'asdf'}
       onPress={onPress}
-      style={styles.container}>
+      style={styles.container}
+    >
       <Image
         source={{ uri: picture }}
         style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }}
@@ -35,18 +36,20 @@ const styles = StyleSheet.create({
   channelName: {
     color: palette.moonRaker,
     // fontFamily: typography.secondary,
+    textAlign: 'left',
     paddingHorizontal: spacing[2],
     paddingTop: 1,
   },
   channelPreview: {
     color: palette.blueBell,
+    textAlign: 'left',
     // fontFamily: typography.primary,
     fontSize: 12,
     paddingHorizontal: spacing[2],
     paddingTop: 4,
   },
   container: {
-    backgroundColor: color.background,
+    backgroundColor: palette.purple,
     borderBottomWidth: 1,
     borderBottomColor: color.line,
     flexDirection: 'row',

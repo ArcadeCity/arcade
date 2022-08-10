@@ -4,7 +4,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    disableStaticImages: true,
+  },
   webpack5: true,
+  experimental: {
+    newNextLinkBehavior: true,
+    images: {
+      allowFutureImage: true,
+    },
+  },
 }
 
 const { withExpo } = require('@expo/next-adapter')
