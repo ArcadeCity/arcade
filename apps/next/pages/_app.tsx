@@ -4,6 +4,8 @@ import React from 'react'
 import type { SolitoAppProps } from 'solito'
 import 'raf/polyfill'
 
+import '../styles/globals.css'
+
 function MyApp({ Component, pageProps }: SolitoAppProps) {
   return (
     <>

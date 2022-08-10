@@ -4,7 +4,7 @@ import { ChannelPreviewScreen } from '@arcadecity/ui/src'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import clsx from 'clsx'
 
-const codeLanguage = 'typescript'
+const codeLanguage = 'jsx'
 const code = `<ChannelPreview
   channel={channel}
   onPress={() => console.log("Pressed channel", channel.id")}
@@ -14,16 +14,14 @@ export default function () {
   return (
     <>
       <ChannelPreviewScreen />
-      <Highlight {...defaultProps} code={code} language={codeLanguage}>
+      <Highlight {...defaultProps} code={code} language='jsx'>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre
-            className={clsx(className, 'flex overflow-x-auto pb-6')}
-            style={{ ...style, padding: 12, borderRadius: 10 }}>
+          <pre className={clsx(className, 'flex overflow-x-auto p-6')} style={style}>
             <code className='px-4'>
-              {tokens.map((line, lineIndex) => (
-                <div key={lineIndex} {...getLineProps({ line })}>
-                  {line.map((token, tokenIndex) => (
-                    <span key={tokenIndex} {...getTokenProps({ token })} />
+              {tokens.map((line, i) => (
+                <div {...getLineProps({ line, key: i })}>
+                  {line.map((token, key) => (
+                    <span {...getTokenProps({ token, key })} />
                   ))}
                 </div>
               ))}
