@@ -42,6 +42,8 @@ export function ChannelPreviewScreen() {
         onPress={() => console.log('Pressed ChannelPreview')}
       />
 
+      <View style={{ height: 30 }} />
+
       <Highlight {...defaultProps} code={code} language={codeLanguage}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
