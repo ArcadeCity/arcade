@@ -6,6 +6,7 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
+      "@arcadecity/use-arcade": ["packages/use-arcade/src"],
       "app/*": ["./packages/app/*"],
       "ui": ["./packages/ui"],
       "ui/*": ["./packages/ui/*"],
