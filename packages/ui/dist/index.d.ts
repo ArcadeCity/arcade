@@ -391,6 +391,8 @@ interface ChannelListProps {
 }
 declare const ChannelList: ({ channels }: ChannelListProps) => JSX.Element;
 
+declare const ChannelView: () => JSX.Element;
+
 declare const ACTIVE_OPACITY = 0.8;
 /**
  * Roles for colors.  Prefer using these over the palette.  It makes it easier
@@ -596,4 +598,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, ChannelList, ChannelPreviewScreen, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelList, ChannelPreviewScreen, ChannelView, Text, color, palette, spacing, typography };

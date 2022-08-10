@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChannelList } from '@arcadecity/ui'
+import { ChannelList, ChannelView } from '@arcadecity/ui'
 import { Channel, useNostr, useChannelsCreated } from '@arcadecity/use-arcade'
 
 export default function () {
@@ -10,7 +10,7 @@ export default function () {
       <div className={styles.sidebar}>
         <ChannelList channels={channels} />
       </div>
-      <div className={styles.main}></div>
+      <ChannelView />
     </div>
   )
 }
