@@ -4,3 +4,31 @@
 @import './prism.css';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+@layer utilities {
+  /* Scroll thumb styles */
+  .scrollbar::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #46367c;
+    border-radius: 1rem;
+  }
+  .scrollbar::-webkit-scrollbar-thumb:active {
+    background-color: #ae30ff;
+  }
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #46367c;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Scroll track styles (Background) */
+  .scrollbar::-webkit-scrollbar-track {
+    background: #2d2252;
+    border-radius: 4px;
+  }
+  .scrollbar::-webkit-scrollbar-track:hover,
+  .scrollbar::-webkit-scrollbar-track:active {
+    background: #2d2252;
+  }
+}

@@ -18,6 +18,6 @@ export default function () {
 const styles = {
   container: 'h-screen w-screen bg-haiti flex text-moonraker',
   sidebar:
-    'w-full md:!w-[350px] border-minsk h-screen flex-shrink-0 overflow-y-auto overflow-x-hidden border-r',
-  main: 'flex h-screen flex-grow flex-col items-stretch bg-purple',
+    'scrollbar w-full md:!w-[350px] h-screen flex-shrink-0 overflow-y-auto overflow-x-hidden',
+  main: 'flex h-screen flex-grow flex-col items-stretch bg-haiti',
 }
