@@ -263,13 +263,142 @@ function ChannelPreviewScreen() {
   </View2>;
 }
 
+// src/molecules/message/message.tsx
+import { Image as Image2, View as View3 } from "react-native";
+import moment from "moment";
+
+// src/molecules/message/message.presets.ts
+import { Platform as Platform2 } from "react-native";
+var STATUS_ROW = {
+  marginVertical: spacing[2],
+  marginLeft: spacing[2],
+  flexDirection: "row"
+};
+var BASE_MESSAGE = {
+  container: {
+    flexDirection: "row",
+    marginTop: 20
+  },
+  avatarContainer: {
+    alignSelf: "flex-end"
+  },
+  textBubble: {
+    flex: 1,
+    borderTopLeftRadius: 30,
+    borderBottomLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: color.palette.moonRaker,
+    paddingHorizontal: spacing[2],
+    marginRight: spacing[4],
+    ...Platform2.select({
+      ios: {
+        shadowColor: color.palette.black,
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 4
+      }
+    })
+  },
+  textContent: {
+    marginHorizontal: spacing[4],
+    marginVertical: spacing[4],
+    color: color.palette.minsk,
+    fontFamily: typography.primary
+  },
+  date: {
+    ...STATUS_ROW
+  },
+  dateText: {
+    fontSize: 11,
+    color: color.palette.blueBell,
+    fontFamily: typography.primary
+  },
+  error: {
+    ...STATUS_ROW
+  },
+  errorText: {
+    fontSize: 12,
+    color: color.error,
+    fontFamily: typography.primary
+  },
+  errorIcon: {
+    marginRight: spacing[1],
+    alignSelf: "center"
+  }
+};
+var messagePresets = {
+  sent: BASE_MESSAGE,
+  received: {
+    ...BASE_MESSAGE,
+    container: {
+      flexDirection: "row-reverse",
+      marginTop: 20
+    },
+    textBubble: {
+      ...BASE_MESSAGE.textBubble,
+      marginRight: 0,
+      marginLeft: spacing[4],
+      borderBottomRightRadius: 30,
+      borderBottomLeftRadius: 0,
+      backgroundColor: color.palette.electricIndigo
+    },
+    textContent: {
+      ...BASE_MESSAGE.textContent,
+      color: color.palette.moonRaker
+    },
+    date: {
+      ...BASE_MESSAGE.date,
+      justifyContent: "flex-end",
+      marginRight: spacing[2]
+    },
+    error: {
+      ...BASE_MESSAGE.error,
+      justifyContent: "flex-end",
+      marginRight: spacing[2]
+    }
+  }
+};
+
+// src/molecules/message/message.tsx
+var MessagePreview = ({ message, preset }) => {
+  const text = message.text;
+  const username = `Anon-${message.pubkey.slice(0, 5)}`;
+  const date = message.created_at * 1e3;
+  const photo = `https://placekitten.com/200/201`;
+  const delivered = true;
+  const messagePreset = messagePresets[preset];
+  const deliveryTime = moment(date).fromNow();
+  return <View3 key={`${deliveryTime}`}>
+    <View3 style={messagePreset.container}>
+      <View3 style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></View3>
+      {delivered && <View3 style={{ flexDirection: "column-reverse" }}><Image2 source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></View3>}
+    </View3>
+    <View3>{delivered ? <View3 style={messagePreset.date}><Text style={messagePreset.dateText}>
+      {username}
+      {" - "}
+      {deliveryTime}
+    </Text></View3> : null}</View3>
+  </View3>;
+};
+
+// src/molecules/ChannelAvatar.tsx
+import { Image as Image3 } from "react-native";
+var ChannelAvatar = ({ metadata }) => {
+  const picture = metadata.picture && metadata.picture.length > 4 ? metadata.picture : "http://placekitten.com/200/300";
+  return <Image3 source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />;
+};
+
 // src/organisms/ChannelList.tsx
+import { setActiveChannelId } from "@arcadecity/use-arcade";
 import { FlatList, StyleSheet as StyleSheet2 } from "react-native";
 var ChannelList = ({ channels }) => {
   return <FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
 var keyExtractor = (item) => item.id;
-var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => console.log("bro")} />;
+var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => setActiveChannelId(item.id)} />;
 var styles2 = StyleSheet2.create({
   flatList: { flex: 1 },
   flatListContentContainer: { flexGrow: 1 },
@@ -277,9 +406,15 @@ var styles2 = StyleSheet2.create({
 });
 
 // src/organisms/ChannelView.tsx
+import { useActiveChannelId, useChannelMessages } from "@arcadecity/use-arcade";
 var ChannelView = () => {
+  const activeChannelId = useActiveChannelId();
+  const messages = useChannelMessages(activeChannelId);
+  console.log(activeChannelId, messages.length);
+  if (!activeChannelId)
+    return <></>;
   return <div className="flex h-screen flex-grow flex-col items-stretch bg-haiti">
-    <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5"><p>Channel title</p></div>
+    <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5" />
     <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><p /></div>
     <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t px-4" style={{ marginBottom: 20 }}><form className="flex flex-grow items-stretch gap-1">
       <div className="relative flex flex-grow items-center">
@@ -298,9 +433,12 @@ var ChannelView = () => {
 };
 export {
   ACTIVE_OPACITY,
+  ChannelAvatar,
   ChannelList,
+  ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  MessagePreview,
   Text,
   color,
   palette,

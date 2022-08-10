@@ -1,5 +1,7 @@
 import * as react_native from 'react-native';
-import { TextStyle, TextProps as TextProps$1, StyleProp } from 'react-native';
+import { TextStyle, TextProps as TextProps$1, StyleProp, ViewStyle } from 'react-native';
+import React$1 from 'react';
+import { Message, Channel as Channel$1 } from '@arcadecity/use-arcade';
 
 /**
  * All the variations of text styling within the app.
@@ -348,6 +350,48 @@ declare const Text: (props: TextProps) => JSX.Element;
 
 declare function ChannelPreviewScreen(): JSX.Element;
 
+declare const messagePresets: {
+    sent: {
+        container: ViewStyle;
+        avatarContainer: ViewStyle;
+        textBubble: ViewStyle;
+        textContent: TextStyle;
+        date: ViewStyle;
+        dateText: TextStyle;
+        error: ViewStyle;
+        errorText: TextStyle;
+        errorIcon: {
+            marginRight: number;
+            alignSelf: string;
+        };
+    };
+    received: {
+        container: ViewStyle;
+        textBubble: ViewStyle;
+        textContent: TextStyle;
+        date: ViewStyle;
+        error: ViewStyle;
+        avatarContainer: ViewStyle;
+        dateText: TextStyle;
+        errorText: TextStyle;
+        errorIcon: {
+            marginRight: number;
+            alignSelf: string;
+        };
+    };
+};
+/**
+ * A list of preset names.
+ */
+declare type MessagePresetNames = keyof typeof messagePresets;
+
+interface Props {
+    message: Message;
+    preset: MessagePresetNames;
+    setSelectedPlayer?: any;
+}
+declare const MessagePreview: React$1.FC<Props>;
+
 declare enum NostrKind {
     metadata = 0,
     text = 1,
@@ -385,9 +429,22 @@ interface Channel extends NostrEvent {
     picture: string;
     type: string;
 }
+interface ChannelMetadata extends Channel {
+    channelId: string;
+}
+
+declare const ChannelAvatar: ({ metadata }: {
+    metadata: ChannelMetadata;
+}) => JSX.Element;
+
+interface ChannelPreviewProps {
+    channel: Channel;
+    onPress: () => void;
+}
+declare const ChannelPreview: ({ channel, onPress }: ChannelPreviewProps) => JSX.Element;
 
 interface ChannelListProps {
-    channels: Channel[];
+    channels: Channel$1[];
 }
 declare const ChannelList: ({ channels }: ChannelListProps) => JSX.Element;
 
@@ -598,4 +655,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, ChannelList, ChannelPreviewScreen, ChannelView, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, MessagePreview, Text, color, palette, spacing, typography };

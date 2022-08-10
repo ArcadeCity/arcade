@@ -1,10 +1,17 @@
+import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade'
 import React from 'react'
 
 export const ChannelView = () => {
+  const activeChannelId = useActiveChannelId() as string
+  const messages: Message[] = useChannelMessages(activeChannelId)
+  console.log(activeChannelId, messages.length)
+
+  if (!activeChannelId) return <></>
+
   return (
     <div className='flex h-screen flex-grow flex-col items-stretch bg-haiti'>
       <div className='border-dark-lighten flex h-20 items-center justify-between border-b px-5'>
-        <p>Channel title</p>
+        {/* <p>Channel title</p> */}
       </div>
       <div className='flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full'>
         <p></p>

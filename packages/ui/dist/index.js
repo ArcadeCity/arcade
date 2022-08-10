@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,15 +17,22 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.tsx
 var src_exports = {};
 __export(src_exports, {
   ACTIVE_OPACITY: () => ACTIVE_OPACITY,
+  ChannelAvatar: () => ChannelAvatar,
   ChannelList: () => ChannelList,
+  ChannelPreview: () => ChannelPreview,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   ChannelView: () => ChannelView,
+  MessagePreview: () => MessagePreview,
   Text: () => Text,
   color: () => color,
   palette: () => palette,
@@ -297,23 +306,158 @@ function ChannelPreviewScreen() {
   </import_dripsy2.View>;
 }
 
-// src/organisms/ChannelList.tsx
+// src/molecules/message/message.tsx
+var import_react_native5 = require("react-native");
+var import_moment = __toESM(require("moment"));
+
+// src/molecules/message/message.presets.ts
 var import_react_native4 = require("react-native");
+var STATUS_ROW = {
+  marginVertical: spacing[2],
+  marginLeft: spacing[2],
+  flexDirection: "row"
+};
+var BASE_MESSAGE = {
+  container: {
+    flexDirection: "row",
+    marginTop: 20
+  },
+  avatarContainer: {
+    alignSelf: "flex-end"
+  },
+  textBubble: {
+    flex: 1,
+    borderTopLeftRadius: 30,
+    borderBottomLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: color.palette.moonRaker,
+    paddingHorizontal: spacing[2],
+    marginRight: spacing[4],
+    ...import_react_native4.Platform.select({
+      ios: {
+        shadowColor: color.palette.black,
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 4
+      }
+    })
+  },
+  textContent: {
+    marginHorizontal: spacing[4],
+    marginVertical: spacing[4],
+    color: color.palette.minsk,
+    fontFamily: typography.primary
+  },
+  date: {
+    ...STATUS_ROW
+  },
+  dateText: {
+    fontSize: 11,
+    color: color.palette.blueBell,
+    fontFamily: typography.primary
+  },
+  error: {
+    ...STATUS_ROW
+  },
+  errorText: {
+    fontSize: 12,
+    color: color.error,
+    fontFamily: typography.primary
+  },
+  errorIcon: {
+    marginRight: spacing[1],
+    alignSelf: "center"
+  }
+};
+var messagePresets = {
+  sent: BASE_MESSAGE,
+  received: {
+    ...BASE_MESSAGE,
+    container: {
+      flexDirection: "row-reverse",
+      marginTop: 20
+    },
+    textBubble: {
+      ...BASE_MESSAGE.textBubble,
+      marginRight: 0,
+      marginLeft: spacing[4],
+      borderBottomRightRadius: 30,
+      borderBottomLeftRadius: 0,
+      backgroundColor: color.palette.electricIndigo
+    },
+    textContent: {
+      ...BASE_MESSAGE.textContent,
+      color: color.palette.moonRaker
+    },
+    date: {
+      ...BASE_MESSAGE.date,
+      justifyContent: "flex-end",
+      marginRight: spacing[2]
+    },
+    error: {
+      ...BASE_MESSAGE.error,
+      justifyContent: "flex-end",
+      marginRight: spacing[2]
+    }
+  }
+};
+
+// src/molecules/message/message.tsx
+var MessagePreview = ({ message, preset }) => {
+  const text = message.text;
+  const username = `Anon-${message.pubkey.slice(0, 5)}`;
+  const date = message.created_at * 1e3;
+  const photo = `https://placekitten.com/200/201`;
+  const delivered = true;
+  const messagePreset = messagePresets[preset];
+  const deliveryTime = (0, import_moment.default)(date).fromNow();
+  return <import_react_native5.View key={`${deliveryTime}`}>
+    <import_react_native5.View style={messagePreset.container}>
+      <import_react_native5.View style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></import_react_native5.View>
+      {delivered && <import_react_native5.View style={{ flexDirection: "column-reverse" }}><import_react_native5.Image source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></import_react_native5.View>}
+    </import_react_native5.View>
+    <import_react_native5.View>{delivered ? <import_react_native5.View style={messagePreset.date}><Text style={messagePreset.dateText}>
+      {username}
+      {" - "}
+      {deliveryTime}
+    </Text></import_react_native5.View> : null}</import_react_native5.View>
+  </import_react_native5.View>;
+};
+
+// src/molecules/ChannelAvatar.tsx
+var import_react_native6 = require("react-native");
+var ChannelAvatar = ({ metadata }) => {
+  const picture = metadata.picture && metadata.picture.length > 4 ? metadata.picture : "http://placekitten.com/200/300";
+  return <import_react_native6.Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />;
+};
+
+// src/organisms/ChannelList.tsx
+var import_use_arcade = require("@arcadecity/use-arcade");
+var import_react_native7 = require("react-native");
 var ChannelList = ({ channels }) => {
-  return <import_react_native4.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
+  return <import_react_native7.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
 var keyExtractor = (item) => item.id;
-var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => console.log("bro")} />;
-var styles2 = import_react_native4.StyleSheet.create({
+var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => (0, import_use_arcade.setActiveChannelId)(item.id)} />;
+var styles2 = import_react_native7.StyleSheet.create({
   flatList: { flex: 1 },
   flatListContentContainer: { flexGrow: 1 },
   statusIndicator: { left: 0, position: "absolute", right: 0, top: 0 }
 });
 
 // src/organisms/ChannelView.tsx
+var import_use_arcade2 = require("@arcadecity/use-arcade");
 var ChannelView = () => {
+  const activeChannelId = (0, import_use_arcade2.useActiveChannelId)();
+  const messages = (0, import_use_arcade2.useChannelMessages)(activeChannelId);
+  console.log(activeChannelId, messages.length);
+  if (!activeChannelId)
+    return <></>;
   return <div className="flex h-screen flex-grow flex-col items-stretch bg-haiti">
-    <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5"><p>Channel title</p></div>
+    <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5" />
     <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><p /></div>
     <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t px-4" style={{ marginBottom: 20 }}><form className="flex flex-grow items-stretch gap-1">
       <div className="relative flex flex-grow items-center">
@@ -333,9 +477,12 @@ var ChannelView = () => {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACTIVE_OPACITY,
+  ChannelAvatar,
   ChannelList,
+  ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  MessagePreview,
   Text,
   color,
   palette,

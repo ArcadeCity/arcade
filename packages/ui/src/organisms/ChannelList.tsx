@@ -1,5 +1,5 @@
 import React from 'react'
-import { Channel } from '@arcadecity/use-arcade'
+import { Channel, setActiveChannelId } from '@arcadecity/use-arcade'
 import { FlatList, StyleSheet } from 'react-native'
 import { ChannelPreview } from '../molecules/ChannelPreview'
 
@@ -21,7 +21,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
 const keyExtractor = (item: Channel) => item.id
 
 const renderItem = ({ item }: { item: Channel }) => (
-  <ChannelPreview channel={item} onPress={() => console.log('bro')} />
+  <ChannelPreview channel={item} onPress={() => setActiveChannelId(item.id)} />
 )
 
 const styles = StyleSheet.create({
