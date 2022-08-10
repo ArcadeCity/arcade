@@ -348,7 +348,48 @@ declare const Text: (props: TextProps) => JSX.Element;
 
 declare function ChannelPreviewScreen(): JSX.Element;
 
-declare const ChannelList: () => JSX.Element;
+declare enum NostrKind {
+    metadata = 0,
+    text = 1,
+    contacts = 3,
+    dm = 4,
+    delete = 5,
+    boost = 6,
+    like = 7,
+    channelcreate = 40,
+    channelmetadata = 41,
+    channelmessage = 42,
+    riderequest = 60
+}
+/**
+ * "The only object type that exists is the event, which has the following format on the wire:"
+ */
+interface NostrEvent {
+    id: string;
+    pubkey: string;
+    created_at: number;
+    kind: NostrKind;
+    /**
+     * ["e", <32-bytes hex of the id of another event>, <recommended relay URL>],
+     * ["p", <32-bytes hex of the key>, <recommended relay URL>],
+     * ... // other kinds of tags may be included later
+     */
+    tags: string[][];
+    content: string;
+    sig: string;
+}
+
+interface Channel extends NostrEvent {
+    about: string;
+    name: string;
+    picture: string;
+    type: string;
+}
+
+interface ChannelListProps {
+    channels: Channel[];
+}
+declare const ChannelList: ({ channels }: ChannelListProps) => JSX.Element;
 
 declare const ACTIVE_OPACITY = 0.8;
 /**
