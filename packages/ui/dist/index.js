@@ -32,6 +32,7 @@ __export(src_exports, {
   ChannelPreview: () => ChannelPreview,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   ChannelView: () => ChannelView,
+  MessageInput: () => MessageInput,
   MessagePreview: () => MessagePreview,
   Text: () => Text,
   color: () => color,
@@ -219,8 +220,8 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles3 = (0, import_ramda.flatten)([style, styleOverride]);
-  return <import_react_native2.Text key={tx} {...rest} style={styles3}>{content}</import_react_native2.Text>;
+  const styles4 = (0, import_ramda.flatten)([style, styleOverride]);
+  return <import_react_native2.Text key={tx} {...rest} style={styles4}>{content}</import_react_native2.Text>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
@@ -449,29 +450,88 @@ var styles2 = import_react_native7.StyleSheet.create({
 });
 
 // src/organisms/ChannelView.tsx
+var import_use_arcade3 = require("@arcadecity/use-arcade");
+
+// src/organisms/MessageInput.tsx
+var import_react_native8 = require("react-native");
+var import_vector_icons = require("@expo/vector-icons");
+var import_react = require("react");
 var import_use_arcade2 = require("@arcadecity/use-arcade");
-var ChannelView = () => {
+var MessageInput = () => {
+  const [text, setText] = (0, import_react.useState)("");
+  const context = (0, import_react.useContext)(import_use_arcade2.ArcadeContext);
   const activeChannelId = (0, import_use_arcade2.useActiveChannelId)();
-  const messages = (0, import_use_arcade2.useChannelMessages)(activeChannelId);
+  const actions = context.actions;
+  const inputBoxRef = (0, import_react.useRef)(null);
+  const submitInput = () => {
+    var _a;
+    if (text.length < 1) {
+      import_react_native8.Alert.alert("Message too short", "What is that, a message for ants?");
+      return;
+    }
+    if (!activeChannelId) {
+      import_react_native8.Alert.alert("Error getting channel ID");
+      return;
+    }
+    (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
+    setText("");
+    actions.sendChannelMessage(activeChannelId, text);
+  };
+  return <import_react_native8.View style={styles3.container}><import_react_native8.View style={styles3.composerContainer}><import_react_native8.View style={styles3.inputContainer}>
+    <import_react_native8.TextInput autoCorrect={false} multiline onChangeText={(text2) => setText(text2)} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
+    <import_react_native8.TouchableOpacity activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><import_vector_icons.FontAwesome name="send" size={24} color={palette.blueBell} /></import_react_native8.TouchableOpacity>
+  </import_react_native8.View></import_react_native8.View></import_react_native8.View>;
+};
+var styles3 = import_react_native8.StyleSheet.create({
+  composerContainer: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    flex: 1
+  },
+  container: {
+    backgroundColor: palette.purple,
+    borderTopWidth: 1,
+    borderTopColor: palette.portGore,
+    padding: 10,
+    flex: 1,
+    height: 60,
+    width: "100%"
+  },
+  inputBox: {
+    backgroundColor: color.field,
+    color: color.text,
+    flexGrow: 1,
+    fontSize: 14,
+    height: 40,
+    borderRadius: 10,
+    includeFontPadding: false,
+    padding: 10,
+    textAlignVertical: "center"
+  },
+  inputContainer: {
+    alignItems: "center",
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
+    paddingLeft: 16,
+    paddingRight: 16
+  },
+  sendButtonContainer: {
+    marginLeft: 14
+  }
+});
+
+// src/organisms/ChannelView.tsx
+var ChannelView = () => {
+  const activeChannelId = (0, import_use_arcade3.useActiveChannelId)();
+  const messages = (0, import_use_arcade3.useChannelMessages)(activeChannelId);
   console.log(activeChannelId, messages.length);
   if (!activeChannelId)
     return <></>;
   return <div className="flex h-screen flex-grow flex-col items-stretch bg-haiti">
     <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5" />
     <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><p /></div>
-    <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t px-4" style={{ marginBottom: 20 }}><form className="flex flex-grow items-stretch gap-1">
-      <div className="relative flex flex-grow items-center">
-        <input maxLength={1e3} className="h-9 w-full rounded-full pl-3 pr-10 outline-none" style={{
-          backgroundColor: "#2D2252",
-          paddingLeft: 25,
-          paddingRight: 25,
-          paddingTop: 15,
-          paddingBottom: 15
-        }} type="text" placeholder="Message..." />
-        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2"><i className="bx bxs-smile text-primary text-2xl" /></button>
-      </div>
-      <button className="text-primary flex flex-shrink-0 items-center text-2xl"><i className="bx bxs-send" /></button>
-    </form></div>
+    <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t w-full"><MessageInput /></div>
   </div>;
 };
 // Annotate the CommonJS export names for ESM import in node:
@@ -482,6 +542,7 @@ var ChannelView = () => {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  MessageInput,
   MessagePreview,
   Text,
   color,

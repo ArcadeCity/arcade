@@ -1,5 +1,6 @@
 import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade'
 import React from 'react'
+import { MessageInput } from './MessageInput'
 
 export const ChannelView = () => {
   const activeChannelId = useActiveChannelId() as string
@@ -16,10 +17,9 @@ export const ChannelView = () => {
       <div className='flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full'>
         <p></p>
       </div>
-      <div
-        className='border-dark-lighten flex h-24 items-stretch gap-1 border-t px-4'
-        style={{ marginBottom: 20 }}>
-        <form className='flex flex-grow items-stretch gap-1'>
+      <div className='border-dark-lighten flex h-24 items-stretch gap-1 border-t w-full'>
+        <MessageInput />
+        {/* <form className='flex flex-grow items-stretch gap-1'>
           <div className='relative flex flex-grow items-center'>
             <input
               maxLength={1000}
@@ -42,7 +42,7 @@ export const ChannelView = () => {
           <button className='text-primary flex flex-shrink-0 items-center text-2xl'>
             <i className='bx bxs-send'></i>
           </button>
-        </form>
+        </form> */}
       </div>
     </div>
   )

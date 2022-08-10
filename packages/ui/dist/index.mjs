@@ -176,8 +176,8 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles3 = flatten([style, styleOverride]);
-  return <ReactNativeText key={tx} {...rest} style={styles3}>{content}</ReactNativeText>;
+  const styles4 = flatten([style, styleOverride]);
+  return <ReactNativeText key={tx} {...rest} style={styles4}>{content}</ReactNativeText>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
@@ -406,9 +406,80 @@ var styles2 = StyleSheet2.create({
 });
 
 // src/organisms/ChannelView.tsx
-import { useActiveChannelId, useChannelMessages } from "@arcadecity/use-arcade";
-var ChannelView = () => {
+import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade";
+
+// src/organisms/MessageInput.tsx
+import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View4 } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { useContext, useRef, useState } from "react";
+import { ArcadeContext, useActiveChannelId } from "@arcadecity/use-arcade";
+var MessageInput = () => {
+  const [text, setText] = useState("");
+  const context = useContext(ArcadeContext);
   const activeChannelId = useActiveChannelId();
+  const actions = context.actions;
+  const inputBoxRef = useRef(null);
+  const submitInput = () => {
+    var _a;
+    if (text.length < 1) {
+      Alert.alert("Message too short", "What is that, a message for ants?");
+      return;
+    }
+    if (!activeChannelId) {
+      Alert.alert("Error getting channel ID");
+      return;
+    }
+    (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
+    setText("");
+    actions.sendChannelMessage(activeChannelId, text);
+  };
+  return <View4 style={styles3.container}><View4 style={styles3.composerContainer}><View4 style={styles3.inputContainer}>
+    <TextInput autoCorrect={false} multiline onChangeText={(text2) => setText(text2)} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
+    <TouchableOpacity2 activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><FontAwesome name="send" size={24} color={palette.blueBell} /></TouchableOpacity2>
+  </View4></View4></View4>;
+};
+var styles3 = StyleSheet3.create({
+  composerContainer: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    flex: 1
+  },
+  container: {
+    backgroundColor: palette.purple,
+    borderTopWidth: 1,
+    borderTopColor: palette.portGore,
+    padding: 10,
+    flex: 1,
+    height: 60,
+    width: "100%"
+  },
+  inputBox: {
+    backgroundColor: color.field,
+    color: color.text,
+    flexGrow: 1,
+    fontSize: 14,
+    height: 40,
+    borderRadius: 10,
+    includeFontPadding: false,
+    padding: 10,
+    textAlignVertical: "center"
+  },
+  inputContainer: {
+    alignItems: "center",
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
+    paddingLeft: 16,
+    paddingRight: 16
+  },
+  sendButtonContainer: {
+    marginLeft: 14
+  }
+});
+
+// src/organisms/ChannelView.tsx
+var ChannelView = () => {
+  const activeChannelId = useActiveChannelId2();
   const messages = useChannelMessages(activeChannelId);
   console.log(activeChannelId, messages.length);
   if (!activeChannelId)
@@ -416,19 +487,7 @@ var ChannelView = () => {
   return <div className="flex h-screen flex-grow flex-col items-stretch bg-haiti">
     <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5" />
     <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><p /></div>
-    <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t px-4" style={{ marginBottom: 20 }}><form className="flex flex-grow items-stretch gap-1">
-      <div className="relative flex flex-grow items-center">
-        <input maxLength={1e3} className="h-9 w-full rounded-full pl-3 pr-10 outline-none" style={{
-          backgroundColor: "#2D2252",
-          paddingLeft: 25,
-          paddingRight: 25,
-          paddingTop: 15,
-          paddingBottom: 15
-        }} type="text" placeholder="Message..." />
-        <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2"><i className="bx bxs-smile text-primary text-2xl" /></button>
-      </div>
-      <button className="text-primary flex flex-shrink-0 items-center text-2xl"><i className="bx bxs-send" /></button>
-    </form></div>
+    <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t w-full"><MessageInput /></div>
   </div>;
 };
 export {
@@ -438,6 +497,7 @@ export {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  MessageInput,
   MessagePreview,
   Text,
   color,
