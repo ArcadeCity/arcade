@@ -265,8 +265,12 @@ function ChannelPreviewScreen() {
 
 // src/organisms/ChannelList.tsx
 import { Text as Text4 } from "dripsy";
-var ChannelList = () => {
-  return <Text4 sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</Text4>;
+var ChannelList = ({ channels }) => {
+  const numChannels = (channels == null ? void 0 : channels.length) ?? 0;
+  return <Text4 sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>
+    {numChannels}
+    {" channels"}
+  </Text4>;
 };
 export {
   ACTIVE_OPACITY,

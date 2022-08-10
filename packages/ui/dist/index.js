@@ -298,8 +298,12 @@ function ChannelPreviewScreen() {
 
 // src/organisms/ChannelList.tsx
 var import_dripsy3 = require("dripsy");
-var ChannelList = () => {
-  return <import_dripsy3.Text sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>ChannelList, bitches</import_dripsy3.Text>;
+var ChannelList = ({ channels }) => {
+  const numChannels = (channels == null ? void 0 : channels.length) ?? 0;
+  return <import_dripsy3.Text sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>
+    {numChannels}
+    {" channels"}
+  </import_dripsy3.Text>;
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
