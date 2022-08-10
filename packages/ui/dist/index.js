@@ -209,8 +209,8 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles2 = (0, import_ramda.flatten)([style, styleOverride]);
-  return <import_react_native2.Text key={tx} {...rest} style={styles2}>{content}</import_react_native2.Text>;
+  const styles3 = (0, import_ramda.flatten)([style, styleOverride]);
+  return <import_react_native2.Text key={tx} {...rest} style={styles3}>{content}</import_react_native2.Text>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
@@ -297,14 +297,17 @@ function ChannelPreviewScreen() {
 }
 
 // src/organisms/ChannelList.tsx
-var import_dripsy3 = require("dripsy");
+var import_react_native4 = require("react-native");
 var ChannelList = ({ channels }) => {
-  const numChannels = (channels == null ? void 0 : channels.length) ?? 0;
-  return <import_dripsy3.Text sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>
-    {numChannels}
-    {" channels"}
-  </import_dripsy3.Text>;
+  return <import_react_native4.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
+var keyExtractor = (item) => item.id;
+var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => console.log("bro")} />;
+var styles2 = import_react_native4.StyleSheet.create({
+  flatList: { flex: 1 },
+  flatListContentContainer: { flexGrow: 1 },
+  statusIndicator: { left: 0, position: "absolute", right: 0, top: 0 }
+});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACTIVE_OPACITY,

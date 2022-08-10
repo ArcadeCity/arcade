@@ -176,8 +176,8 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles2 = flatten([style, styleOverride]);
-  return <ReactNativeText key={tx} {...rest} style={styles2}>{content}</ReactNativeText>;
+  const styles3 = flatten([style, styleOverride]);
+  return <ReactNativeText key={tx} {...rest} style={styles3}>{content}</ReactNativeText>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
@@ -264,14 +264,17 @@ function ChannelPreviewScreen() {
 }
 
 // src/organisms/ChannelList.tsx
-import { Text as Text4 } from "dripsy";
+import { FlatList, StyleSheet as StyleSheet2 } from "react-native";
 var ChannelList = ({ channels }) => {
-  const numChannels = (channels == null ? void 0 : channels.length) ?? 0;
-  return <Text4 sx={{ color: palette.moonRaker, textAlign: "center", mb: 16, fontWeight: "bold" }}>
-    {numChannels}
-    {" channels"}
-  </Text4>;
+  return <FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
+var keyExtractor = (item) => item.id;
+var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => console.log("bro")} />;
+var styles2 = StyleSheet2.create({
+  flatList: { flex: 1 },
+  flatListContentContainer: { flexGrow: 1 },
+  statusIndicator: { left: 0, position: "absolute", right: 0, top: 0 }
+});
 export {
   ACTIVE_OPACITY,
   ChannelList,
