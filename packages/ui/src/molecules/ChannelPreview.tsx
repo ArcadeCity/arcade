@@ -1,5 +1,5 @@
 import { P, Text } from 'dripsy'
-import { color, palette, spacing } from '@arcadecity/ui'
+import { color, palette, spacing } from '../theme'
 import { Channel } from '../../../use-arcade/src'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 

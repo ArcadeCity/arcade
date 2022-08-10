@@ -8,6 +8,7 @@
     "paths": {
       "app/*": ["./packages/app/*"],
       "ui": ["./packages/ui"],
+      "ui/*": ["./packages/ui/*"],
       "use-arcade": ["./packages/use-arcade"]
     }
   }

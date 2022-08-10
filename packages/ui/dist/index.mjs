@@ -176,14 +176,95 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles = flatten([style, styleOverride]);
-  return <ReactNativeText key={tx} {...rest} style={styles}>{content}</ReactNativeText>;
+  const styles2 = flatten([style, styleOverride]);
+  return <ReactNativeText key={tx} {...rest} style={styles2}>{content}</ReactNativeText>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
 }
+
+// src/library/ChannelPreviewScreen.tsx
+import { H1, View as View2 } from "dripsy";
+
+// src/molecules/ChannelPreview.tsx
+import { Text as Text2 } from "dripsy";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+var ChannelPreview = ({ channel, onPress }) => {
+  var _a;
+  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/300";
+  return <TouchableOpacity activeOpacity={0.8} key={(channel == null ? void 0 : channel.id) ?? "asdf"} onPress={onPress} style={styles.container}>
+    <Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
+    <View style={styles.contentContainer}>
+      <Text2 style={styles.channelName}>{(channel == null ? void 0 : channel.name) ?? "no name"}</Text2>
+      <Text2 style={styles.channelPreview}>{(channel == null ? void 0 : channel.about) ?? "no about"}</Text2>
+    </View>
+  </TouchableOpacity>;
+};
+var styles = StyleSheet.create({
+  channelName: {
+    color: palette.moonRaker,
+    textAlign: "left",
+    paddingHorizontal: spacing[2],
+    paddingTop: 1
+  },
+  channelPreview: {
+    color: palette.blueBell,
+    textAlign: "left",
+    fontSize: 12,
+    paddingHorizontal: spacing[2],
+    paddingTop: 4
+  },
+  container: {
+    backgroundColor: palette.purple,
+    borderBottomWidth: 1,
+    borderBottomColor: color.line,
+    flexDirection: "row",
+    padding: spacing[3]
+  },
+  contentContainer: { flex: 1 },
+  row: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingLeft: 8
+  },
+  statusContainer: {
+    display: "flex",
+    flexDirection: "row"
+  },
+  title: { fontSize: 14, fontWeight: "700" }
+});
+
+// src/library/ChannelPreviewScreen.tsx
+function ChannelPreviewScreen() {
+  const dummyChannel = {
+    id: "1",
+    name: "Dummy Channel",
+    about: "This is a dummy channel",
+    picture: "http://placekitten.com/200/300",
+    type: "public",
+    pubkey: "abcdef",
+    created_at: Date.now(),
+    kind: 40,
+    tags: [],
+    content: "",
+    sig: "asdf"
+  };
+  return <View2 sx={{
+    alignItems: "center",
+    backgroundColor: color.background,
+    paddingTop: 40
+  }}>
+    <H1>ChannelPreview</H1>
+    <View2 style={{ height: 20 }} />
+    <ChannelPreview channel={dummyChannel} onPress={() => console.log("Pressed ChannelPreview")} />
+    <View2 style={{ height: 30 }} />
+  </View2>;
+}
 export {
   ACTIVE_OPACITY,
+  ChannelPreviewScreen,
   Text,
   color,
   palette,

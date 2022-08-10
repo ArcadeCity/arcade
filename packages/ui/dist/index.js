@@ -21,6 +21,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var src_exports = {};
 __export(src_exports, {
   ACTIVE_OPACITY: () => ACTIVE_OPACITY,
+  ChannelPreviewScreen: () => ChannelPreviewScreen,
   Text: () => Text,
   color: () => color,
   palette: () => palette,
@@ -207,15 +208,96 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles = (0, import_ramda.flatten)([style, styleOverride]);
-  return <import_react_native2.Text key={tx} {...rest} style={styles}>{content}</import_react_native2.Text>;
+  const styles2 = (0, import_ramda.flatten)([style, styleOverride]);
+  return <import_react_native2.Text key={tx} {...rest} style={styles2}>{content}</import_react_native2.Text>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
 }
+
+// src/library/ChannelPreviewScreen.tsx
+var import_dripsy2 = require("dripsy");
+
+// src/molecules/ChannelPreview.tsx
+var import_dripsy = require("dripsy");
+var import_react_native3 = require("react-native");
+var ChannelPreview = ({ channel, onPress }) => {
+  var _a;
+  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/300";
+  return <import_react_native3.TouchableOpacity activeOpacity={0.8} key={(channel == null ? void 0 : channel.id) ?? "asdf"} onPress={onPress} style={styles.container}>
+    <import_react_native3.Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
+    <import_react_native3.View style={styles.contentContainer}>
+      <import_dripsy.Text style={styles.channelName}>{(channel == null ? void 0 : channel.name) ?? "no name"}</import_dripsy.Text>
+      <import_dripsy.Text style={styles.channelPreview}>{(channel == null ? void 0 : channel.about) ?? "no about"}</import_dripsy.Text>
+    </import_react_native3.View>
+  </import_react_native3.TouchableOpacity>;
+};
+var styles = import_react_native3.StyleSheet.create({
+  channelName: {
+    color: palette.moonRaker,
+    textAlign: "left",
+    paddingHorizontal: spacing[2],
+    paddingTop: 1
+  },
+  channelPreview: {
+    color: palette.blueBell,
+    textAlign: "left",
+    fontSize: 12,
+    paddingHorizontal: spacing[2],
+    paddingTop: 4
+  },
+  container: {
+    backgroundColor: palette.purple,
+    borderBottomWidth: 1,
+    borderBottomColor: color.line,
+    flexDirection: "row",
+    padding: spacing[3]
+  },
+  contentContainer: { flex: 1 },
+  row: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingLeft: 8
+  },
+  statusContainer: {
+    display: "flex",
+    flexDirection: "row"
+  },
+  title: { fontSize: 14, fontWeight: "700" }
+});
+
+// src/library/ChannelPreviewScreen.tsx
+function ChannelPreviewScreen() {
+  const dummyChannel = {
+    id: "1",
+    name: "Dummy Channel",
+    about: "This is a dummy channel",
+    picture: "http://placekitten.com/200/300",
+    type: "public",
+    pubkey: "abcdef",
+    created_at: Date.now(),
+    kind: 40,
+    tags: [],
+    content: "",
+    sig: "asdf"
+  };
+  return <import_dripsy2.View sx={{
+    alignItems: "center",
+    backgroundColor: color.background,
+    paddingTop: 40
+  }}>
+    <import_dripsy2.H1>ChannelPreview</import_dripsy2.H1>
+    <import_dripsy2.View style={{ height: 20 }} />
+    <ChannelPreview channel={dummyChannel} onPress={() => console.log("Pressed ChannelPreview")} />
+    <import_dripsy2.View style={{ height: 30 }} />
+  </import_dripsy2.View>;
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACTIVE_OPACITY,
+  ChannelPreviewScreen,
   Text,
   color,
   palette,
