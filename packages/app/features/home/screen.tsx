@@ -3,7 +3,7 @@ import { color, palette } from '@arcadecity/ui'
 import {
   Channel,
   useChannelsCreated,
-  useArcadeRelay,
+  useNostr,
   ArcadeContext,
   UseArcadeRelayActions,
 } from '@arcadecity/use-arcade/src/index'
@@ -12,7 +12,7 @@ import { TouchableOpacity } from 'react-native'
 import { ChannelPreview } from '../../../ui/src/molecules/ChannelPreview'
 
 export function HomeScreen() {
-  useArcadeRelay()
+  useNostr()
   const channels: Channel[] = useChannelsCreated()
   const context = useContext(ArcadeContext) as any
   const actions = context.actions as UseArcadeRelayActions

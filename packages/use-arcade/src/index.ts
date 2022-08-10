@@ -1,7 +1,7 @@
 export { ArcadeContext } from './context'
 
-export { useArcadeRelay } from './hooks/useArcadeRelay'
-export type { UseArcadeRelayActions } from './hooks/useArcadeRelay'
+export { useNostr } from './hooks/useNostr'
+export type { UseArcadeRelayActions } from './hooks/useNostr'
 export { useBoolean } from './hooks/useBoolean'
 
 export * from './hooks'

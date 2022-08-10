@@ -32,7 +32,7 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 
 const subId = Math.random().toString().slice(2)
 
-export const useArcadeRelay: UseArcadeRelayFunction = () => {
+export const useNostr: UseArcadeRelayFunction = () => {
   const [account] = useAccount() as [Account]
   const context = useContext(ArcadeContext) as any
   const [isPaused, setPause] = useState<boolean>(false)

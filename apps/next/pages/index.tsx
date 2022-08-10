@@ -1,9 +1,9 @@
 import React from 'react'
 import { ChannelList } from '@arcadecity/ui'
-import { Channel, useArcadeRelay, useChannelsCreated } from '@arcadecity/use-arcade'
+import { Channel, useNostr, useChannelsCreated } from '@arcadecity/use-arcade'
 
 export default function () {
-  useArcadeRelay()
+  useNostr()
   const channels: Channel[] = useChannelsCreated()
   return (
     <div className={styles.container}>
