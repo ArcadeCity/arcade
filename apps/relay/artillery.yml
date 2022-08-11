@@ -1,8 +1,8 @@
 config:
   # target: "ws://127.0.0.1:3000"
-  # target: "wss://relay.arcade.city"
+  # target: "wss://relay.damus.io"
   # target: "wss://relay.nostr.info"
-  target: "wss://relay.damus.io"
+  target: "wss://relay.arcade.city"
   processor: "./artillery-test.js"
   phases:
     - duration: 5
