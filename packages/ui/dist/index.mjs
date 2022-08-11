@@ -59,7 +59,7 @@ var typography = {
   primary: Platform.select({
     ios: "Inter_400Regular",
     android: "Inter_400Regular",
-    web: "Inter_400Regular"
+    web: "Inter"
   }),
   bold: Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter_700Bold" }),
   secondary: Platform.select({
@@ -176,8 +176,8 @@ var Text = (props) => {
   const newText = capitalized ? capitalize(whichText) : whichText;
   const content = newText || children;
   const style = presets[preset] || presets.default;
-  const styles4 = flatten([style, styleOverride]);
-  return <ReactNativeText key={tx} {...rest} style={styles4}>{content}</ReactNativeText>;
+  const styles5 = flatten([style, styleOverride]);
+  return <ReactNativeText key={tx} {...rest} style={styles5}>{content}</ReactNativeText>;
 };
 function capitalize(theString) {
   return theString.charAt(0).toUpperCase() + theString.slice(1);
@@ -406,7 +406,7 @@ var styles2 = StyleSheet2.create({
 });
 
 // src/organisms/ChannelView.tsx
-import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade";
+import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useChannelMessages2 } from "@arcadecity/use-arcade";
 
 // src/organisms/MessageInput.tsx
 import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View4 } from "react-native";
@@ -477,16 +477,43 @@ var styles3 = StyleSheet3.create({
   }
 });
 
-// src/organisms/ChannelView.tsx
-var ChannelView = () => {
+// src/organisms/MessageList.tsx
+import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade";
+import { FlatList as FlatList2, StyleSheet as StyleSheet4, View as View5 } from "react-native";
+var MessageList = () => {
   const activeChannelId = useActiveChannelId2();
   const messages = useChannelMessages(activeChannelId);
+  console.log("MessageList has messages:", messages.length);
+  if (!activeChannelId)
+    return <></>;
+  return <View5 style={styles4.container}><FlatList2 data={messages} keyExtractor={keyExtractor2} renderItem={renderItem2} style={[styles4.flatList, { backgroundColor: "#120B29" }]} /></View5>;
+};
+var keyExtractor2 = (item) => item.id;
+var pubkey = "d67fe59472f658c1b2dec9ffd60b86af260a2f8460b441f9a891761f87b67a5d";
+var renderItem2 = ({ item }) => <MessagePreview message={item} preset={pubkey === item.pubkey ? "sent" : "received"} />;
+var styles4 = StyleSheet4.create({
+  container: {
+    paddingHorizontal: spacing[4],
+    backgroundColor: color.background,
+    flex: 1,
+    width: "100%"
+  },
+  contentContainer: {
+    flexGrow: 1
+  },
+  flatList: { flex: 1 }
+});
+
+// src/organisms/ChannelView.tsx
+var ChannelView = () => {
+  const activeChannelId = useActiveChannelId3();
+  const messages = useChannelMessages2(activeChannelId);
   console.log(activeChannelId, messages.length);
   if (!activeChannelId)
     return <></>;
   return <div className="flex h-screen flex-grow flex-col items-stretch bg-haiti">
     <div className="border-dark-lighten flex h-20 items-center justify-between border-b px-5" />
-    <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><p /></div>
+    <div className="flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full"><MessageList /></div>
     <div className="border-dark-lighten flex h-24 items-stretch gap-1 border-t w-full"><MessageInput /></div>
   </div>;
 };
@@ -498,6 +525,7 @@ export {
   ChannelPreviewScreen,
   ChannelView,
   MessageInput,
+  MessageList,
   MessagePreview,
   Text,
   color,

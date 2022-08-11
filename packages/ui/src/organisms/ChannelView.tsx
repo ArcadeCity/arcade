@@ -1,6 +1,7 @@
 import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade'
 import React from 'react'
 import { MessageInput } from './MessageInput'
+import { MessageList } from './MessageList'
 
 export const ChannelView = () => {
   const activeChannelId = useActiveChannelId() as string
@@ -15,7 +16,7 @@ export const ChannelView = () => {
         {/* <p>Channel title</p> */}
       </div>
       <div className='flex flex-grow flex-col items-stretch gap-3 pt-10 pb-1 bg-purple w-full'>
-        <p></p>
+        <MessageList />
       </div>
       <div className='border-dark-lighten flex h-24 items-stretch gap-1 border-t w-full'>
         <MessageInput />

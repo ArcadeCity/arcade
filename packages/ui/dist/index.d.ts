@@ -452,6 +452,8 @@ declare const ChannelView: () => JSX.Element;
 
 declare const MessageInput: () => JSX.Element;
 
+declare const MessageList: () => JSX.Element;
+
 declare const ACTIVE_OPACITY = 0.8;
 /**
  * Roles for colors.  Prefer using these over the palette.  It makes it easier
@@ -657,4 +659,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, MessageInput, MessagePreview, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };
