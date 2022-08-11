@@ -1,10 +1,11 @@
 config:
-  target: "ws://127.0.0.1:3000"
+  # target: "ws://127.0.0.1:3000"
   # target: "wss://relay.nostr.info"
-  # target: "wss://nostr-pub.semisol.dev"
+  processor: "./artillery-test.js"
+  target: "wss://relay.futohq.com"
   phases:
-    - duration: 20
-      arrivalRate: 10
+    - duration: 1
+      arrivalRate: 1
   ws:
     subprotocols:
       - json
@@ -14,6 +15,7 @@ config:
       - "subid"
 scenarios:
   - engine: ws
-    name: Dummy request with dynamic subid from file
+    name: Dummy request with timestamp as subid
     flow:
-      - send: '["REQ","{{ subid }}",{"kinds":[0,1,4,40,41,42]}]'
+      - function: "createSubscriptionRequest"
+      - send: "{{ data }}"
