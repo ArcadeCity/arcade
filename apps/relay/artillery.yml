@@ -1,14 +1,19 @@
 config:
-  # target: "ws://127.0.0.1:3000"
-  target: "wss://relay.nostr.info"
+  target: "ws://127.0.0.1:3000"
+  # target: "wss://relay.nostr.info"
+  # target: "wss://nostr-pub.semisol.dev"
   phases:
     - duration: 20
       arrivalRate: 10
   ws:
     subprotocols:
       - json
+  payload:
+    path: "test_subids.csv"
+    fields:
+      - "subid"
 scenarios:
   - engine: ws
-    name: Request stuff but with subscription ID
+    name: Dummy request with dynamic subid from file
     flow:
-      - send: '["REQ","011593081935073135",{"kinds":[0,1,4,40,41,42]}]'
+      - send: '["REQ","{{ subid }}",{"kinds":[0,1,4,40,41,42]}]'
