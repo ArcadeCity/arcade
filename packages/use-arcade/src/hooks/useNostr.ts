@@ -42,6 +42,7 @@ export const useNostr: UseArcadeRelayFunction = () => {
 
   const connect = useCallback(() => {
     console.log('Connecting...')
+    // ws.current = new WebSocket('ws://localhost:3000')
     ws.current = new WebSocket('wss://relay.damus.io')
     // ws.current = new WebSocket('wss://relay.arcade.city')
     ws.current.onopen = () => {
