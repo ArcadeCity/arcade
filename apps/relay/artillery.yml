@@ -1,15 +1,12 @@
 config:
   # target: "ws://127.0.0.1:3000"
-  target: "wss://relay.arcade.city"
+  # target: "wss://relay.arcade.city"
   # target: "wss://relay.nostr.info"
-  # target: "wss://relay.damus.io"
+  target: "wss://relay.damus.io"
   processor: "./artillery-test.js"
   phases:
-    - duration: 20
-      arrivalRate: 10
-  ws:
-    subprotocols:
-      - json
+    - duration: 5
+      arrivalRate: 5
 scenarios:
   - engine: ws
     name: Dummy request with timestamp as subid
