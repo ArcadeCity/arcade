@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     padding: 10,
     textAlignVertical: 'center',
     outlineWidth: 0,
+    opacity: 0.5,
   },
   inputContainer: {
     alignItems: 'center',

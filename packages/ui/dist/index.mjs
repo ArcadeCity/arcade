@@ -460,7 +460,8 @@ var styles3 = StyleSheet3.create({
     includeFontPadding: false,
     padding: 10,
     textAlignVertical: "center",
-    outlineWidth: 0
+    outlineWidth: 0,
+    opacity: 0.5
   },
   inputContainer: {
     alignItems: "center",
