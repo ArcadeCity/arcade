@@ -465,7 +465,6 @@ var MessageInput = () => {
   const actions = context.actions;
   const inputBoxRef = (0, import_react.useRef)(null);
   const submitInput = () => {
-    var _a;
     if (text.length < 1) {
       import_react_native8.Alert.alert("Message too short", "What is that, a message for ants?");
       return;
@@ -474,7 +473,6 @@ var MessageInput = () => {
       import_react_native8.Alert.alert("Error getting channel ID");
       return;
     }
-    (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
     actions.sendChannelMessage(activeChannelId, text);
   };
   return <import_react_native8.View style={styles3.container}><import_react_native8.View style={styles3.composerContainer}><import_react_native8.View style={styles3.inputContainer}>

@@ -19,7 +19,7 @@ export const MessageInput = () => {
       Alert.alert('Error getting channel ID')
       return
     }
-    inputBoxRef.current?.clear()
+    // inputBoxRef.current?.clear()
     // setText('')
     actions.sendChannelMessage(activeChannelId, text)
   }

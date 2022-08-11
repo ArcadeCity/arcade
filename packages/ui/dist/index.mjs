@@ -420,7 +420,6 @@ var MessageInput = () => {
   const actions = context.actions;
   const inputBoxRef = useRef(null);
   const submitInput = () => {
-    var _a;
     if (text.length < 1) {
       Alert.alert("Message too short", "What is that, a message for ants?");
       return;
@@ -429,7 +428,6 @@ var MessageInput = () => {
       Alert.alert("Error getting channel ID");
       return;
     }
-    (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
     actions.sendChannelMessage(activeChannelId, text);
   };
   return <View4 style={styles3.container}><View4 style={styles3.composerContainer}><View4 style={styles3.inputContainer}>
