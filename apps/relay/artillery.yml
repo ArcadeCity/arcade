@@ -9,10 +9,6 @@ config:
   ws:
     subprotocols:
       - json
-  payload:
-    path: "test_subids.csv"
-    fields:
-      - "subid"
 scenarios:
   - engine: ws
     name: Dummy request with timestamp as subid
