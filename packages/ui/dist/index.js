@@ -504,7 +504,8 @@ var styles3 = import_react_native8.StyleSheet.create({
     borderRadius: 10,
     includeFontPadding: false,
     padding: 10,
-    textAlignVertical: "center"
+    textAlignVertical: "center",
+    outlineWidth: 0
   },
   inputContainer: {
     alignItems: "center",

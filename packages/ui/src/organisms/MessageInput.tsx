@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     padding: 10,
     textAlignVertical: 'center',
+    outlineWidth: 0,
   },
   inputContainer: {
     alignItems: 'center',

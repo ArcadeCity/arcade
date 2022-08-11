@@ -459,7 +459,8 @@ var styles3 = StyleSheet3.create({
     borderRadius: 10,
     includeFontPadding: false,
     padding: 10,
-    textAlignVertical: "center"
+    textAlignVertical: "center",
+    outlineWidth: 0
   },
   inputContainer: {
     alignItems: "center",
