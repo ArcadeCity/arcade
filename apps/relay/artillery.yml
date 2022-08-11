@@ -1,11 +1,12 @@
 config:
   # target: "ws://127.0.0.1:3000"
+  target: "wss://relay.arcade.city"
   # target: "wss://relay.nostr.info"
+  # target: "wss://relay.futohq.com"
   processor: "./artillery-test.js"
-  target: "wss://relay.futohq.com"
   phases:
-    - duration: 1
-      arrivalRate: 1
+    - duration: 20
+      arrivalRate: 10
   ws:
     subprotocols:
       - json
