@@ -1,5 +1,8 @@
 import * as edgedb from 'edgedb'
 import edgeql from '../dbschema/edgeql-js'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: '.env' })
 
 export const edgedbClient = edgedb.createClient({
   host: process.env.EDGEDB_HOST,
