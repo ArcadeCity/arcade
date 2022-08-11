@@ -1,3 +1,5 @@
 export * from './atoms'
 export * from './library'
+export * from './molecules'
+export * from './organisms'
 export * from './theme'

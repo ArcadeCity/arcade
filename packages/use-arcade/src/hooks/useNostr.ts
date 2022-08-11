@@ -20,6 +20,7 @@ export type UseArcadeRelayState = {
 }
 
 export type UseArcadeRelayActions = {
+  checkChannelMessages: (channelId: string) => void
   createChannel: (name: string, about: string, picture: string) => void
   createDemoChannel: () => void
   initialSubscribe: () => void
@@ -32,9 +33,9 @@ type UseArcadeRelayFunction = () => [UseArcadeRelayState, UseArcadeRelayActions]
 
 const subId = Math.random().toString().slice(2)
 
-export const useArcadeRelay: UseArcadeRelayFunction = () => {
+export const useNostr: UseArcadeRelayFunction = () => {
   const [account] = useAccount() as [Account]
-  const context = useContext(ArcadeContext)
+  const context = useContext(ArcadeContext) as any
   const [isPaused, setPause] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
   const ws = useRef<WebSocket | null>(null)
@@ -106,9 +107,9 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
             // NostrKind.metadata,
             NostrKind.channelcreate,
             NostrKind.channelmetadata,
-            // NostrKind.channelmessage,
+            NostrKind.channelmessage,
           ],
-          limit: 75,
+          // limit: 75,
         },
       ]),
     )
@@ -117,7 +118,7 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
   const waitThenGrabUserMetadata = useCallback(async () => {
     await delay(1000)
     console.log(`Requesting metadata for ${account.keys.publicKey}`)
-    ws.current.send(
+    ws?.current?.send(
       JSON.stringify([
         'REQ',
         subId + 'abcd',
@@ -195,8 +196,29 @@ export const useArcadeRelay: UseArcadeRelayFunction = () => {
     console.log('Sent:', formattedEvent)
   }
 
+  const checkChannelMessages = async (channelId: string) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      console.log('Not ready.')
+      setReady(false)
+      return
+    }
+    ws?.current?.send(
+      JSON.stringify([
+        'REQ',
+        subId + 'abcde',
+        {
+          kinds: [NostrKind.channelmessage],
+          // authors: ['1fc9b7a85047fcb4f4875b4489a61b5ea15010633afebe01a2015a410fe65c9a'],
+          // authors: [account.keys.publicKey],
+          '#e': [channelId],
+        },
+      ]),
+    )
+  }
+
   const state: UseArcadeRelayState = { isPaused, ready }
   const actions: UseArcadeRelayActions = {
+    checkChannelMessages,
     createChannel,
     createDemoChannel,
     initialSubscribe,

@@ -8,10 +8,11 @@
   "private": true,
   "scripts": {
     "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react",
+    "dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react,react-native,dripsy,@arcadecity/use-arcade,@expo/vector-icons",
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "moment": "^2.29.4",
     "ramda": "0.28.0"
   },
   "devDependencies": {

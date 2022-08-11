@@ -10,7 +10,7 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
   channelIdProvided: string | undefined = undefined,
 ) => {
   const activeChannelId = useActiveChannelId()
-  const channelId = channelIdProvided ?? activeChannelId
+  const channelId = channelIdProvided ?? (activeChannelId as string)
   const snapshot = useSnapshot(store)
   const eventArray = Array.from(snapshot.events.values()) as NostrEvent[]
   const channel = useChannel(channelId)
@@ -19,7 +19,7 @@ export const useChannelMetadata: (channelIdProvided?: string | undefined) => Cha
     .filter((event: NostrEvent) => isArrayInArray(['#e', channelId], event.tags))
     .map((event: NostrEvent) => {
       const parsedEvent = JSON.parse(event.content)
-      const cleanedEvent = Object.assign({}, event)
+      const cleanedEvent = Object.assign({}, event) as any
       delete cleanedEvent.content
       return {
         ...cleanedEvent,

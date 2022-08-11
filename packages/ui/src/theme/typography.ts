@@ -20,7 +20,7 @@ export const typography = {
   primary: Platform.select({
     ios: 'Inter_400Regular',
     android: 'Inter_400Regular',
-    web: 'Inter_400Regular',
+    web: 'Inter',
   }),
 
   bold: Platform.select({ ios: 'Inter_700Bold', android: 'Inter_700Bold', web: 'Inter_700Bold' }),

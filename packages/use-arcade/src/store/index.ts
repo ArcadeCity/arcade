@@ -26,7 +26,7 @@ export const addEvent = (event: NostrEvent) => {
   try {
     store.events.set(event.id, event)
     console.log(`Stored event kind ${event.kind} - id ${event.id}`)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e.message)
   }
 }

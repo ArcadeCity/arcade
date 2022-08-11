@@ -1,5 +1,7 @@
 import * as react_native from 'react-native';
-import { TextStyle, TextProps as TextProps$1, StyleProp } from 'react-native';
+import { TextStyle, TextProps as TextProps$1, StyleProp, ViewStyle } from 'react-native';
+import React$1 from 'react';
+import { Message, Channel as Channel$1 } from '@arcadecity/use-arcade';
 
 /**
  * All the variations of text styling within the app.
@@ -346,6 +348,112 @@ interface TextProps extends TextProps$1 {
  */
 declare const Text: (props: TextProps) => JSX.Element;
 
+declare function ChannelPreviewScreen(): JSX.Element;
+
+declare const messagePresets: {
+    sent: {
+        container: ViewStyle;
+        avatarContainer: ViewStyle;
+        textBubble: ViewStyle;
+        textContent: TextStyle;
+        date: ViewStyle;
+        dateText: TextStyle;
+        error: ViewStyle;
+        errorText: TextStyle;
+        errorIcon: {
+            marginRight: number;
+            alignSelf: string;
+        };
+    };
+    received: {
+        container: ViewStyle;
+        textBubble: ViewStyle;
+        textContent: TextStyle;
+        date: ViewStyle;
+        error: ViewStyle;
+        avatarContainer: ViewStyle;
+        dateText: TextStyle;
+        errorText: TextStyle;
+        errorIcon: {
+            marginRight: number;
+            alignSelf: string;
+        };
+    };
+};
+/**
+ * A list of preset names.
+ */
+declare type MessagePresetNames = keyof typeof messagePresets;
+
+interface Props {
+    message: Message;
+    preset: MessagePresetNames;
+    setSelectedPlayer?: any;
+}
+declare const MessagePreview: React$1.FC<Props>;
+
+declare enum NostrKind {
+    metadata = 0,
+    text = 1,
+    contacts = 3,
+    dm = 4,
+    delete = 5,
+    boost = 6,
+    like = 7,
+    channelcreate = 40,
+    channelmetadata = 41,
+    channelmessage = 42,
+    riderequest = 60
+}
+/**
+ * "The only object type that exists is the event, which has the following format on the wire:"
+ */
+interface NostrEvent {
+    id: string;
+    pubkey: string;
+    created_at: number;
+    kind: NostrKind;
+    /**
+     * ["e", <32-bytes hex of the id of another event>, <recommended relay URL>],
+     * ["p", <32-bytes hex of the key>, <recommended relay URL>],
+     * ... // other kinds of tags may be included later
+     */
+    tags: string[][];
+    content: string;
+    sig: string;
+}
+
+interface Channel extends NostrEvent {
+    about: string;
+    name: string;
+    picture: string;
+    type: string;
+}
+interface ChannelMetadata extends Channel {
+    channelId: string;
+}
+
+declare const ChannelAvatar: ({ metadata }: {
+    metadata: ChannelMetadata;
+}) => JSX.Element;
+
+interface ChannelPreviewProps {
+    channel: Channel;
+    onPress: () => void;
+}
+declare const ChannelPreview: ({ channel, onPress }: ChannelPreviewProps) => JSX.Element;
+
+interface ChannelListProps {
+    channels: Channel$1[];
+}
+declare const ChannelList: ({ channels }: ChannelListProps) => JSX.Element;
+
+declare const ChannelView: () => JSX.Element;
+
+declare const MessageInput: () => JSX.Element;
+
+declare const MessageList: () => JSX.Element;
+
 declare const ACTIVE_OPACITY = 0.8;
 /**
  * Roles for colors.  Prefer using these over the palette.  It makes it easier
@@ -551,4 +659,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };
