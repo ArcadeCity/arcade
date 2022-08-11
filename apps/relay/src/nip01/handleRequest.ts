@@ -1,8 +1,6 @@
 import WebSocket from 'ws'
 import { e, edgedbClient } from '../edgedb'
-import {
-  Filters, formatEvent, normalizeEvent, NostrEvent
-} from '../nostr-utils'
+import { Filters, formatEvent, normalizeEvent, NostrEvent } from '../nostr-utils'
 
 /**
  * Upon receiving a REQ message, the relay SHOULD query its internal database and return events that
@@ -31,6 +29,6 @@ export const handleRequest = async (ws: WebSocket, subId: string, filters: Filte
     const normalizedEvent: NostrEvent = normalizeEvent(event)
     const formattedEvent = formatEvent(subId, normalizedEvent)
     ws.send(formattedEvent)
-    console.log('Sent:', formattedEvent)
+    console.log(`Sent to ${subId}`)
   })
 }
