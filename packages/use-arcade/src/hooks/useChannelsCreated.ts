@@ -23,6 +23,7 @@ export const useChannelsCreated: () => Channel[] = () => {
       } as Channel
     })
     .filter((channel: Channel) => !!channel.about)
+    .filter((channel: Channel) => channel.name !== 'TestChannel1')
     .sort((a: Channel, b: Channel) => b.created_at - a.created_at)
   // .sort(
   //   (a: Channel, b: Channel) =>
