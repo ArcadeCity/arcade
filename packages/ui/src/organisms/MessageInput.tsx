@@ -5,7 +5,7 @@ import React, { useContext, useRef, useState } from 'react'
 import { ArcadeContext, useActiveChannelId, UseArcadeRelayActions } from '@arcadecity/use-arcade'
 
 export const MessageInput = () => {
-  const [text, setText] = useState('')
+  const [text, setText] = useState('Bro')
   const context = useContext(ArcadeContext) as any
   const activeChannelId = useActiveChannelId()
   const actions = context.actions as UseArcadeRelayActions
@@ -20,7 +20,7 @@ export const MessageInput = () => {
       return
     }
     inputBoxRef.current?.clear()
-    setText('')
+    // setText('')
     actions.sendChannelMessage(activeChannelId, text)
   }
   return (
@@ -29,8 +29,11 @@ export const MessageInput = () => {
         <View style={styles.inputContainer}>
           <TextInput
             autoCorrect={false}
+            defaultValue='Bro'
             multiline
-            onChangeText={(text: string) => setText(text)}
+            editable={false}
+            // disabled={true}
+            // onChangeText={(text: string) => setText(text)}
             ref={inputBoxRef}
             spellCheck={false}
             style={styles.inputBox}

@@ -414,7 +414,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useContext, useRef, useState } from "react";
 import { ArcadeContext, useActiveChannelId } from "@arcadecity/use-arcade";
 var MessageInput = () => {
-  const [text, setText] = useState("");
+  const [text, setText] = useState("Bro");
   const context = useContext(ArcadeContext);
   const activeChannelId = useActiveChannelId();
   const actions = context.actions;
@@ -430,11 +430,10 @@ var MessageInput = () => {
       return;
     }
     (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
-    setText("");
     actions.sendChannelMessage(activeChannelId, text);
   };
   return <View4 style={styles3.container}><View4 style={styles3.composerContainer}><View4 style={styles3.inputContainer}>
-    <TextInput autoCorrect={false} multiline onChangeText={(text2) => setText(text2)} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
+    <TextInput autoCorrect={false} defaultValue="Bro" multiline editable={false} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
     <TouchableOpacity2 activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><FontAwesome name="send" size={24} color={palette.blueBell} /></TouchableOpacity2>
   </View4></View4></View4>;
 };

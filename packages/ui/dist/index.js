@@ -459,7 +459,7 @@ var import_vector_icons = require("@expo/vector-icons");
 var import_react = require("react");
 var import_use_arcade2 = require("@arcadecity/use-arcade");
 var MessageInput = () => {
-  const [text, setText] = (0, import_react.useState)("");
+  const [text, setText] = (0, import_react.useState)("Bro");
   const context = (0, import_react.useContext)(import_use_arcade2.ArcadeContext);
   const activeChannelId = (0, import_use_arcade2.useActiveChannelId)();
   const actions = context.actions;
@@ -475,11 +475,10 @@ var MessageInput = () => {
       return;
     }
     (_a = inputBoxRef.current) == null ? void 0 : _a.clear();
-    setText("");
     actions.sendChannelMessage(activeChannelId, text);
   };
   return <import_react_native8.View style={styles3.container}><import_react_native8.View style={styles3.composerContainer}><import_react_native8.View style={styles3.inputContainer}>
-    <import_react_native8.TextInput autoCorrect={false} multiline onChangeText={(text2) => setText(text2)} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
+    <import_react_native8.TextInput autoCorrect={false} defaultValue="Bro" multiline editable={false} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
     <import_react_native8.TouchableOpacity activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><import_vector_icons.FontAwesome name="send" size={24} color={palette.blueBell} /></import_react_native8.TouchableOpacity>
   </import_react_native8.View></import_react_native8.View></import_react_native8.View>;
 };
