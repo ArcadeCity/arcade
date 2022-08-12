@@ -16,6 +16,7 @@
   },
   "workspaces": [
     "apps/arcade-chat",
+    "apps/arcade-city",
     "apps/next",
     "packages/app",
     "packages/tsconfig",
