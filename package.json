@@ -28,11 +28,11 @@
     "@noble/hashes": "1.1.2",
     "react": "18.0.0",
     "react-dom": "18.0.0",
-    "react-native": "0.69.3"
+    "react-native": "0.69.4"
   },
   "scripts": {
     "web": "yarn turbo run dev --parallel --no-cache --scope=@arcadecity/next",
-    "ac": "yarn workspace @arcadecity/arcade-chat run ios",
+    "ac": "yarn workspace @arcadecity/arcade-city run ios",
     "dev": "turbo run dev",
     "dev:ac": "yarn turbo run ios --parallel --no-cache --scope=@arcadecity/arcade-city",
     "dev:ac:web": "yarn turbo run web --parallel --no-cache --scope=@arcadecity/arcade-city",
