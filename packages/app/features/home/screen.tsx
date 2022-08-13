@@ -9,7 +9,7 @@ import {
 } from '@arcadecity/use-arcade/src/index'
 import { useContext } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { ChannelPreview } from '../../../ui/src/molecules/ChannelPreview'
+import { ChannelPreview } from '@arcadecity/ui'
 
 export function HomeScreen() {
   useNostr()
@@ -28,7 +28,7 @@ export function HomeScreen() {
         p: 16,
         backgroundColor: color.background,
       }}>
-      <View>
+      <View style={{ paddingTop: 40 }}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={createChannel}
