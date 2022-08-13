@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "build:ios": "eas build -p ios"
+    "build:ios": "eas build -p ios",
+    "submit:ios": "eas submit -p ios"
   },
   "jest": {
     "preset": "jest-expo"

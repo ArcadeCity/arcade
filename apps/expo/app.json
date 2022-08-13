@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "arcade.city.mobile",
-      "buildNumber": "55",
+      "buildNumber": "56",
       "config": {
         "usesNonExemptEncryption": false
       }
