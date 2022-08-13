@@ -191,7 +191,7 @@ import { Text as Text2 } from "dripsy";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 var ChannelPreview = ({ channel, onPress }) => {
   var _a;
-  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/300";
+  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/200";
   return <TouchableOpacity activeOpacity={0.8} key={(channel == null ? void 0 : channel.id) ?? "asdf"} onPress={onPress} style={styles.container}>
     <Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
     <View style={styles.contentContainer}>

@@ -12,14 +12,13 @@ export const ChannelPreview = ({ channel, onPress }: ChannelPreviewProps) => {
   const picture =
     channel?.picture && channel?.picture?.length > 4
       ? channel.picture
-      : 'http://placekitten.com/200/300'
+      : 'http://placekitten.com/200/200'
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       key={channel?.id ?? 'asdf'}
       onPress={onPress}
-      style={styles.container}
-    >
+      style={styles.container}>
       <Image
         source={{ uri: picture }}
         style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }}

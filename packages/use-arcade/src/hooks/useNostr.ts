@@ -48,7 +48,7 @@ export const useNostr: UseArcadeRelayFunction = () => {
     ws.current.onopen = () => {
       console.log('ws opened')
       setReady(true)
-      initialSubscribe()
+      // initialSubscribe()
     }
     ws.current.onclose = () => {
       console.log('ws closed')
