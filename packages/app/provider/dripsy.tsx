@@ -1,5 +1,5 @@
 import { DripsyProvider, makeTheme } from 'dripsy'
-import { palette } from '../../ui/src/index'
+import { palette } from '@arcadecity/ui'
 
 const theme = makeTheme({
   // https://www.dripsy.xyz/usage/theming/create
