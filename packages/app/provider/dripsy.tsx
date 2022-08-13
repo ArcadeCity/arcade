@@ -1,5 +1,6 @@
+import React from 'react'
 import { DripsyProvider, makeTheme } from 'dripsy'
-import { palette } from '../../ui/src/index'
+import { palette } from '../../ui/src/theme/palette'
 
 const theme = makeTheme({
   // https://www.dripsy.xyz/usage/theming/create
