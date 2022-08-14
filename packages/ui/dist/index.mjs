@@ -263,12 +263,82 @@ function ChannelPreviewScreen() {
   </View2>;
 }
 
+// ../../node_modules/ui/src/theme/palette.ts
+var palette2 = {
+  arwes: "rgb(0, 248, 248)",
+  arwesTitle: "#a1ecfb",
+  arwesText: "#26dafd",
+  arwesFade: "rgba(0, 248, 248, 0.5)",
+  arwesFader: "rgba(0, 248, 248, 0.3)",
+  arwesSecondary: "rgb(6,61,62)",
+  white: "#FFFFFF",
+  black: "#000000",
+  haiti: "#120B29",
+  purple: "#1C133A",
+  portGore: "#2D2252",
+  blueBell: "#9D98CB",
+  blueBellFaded: "rgba(157, 152, 203, 0.6)",
+  minsk: "#46367C",
+  moonRaker: "#EEECFB",
+  radicalRed: "#FC3A57",
+  pinkFlamingo: "#F459F4",
+  electricViolet: "#AE30FF",
+  electricIndigo: "#5B20F2",
+  blueBright: "#66B3F8"
+};
+
+// ../../node_modules/ui/src/theme/color.ts
+var color2 = {
+  palette: palette2,
+  transparent: "rgba(0, 0, 0, 0)",
+  background: palette2.haiti,
+  primary: palette2.electricIndigo,
+  secondary: palette2.moonRaker,
+  info: palette2.portGore,
+  line: palette2.portGore,
+  field: palette2.portGore,
+  tabbar: palette2.portGore,
+  text: palette2.moonRaker,
+  secondaryText: palette2.minsk,
+  dim: palette2.blueBell,
+  origin: palette2.electricViolet,
+  link: palette2.electricViolet,
+  active: palette2.electricViolet,
+  destination: palette2.pinkFlamingo,
+  highlight: palette2.pinkFlamingo,
+  error: palette2.radicalRed,
+  shadow: palette2.haiti
+};
+
+// ../../node_modules/ui/src/theme/typography.ts
+import { Platform as Platform2 } from "react-native";
+var typography2 = {
+  primary: Platform2.select({
+    ios: "Inter_400Regular",
+    android: "Inter_400Regular",
+    web: "Inter"
+  }),
+  bold: Platform2.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter_700Bold" }),
+  secondary: Platform2.select({
+    ios: "Lexend_700Bold",
+    android: "Lexend_700Bold",
+    web: "Lexend_700Bold"
+  }),
+  code: Platform2.select({ ios: "Courier", android: "monospace", web: "monospace" })
+};
+
+// src/molecules/map/map.tsx
+import { WebView } from "react-native-webview";
+var Map = () => {
+  return <WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
+};
+
 // src/molecules/message/message.tsx
 import { Image as Image2, View as View3 } from "react-native";
 import moment from "moment";
 
 // src/molecules/message/message.presets.ts
-import { Platform as Platform2 } from "react-native";
+import { Platform as Platform3 } from "react-native";
 var STATUS_ROW = {
   marginVertical: spacing[2],
   marginLeft: spacing[2],
@@ -290,7 +360,7 @@ var BASE_MESSAGE = {
     backgroundColor: color.palette.moonRaker,
     paddingHorizontal: spacing[2],
     marginRight: spacing[4],
-    ...Platform2.select({
+    ...Platform3.select({
       ios: {
         shadowColor: color.palette.black,
         shadowOffset: {
@@ -523,6 +593,7 @@ export {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  Map,
   MessageInput,
   MessageList,
   MessagePreview,

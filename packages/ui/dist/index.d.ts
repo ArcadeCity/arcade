@@ -350,6 +350,8 @@ declare const Text: (props: TextProps) => JSX.Element;
 
 declare function ChannelPreviewScreen(): JSX.Element;
 
+declare const Map: () => JSX.Element;
+
 declare const messagePresets: {
     sent: {
         container: ViewStyle;
@@ -659,4 +661,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, Map, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };
