@@ -8,9 +8,6 @@ import { Alert } from 'react-native'
 
 export default function App() {
   useExpoUpdates(3)
-  useEffect(() => {
-    Alert.alert('Test!!!')
-  }, [])
   return (
     <Provider>
       <StatusBar style='light' />

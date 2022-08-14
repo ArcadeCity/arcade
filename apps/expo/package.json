@@ -12,7 +12,8 @@
     "build:ios": "eas build -p ios",
     "build:ios:local": "eas build --platform ios --local",
     "submit:ios": "eas submit -p ios",
-    "update": "eas update -p ios"
+    "publish:ios": "yarn publish:ios:production",
+    "publish:ios:production": "eas update --branch production -p ios --message 'Update'"
   },
   "jest": {
     "preset": "jest-expo"
