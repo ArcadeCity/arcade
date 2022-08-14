@@ -17,8 +17,9 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
           },
         }),
         []
-      )}>
+      )}
+    >
       {children}
     </NavigationContainer>
   )
-}.
+}
