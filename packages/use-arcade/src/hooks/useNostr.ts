@@ -110,7 +110,7 @@ export const useNostr: UseArcadeRelayFunction = () => {
             NostrKind.channelmetadata,
             NostrKind.channelmessage,
           ],
-          // limit: 75,
+          limit: 50,
         },
       ]),
     )

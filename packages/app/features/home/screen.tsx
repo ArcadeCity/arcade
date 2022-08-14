@@ -1,15 +1,15 @@
-import { useSx, View, H1, P } from 'dripsy'
-import { color, palette } from '@arcadecity/ui'
+import React, { useContext } from 'react'
+import { TouchableOpacity } from 'react-native'
+import { View, H1, P } from 'dripsy'
+import { color, palette } from '@arcadecity/ui/src/theme'
+import { ChannelPreview } from '@arcadecity/ui/src/molecules/ChannelPreview'
 import {
   Channel,
   useChannelsCreated,
   useNostr,
   ArcadeContext,
   UseArcadeRelayActions,
-} from '@arcadecity/use-arcade/src/index'
-import { useContext } from 'react'
-import { TouchableOpacity } from 'react-native'
-import { ChannelPreview } from '../../../ui/src/molecules/ChannelPreview'
+} from '@arcadecity/use-arcade/src'
 
 export function HomeScreen() {
   useNostr()
@@ -17,7 +17,7 @@ export function HomeScreen() {
   const context = useContext(ArcadeContext) as any
   const actions = context.actions as UseArcadeRelayActions
   const createChannel = async () => {
-    actions.createChannel('TestChannel1', 'Aboutsogood', 'https://placekitten.com/200/300')
+    actions.createChannel('TestChannel2', 'About so good', 'https://placekitten.com/200/300')
   }
 
   return (
@@ -28,7 +28,7 @@ export function HomeScreen() {
         p: 16,
         backgroundColor: color.background,
       }}>
-      <View>
+      <View style={{ paddingTop: 40 }}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={createChannel}

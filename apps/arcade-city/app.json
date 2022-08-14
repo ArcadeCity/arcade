@@ -23,7 +23,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "arcade.city.mobile",
-      "buildNumber": "53",
+      "buildNumber": "54",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -43,7 +43,6 @@
       "eas": {
         "projectId": "fcdf1453-a330-40a7-98fb-0e4ae15659ca"
       }
-    },
-    "plugins": ["sentry-expo"]
+    }
   }
 }

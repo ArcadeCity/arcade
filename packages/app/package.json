@@ -3,6 +3,8 @@
   "name": "app",
   "main": "index.ts",
   "dependencies": {
+    "@arcadecity/ui": "*",
+    "@arcadecity/use-arcade": "*",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
     "dripsy": "^3.6.0",

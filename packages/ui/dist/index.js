@@ -236,7 +236,7 @@ var import_dripsy = require("dripsy");
 var import_react_native3 = require("react-native");
 var ChannelPreview = ({ channel, onPress }) => {
   var _a;
-  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/300";
+  const picture = (channel == null ? void 0 : channel.picture) && ((_a = channel == null ? void 0 : channel.picture) == null ? void 0 : _a.length) > 4 ? channel.picture : "http://placekitten.com/200/200";
   return <import_react_native3.TouchableOpacity activeOpacity={0.8} key={(channel == null ? void 0 : channel.id) ?? "asdf"} onPress={onPress} style={styles.container}>
     <import_react_native3.Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
     <import_react_native3.View style={styles.contentContainer}>

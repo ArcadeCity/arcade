@@ -22,12 +22,12 @@ export const useChannelMessages: (channelId: string) => Message[] = (channelId: 
         ...parsedEvent,
       } as Message
     })
-  if (messages.length === 0) {
-    if (context && context.actions) {
-      const actions = context.actions as any
-      actions.checkChannelMessages(channelId)
-    }
-  }
-  console.log('useChannelMessages returning messages #:', messages.length)
+  // if (messages.length === 0) {
+  //   if (context && context.actions) {
+  //     const actions = context.actions as any
+  //     actions.checkChannelMessages(channelId)
+  //   }
+  // }
+  // console.log('useChannelMessages returning messages #:', messages.length)
   return messages
 }

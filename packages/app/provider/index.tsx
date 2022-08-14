@@ -1,3 +1,4 @@
+import React from 'react'
 import { Dripsy } from './dripsy'
 import { NavigationProvider } from './navigation'
 
