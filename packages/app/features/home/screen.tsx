@@ -17,7 +17,7 @@ export function HomeScreen() {
   const context = useContext(ArcadeContext) as any
   const actions = context.actions as UseArcadeRelayActions
   const createChannel = async () => {
-    actions.createChannel('TestChannel1', 'Aboutsogood', 'https://placekitten.com/200/300')
+    actions.createChannel('TestChannel2', 'About so good', 'https://placekitten.com/200/300')
   }
 
   return (
