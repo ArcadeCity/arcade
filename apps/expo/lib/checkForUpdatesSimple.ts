@@ -11,6 +11,7 @@ export const checkForUpdatesSimple = async () => {
       await Updates.reloadAsync()
     } catch (e) {
       console.log(e)
+      Alert.alert(e.message)
     }
   }
 }
