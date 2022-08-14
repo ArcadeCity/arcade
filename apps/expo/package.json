@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "yarn ios",
+    "dev": "yarn start",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",

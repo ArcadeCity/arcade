@@ -1,3 +1,4 @@
+import React from 'react'
 import { P, Text } from 'dripsy'
 import { color, palette, spacing } from '../theme'
 import { Channel } from '../../../use-arcade/src'
