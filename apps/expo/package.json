@@ -11,7 +11,8 @@
     "test": "jest --watchAll",
     "build:ios": "eas build -p ios",
     "build:ios:local": "eas build --platform ios --local",
-    "submit:ios": "eas submit -p ios"
+    "submit:ios": "eas submit -p ios",
+    "update": "eas update -p ios"
   },
   "jest": {
     "preset": "jest-expo"

@@ -34,7 +34,7 @@ export function HomeScreen() {
           onPress={createChannel}
           style={{ backgroundColor: palette.electricIndigo, borderRadius: 10, marginVertical: 20 }}>
           <P sx={{ color: palette.moonRaker, fontWeight: 'bold', textAlign: 'center' }}>
-            Create demo channel
+            Create demo channel!
           </P>
         </TouchableOpacity>
         <H1 sx={{ color: color.text, fontWeight: '800' }}>Channels: {channels.length}</H1>
