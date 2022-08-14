@@ -1,9 +1,6 @@
 import './map'
 import { getPublicKey, relayPool } from 'nostr-tools'
-import {
-  generateSeedWords, privateKeyFromSeed, seedFromWords
-} from 'nostr-tools/nip06'
-// import { createDemoRideRequest } from '@arcadecity/nostr-utils'
+import { generateSeedWords, privateKeyFromSeed, seedFromWords } from 'nostr-tools/nip06'
 import { GeoCoordinates } from '@here/harp-geoutils'
 import { flyTo, stopAnimation } from './flyTo'
 import { normalizeRideRequestEvent } from './normalize'
