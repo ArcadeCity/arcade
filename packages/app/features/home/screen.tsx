@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View } from 'dripsy'
-import { color } from '@arcadecity/ui/src/theme'
+import { color, palette } from '@arcadecity/ui/src/theme'
 import { Wallpaper } from './Wallpaper'
 import { Logo } from './Logo'
 import { Button } from './Button'
@@ -19,7 +19,7 @@ export function HomeScreen() {
           top: 0,
           left: 0,
           right: 0,
-          bottom: 0,
+          bottom: 150,
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 9000,
@@ -35,13 +35,16 @@ export function HomeScreen() {
           position: 'absolute',
           left: 0,
           right: 0,
-          bottom: 30,
+          bottom: 50,
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 9010,
         }}>
-        <Button width={200}>
-          <Text sx={{ color: 'white' }}>JOIN ARCADE CITY</Text>
+        <Button width={250} height={70}>
+          <Text
+            sx={{ color: palette.moonRaker, fontSize: 20, letterSpacing: 2, textAlign: 'center' }}>
+            JOIN ARCADE CITY
+          </Text>
         </Button>
       </View>
     </View>
