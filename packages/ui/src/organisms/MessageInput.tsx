@@ -2,7 +2,11 @@ import { color, palette } from '../theme'
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import React, { useContext, useRef, useState } from 'react'
-import { ArcadeContext, useActiveChannelId, UseArcadeRelayActions } from '@arcadecity/use-arcade'
+import {
+  ArcadeContext,
+  useActiveChannelId,
+  UseArcadeRelayActions,
+} from '@arcadecity/use-arcade/src'
 
 export const MessageInput = () => {
   const [text, setText] = useState('Bro')

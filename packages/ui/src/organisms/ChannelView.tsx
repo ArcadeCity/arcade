@@ -1,4 +1,4 @@
-import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade'
+import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade/src'
 import React from 'react'
 import { MessageInput } from './MessageInput'
 import { MessageList } from './MessageList'

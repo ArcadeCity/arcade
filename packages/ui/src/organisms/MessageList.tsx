@@ -1,5 +1,5 @@
 import { color, spacing } from '../theme'
-import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade'
+import { Message, useActiveChannelId, useChannelMessages } from '@arcadecity/use-arcade/src'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { MessagePreview } from '../molecules/message'
 

@@ -462,7 +462,7 @@ var ChannelAvatar = ({ metadata }) => {
 };
 
 // src/organisms/ChannelList.tsx
-import { setActiveChannelId } from "@arcadecity/use-arcade";
+import { setActiveChannelId } from "@arcadecity/use-arcade/src";
 import { FlatList, StyleSheet as StyleSheet2 } from "react-native";
 var ChannelList = ({ channels }) => {
   return <FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
@@ -476,13 +476,16 @@ var styles2 = StyleSheet2.create({
 });
 
 // src/organisms/ChannelView.tsx
-import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useChannelMessages2 } from "@arcadecity/use-arcade";
+import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useChannelMessages2 } from "@arcadecity/use-arcade/src";
 
 // src/organisms/MessageInput.tsx
 import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View4 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useContext, useRef, useState } from "react";
-import { ArcadeContext, useActiveChannelId } from "@arcadecity/use-arcade";
+import {
+  ArcadeContext,
+  useActiveChannelId
+} from "@arcadecity/use-arcade/src";
 var MessageInput = () => {
   const [text, setText] = useState("Bro");
   const context = useContext(ArcadeContext);
@@ -547,7 +550,7 @@ var styles3 = StyleSheet3.create({
 });
 
 // src/organisms/MessageList.tsx
-import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade";
+import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade/src";
 import { FlatList as FlatList2, StyleSheet as StyleSheet4, View as View5 } from "react-native";
 var MessageList = () => {
   const activeChannelId = useActiveChannelId2();
