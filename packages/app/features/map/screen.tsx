@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'dripsy'
 import { color } from '@arcadecity/ui/src/theme'
-import { Filter } from './Filter'
+import { Map } from '@arcadecity/ui/src/molecules'
 
 export function HomeScreen() {
   return (
@@ -9,8 +9,9 @@ export function HomeScreen() {
       sx={{
         flex: 1,
         backgroundColor: color.background,
-      }}>
-      <Filter />
+      }}
+    >
+      <Map />
     </View>
   )
 }
