@@ -25,6 +25,7 @@ const withTM = require('next-transpile-modules')([
   'dripsy',
   '@dripsy/core',
   'moti',
+  '@shopify/react-native-skia',
   // '@motify/core',
   // '@motify/components',
   'app',
