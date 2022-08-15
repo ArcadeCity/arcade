@@ -32,6 +32,7 @@ __export(src_exports, {
   ChannelPreview: () => ChannelPreview,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   ChannelView: () => ChannelView,
+  FadeInMap: () => FadeInMap,
   Map: () => Map,
   MessageInput: () => MessageInput,
   MessageList: () => MessageList,
@@ -309,6 +310,9 @@ function ChannelPreviewScreen() {
   </import_dripsy2.View>;
 }
 
+// src/molecules/map/FadeInMap.tsx
+var import_dripsy3 = require("dripsy");
+
 // ../../node_modules/ui/src/theme/palette.ts
 var palette2 = {
   arwes: "rgb(0, 248, 248)",
@@ -377,6 +381,23 @@ var typography2 = {
 var import_react_native_webview = require("react-native-webview");
 var Map = () => {
   return <import_react_native_webview.WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
+};
+
+// src/molecules/map/FadeInMap.tsx
+var FadeInMap = () => {
+  return <>
+    <import_dripsy3.View style={{
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      position: "absolute",
+      zIndex: 7888,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }} />
+    <Map />
+  </>;
 };
 
 // src/molecules/message/message.tsx
@@ -640,6 +661,7 @@ var ChannelView = () => {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  FadeInMap,
   Map,
   MessageInput,
   MessageList,

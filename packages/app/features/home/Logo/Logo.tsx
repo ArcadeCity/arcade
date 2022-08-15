@@ -3,8 +3,8 @@ import { Canvas, Image, useImage } from '@shopify/react-native-skia'
 
 export const Logo = () => {
   const image = useImage(require('./aclogo512.png'))
-  const height = 140
-  const width = 140
+  const height = 160
+  const width = 160
   if (!image) {
     return null
   }

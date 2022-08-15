@@ -1,10 +1,13 @@
 import React from 'react'
-import { P, Text, View } from 'dripsy'
-import { color, palette } from '@arcadecity/ui/src/theme'
+import { P, View } from 'dripsy'
+import { palette } from '@arcadecity/ui/src/theme'
 import { Wallpaper } from './Wallpaper'
 import { Logo } from './Logo'
 import { Button } from './Button'
-import { TouchableOpacity } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
+import { FadeInMap } from '@arcadecity/ui/src/molecules/map/FadeInMap'
+
+const background = Platform.OS === 'web' ? <Wallpaper /> : <FadeInMap />
 
 export function HomeScreen() {
   return (
@@ -28,7 +31,7 @@ export function HomeScreen() {
         <Logo />
       </View>
 
-      <Wallpaper />
+      {background}
 
       <View
         style={{
