@@ -30,11 +30,17 @@ export const Wallpaper = () => {
           colors={[palette.portGore, palette.haiti]}
         />
       </Fill>
-      {/* <Group>
+      <Group>
         <LinearGradient
           start={vec(0, 0)}
           end={vec(0, height)}
-          colors={['#5a3ec3', '#eba5c5', '#e1d4b7', '#e9b74c', '#cf1403']}
+          colors={[
+            palette.electricIndigo,
+            palette.electricViolet,
+            palette.pinkFlamingo,
+            palette.electricIndigo,
+            palette.haiti,
+          ]}
         />
         <Shadow dx={10} dy={0} blur={20} color='rgba(0, 0, 0, 0.8)' />
         {STRIPES.map((i) => (
@@ -64,7 +70,7 @@ export const Wallpaper = () => {
             </Mask>
           </Group>
         ))}
-      </Group> */}
+      </Group>
       {/* <Fill blendMode='softLight'>
         <Turbulence freqX={1} freqY={1} octaves={3} />
       </Fill> */}
