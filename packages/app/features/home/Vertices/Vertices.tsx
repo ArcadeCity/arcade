@@ -14,12 +14,13 @@ import cdt2d from 'cdt2d'
 import SimplexNoise from 'simplex-noise'
 
 import './cdt2d.d'
+import { palette as acpalette } from 'ui/src'
 
 const N = 3
 const n = new Array(N + 1).fill(0).map((_, i) => i)
 
 const F = 6000
-const palette = ['#61DAFB', '#fb61da', '#dafb61', '#61fbcf']
+const palette = [acpalette.blueBell, acpalette.purple, acpalette.electricViolet, acpalette.haiti]
 
 export const Demo = () => {
   const { width, height } = useWindowDimensions()
