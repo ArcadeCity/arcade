@@ -2,6 +2,8 @@ import React from 'react'
 import { View } from 'dripsy'
 import { color } from '@arcadecity/ui/src/theme'
 import { Aurora } from './Aurora'
+import { Wallpaper } from './Wallpaper'
+import { Vertices } from './Vertices'
 
 export function HomeScreen() {
   return (
@@ -10,7 +12,7 @@ export function HomeScreen() {
         flex: 1,
         backgroundColor: color.background,
       }}>
-      <Aurora />
+      <Vertices />
     </View>
   )
 }

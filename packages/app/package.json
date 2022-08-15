@@ -7,6 +7,7 @@
     "@arcadecity/use-arcade": "*",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
+    "cdt2d": "^1.0.0",
     "dripsy": "^3.6.0",
     "expo-linking": "^3.0.0",
     "moti": "canary",
