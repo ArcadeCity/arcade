@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Dimensions } from 'react-native'
+import { Dimensions, useWindowDimensions } from 'react-native'
 import {
   Canvas,
   Image,
@@ -26,7 +26,7 @@ export const Filter = () => {
     x.current = mix(progress.value, 0, 100)
   }, progress) // you can pass other shared values as extra parameters
 
-  const { width, height } = Dimensions.get('window')
+  const { width, height } = useWindowDimensions()
   if (!image) {
     return null
   }

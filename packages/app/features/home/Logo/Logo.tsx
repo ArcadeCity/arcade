@@ -1,0 +1,16 @@
+import React from 'react'
+import { Canvas, Image, useImage } from '@shopify/react-native-skia'
+
+export const Logo = () => {
+  const image = useImage(require('./aclogo512.png'))
+  const height = 140
+  const width = 140
+  if (!image) {
+    return null
+  }
+  return (
+    <Canvas style={{ width, height }}>
+      <Image image={image} x={0} y={0} width={width} height={height} fit='contain'></Image>
+    </Canvas>
+  )
+}
