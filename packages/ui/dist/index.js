@@ -32,6 +32,7 @@ __export(src_exports, {
   ChannelPreview: () => ChannelPreview,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   ChannelView: () => ChannelView,
+  Map: () => Map,
   MessageInput: () => MessageInput,
   MessageList: () => MessageList,
   MessagePreview: () => MessagePreview,
@@ -308,12 +309,82 @@ function ChannelPreviewScreen() {
   </import_dripsy2.View>;
 }
 
+// ../../node_modules/ui/src/theme/palette.ts
+var palette2 = {
+  arwes: "rgb(0, 248, 248)",
+  arwesTitle: "#a1ecfb",
+  arwesText: "#26dafd",
+  arwesFade: "rgba(0, 248, 248, 0.5)",
+  arwesFader: "rgba(0, 248, 248, 0.3)",
+  arwesSecondary: "rgb(6,61,62)",
+  white: "#FFFFFF",
+  black: "#000000",
+  haiti: "#120B29",
+  purple: "#1C133A",
+  portGore: "#2D2252",
+  blueBell: "#9D98CB",
+  blueBellFaded: "rgba(157, 152, 203, 0.6)",
+  minsk: "#46367C",
+  moonRaker: "#EEECFB",
+  radicalRed: "#FC3A57",
+  pinkFlamingo: "#F459F4",
+  electricViolet: "#AE30FF",
+  electricIndigo: "#5B20F2",
+  blueBright: "#66B3F8"
+};
+
+// ../../node_modules/ui/src/theme/color.ts
+var color2 = {
+  palette: palette2,
+  transparent: "rgba(0, 0, 0, 0)",
+  background: palette2.haiti,
+  primary: palette2.electricIndigo,
+  secondary: palette2.moonRaker,
+  info: palette2.portGore,
+  line: palette2.portGore,
+  field: palette2.portGore,
+  tabbar: palette2.portGore,
+  text: palette2.moonRaker,
+  secondaryText: palette2.minsk,
+  dim: palette2.blueBell,
+  origin: palette2.electricViolet,
+  link: palette2.electricViolet,
+  active: palette2.electricViolet,
+  destination: palette2.pinkFlamingo,
+  highlight: palette2.pinkFlamingo,
+  error: palette2.radicalRed,
+  shadow: palette2.haiti
+};
+
+// ../../node_modules/ui/src/theme/typography.ts
+var import_react_native4 = require("react-native");
+var typography2 = {
+  primary: import_react_native4.Platform.select({
+    ios: "Inter_400Regular",
+    android: "Inter_400Regular",
+    web: "Inter"
+  }),
+  bold: import_react_native4.Platform.select({ ios: "Inter_700Bold", android: "Inter_700Bold", web: "Inter_700Bold" }),
+  secondary: import_react_native4.Platform.select({
+    ios: "Lexend_700Bold",
+    android: "Lexend_700Bold",
+    web: "Lexend_700Bold"
+  }),
+  code: import_react_native4.Platform.select({ ios: "Courier", android: "monospace", web: "monospace" })
+};
+
+// src/molecules/map/map.tsx
+var import_react_native_webview = require("react-native-webview");
+var Map = () => {
+  return <import_react_native_webview.WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
+};
+
 // src/molecules/message/message.tsx
-var import_react_native5 = require("react-native");
+var import_react_native6 = require("react-native");
 var import_moment = __toESM(require("moment"));
 
 // src/molecules/message/message.presets.ts
-var import_react_native4 = require("react-native");
+var import_react_native5 = require("react-native");
 var STATUS_ROW = {
   marginVertical: spacing[2],
   marginLeft: spacing[2],
@@ -335,7 +406,7 @@ var BASE_MESSAGE = {
     backgroundColor: color.palette.moonRaker,
     paddingHorizontal: spacing[2],
     marginRight: spacing[4],
-    ...import_react_native4.Platform.select({
+    ...import_react_native5.Platform.select({
       ios: {
         shadowColor: color.palette.black,
         shadowOffset: {
@@ -416,35 +487,35 @@ var MessagePreview = ({ message, preset }) => {
   const delivered = true;
   const messagePreset = messagePresets[preset];
   const deliveryTime = (0, import_moment.default)(date).fromNow();
-  return <import_react_native5.View key={`${deliveryTime}`}>
-    <import_react_native5.View style={messagePreset.container}>
-      <import_react_native5.View style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></import_react_native5.View>
-      {delivered && <import_react_native5.View style={{ flexDirection: "column-reverse" }}><import_react_native5.Image source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></import_react_native5.View>}
-    </import_react_native5.View>
-    <import_react_native5.View>{delivered ? <import_react_native5.View style={messagePreset.date}><Text style={messagePreset.dateText}>
+  return <import_react_native6.View key={`${deliveryTime}`}>
+    <import_react_native6.View style={messagePreset.container}>
+      <import_react_native6.View style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></import_react_native6.View>
+      {delivered && <import_react_native6.View style={{ flexDirection: "column-reverse" }}><import_react_native6.Image source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></import_react_native6.View>}
+    </import_react_native6.View>
+    <import_react_native6.View>{delivered ? <import_react_native6.View style={messagePreset.date}><Text style={messagePreset.dateText}>
       {username}
       {" - "}
       {deliveryTime}
-    </Text></import_react_native5.View> : null}</import_react_native5.View>
-  </import_react_native5.View>;
+    </Text></import_react_native6.View> : null}</import_react_native6.View>
+  </import_react_native6.View>;
 };
 
 // src/molecules/ChannelAvatar.tsx
-var import_react_native6 = require("react-native");
+var import_react_native7 = require("react-native");
 var ChannelAvatar = ({ metadata }) => {
   const picture = metadata.picture && metadata.picture.length > 4 ? metadata.picture : "http://placekitten.com/200/300";
-  return <import_react_native6.Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />;
+  return <import_react_native7.Image source={{ uri: picture }} style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />;
 };
 
 // src/organisms/ChannelList.tsx
 var import_use_arcade = require("@arcadecity/use-arcade");
-var import_react_native7 = require("react-native");
+var import_react_native8 = require("react-native");
 var ChannelList = ({ channels }) => {
-  return <import_react_native7.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
+  return <import_react_native8.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
 var keyExtractor = (item) => item.id;
 var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => (0, import_use_arcade.setActiveChannelId)(item.id)} />;
-var styles2 = import_react_native7.StyleSheet.create({
+var styles2 = import_react_native8.StyleSheet.create({
   flatList: { flex: 1 },
   flatListContentContainer: { flexGrow: 1 },
   statusIndicator: { left: 0, position: "absolute", right: 0, top: 0 }
@@ -454,7 +525,7 @@ var styles2 = import_react_native7.StyleSheet.create({
 var import_use_arcade4 = require("@arcadecity/use-arcade");
 
 // src/organisms/MessageInput.tsx
-var import_react_native8 = require("react-native");
+var import_react_native9 = require("react-native");
 var import_vector_icons = require("@expo/vector-icons");
 var import_react = require("react");
 var import_use_arcade2 = require("@arcadecity/use-arcade");
@@ -466,21 +537,21 @@ var MessageInput = () => {
   const inputBoxRef = (0, import_react.useRef)(null);
   const submitInput = () => {
     if (text.length < 1) {
-      import_react_native8.Alert.alert("Message too short", "What is that, a message for ants?");
+      import_react_native9.Alert.alert("Message too short", "What is that, a message for ants?");
       return;
     }
     if (!activeChannelId) {
-      import_react_native8.Alert.alert("Error getting channel ID");
+      import_react_native9.Alert.alert("Error getting channel ID");
       return;
     }
     actions.sendChannelMessage(activeChannelId, text);
   };
-  return <import_react_native8.View style={styles3.container}><import_react_native8.View style={styles3.composerContainer}><import_react_native8.View style={styles3.inputContainer}>
-    <import_react_native8.TextInput autoCorrect={false} defaultValue="Bro" multiline editable={false} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
-    <import_react_native8.TouchableOpacity activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><import_vector_icons.FontAwesome name="send" size={24} color={palette.blueBell} /></import_react_native8.TouchableOpacity>
-  </import_react_native8.View></import_react_native8.View></import_react_native8.View>;
+  return <import_react_native9.View style={styles3.container}><import_react_native9.View style={styles3.composerContainer}><import_react_native9.View style={styles3.inputContainer}>
+    <import_react_native9.TextInput autoCorrect={false} defaultValue="Bro" multiline editable={false} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
+    <import_react_native9.TouchableOpacity activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><import_vector_icons.FontAwesome name="send" size={24} color={palette.blueBell} /></import_react_native9.TouchableOpacity>
+  </import_react_native9.View></import_react_native9.View></import_react_native9.View>;
 };
-var styles3 = import_react_native8.StyleSheet.create({
+var styles3 = import_react_native9.StyleSheet.create({
   composerContainer: {
     alignItems: "flex-end",
     flexDirection: "row",
@@ -523,19 +594,19 @@ var styles3 = import_react_native8.StyleSheet.create({
 
 // src/organisms/MessageList.tsx
 var import_use_arcade3 = require("@arcadecity/use-arcade");
-var import_react_native9 = require("react-native");
+var import_react_native10 = require("react-native");
 var MessageList = () => {
   const activeChannelId = (0, import_use_arcade3.useActiveChannelId)();
   const messages = (0, import_use_arcade3.useChannelMessages)(activeChannelId);
   console.log("MessageList has messages:", messages.length);
   if (!activeChannelId)
     return <></>;
-  return <import_react_native9.View style={styles4.container}><import_react_native9.FlatList data={messages} keyExtractor={keyExtractor2} renderItem={renderItem2} style={[styles4.flatList, { backgroundColor: "#120B29" }]} /></import_react_native9.View>;
+  return <import_react_native10.View style={styles4.container}><import_react_native10.FlatList data={messages} keyExtractor={keyExtractor2} renderItem={renderItem2} style={[styles4.flatList, { backgroundColor: "#120B29" }]} /></import_react_native10.View>;
 };
 var keyExtractor2 = (item) => item.id;
 var pubkey = "d67fe59472f658c1b2dec9ffd60b86af260a2f8460b441f9a891761f87b67a5d";
 var renderItem2 = ({ item }) => <MessagePreview message={item} preset={pubkey === item.pubkey ? "sent" : "received"} />;
-var styles4 = import_react_native9.StyleSheet.create({
+var styles4 = import_react_native10.StyleSheet.create({
   container: {
     paddingHorizontal: spacing[4],
     backgroundColor: color.background,
@@ -569,6 +640,7 @@ var ChannelView = () => {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  Map,
   MessageInput,
   MessageList,
   MessagePreview,
