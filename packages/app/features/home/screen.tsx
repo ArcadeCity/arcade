@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'dripsy'
 import { color } from '@arcadecity/ui/src/theme'
-import { Filter } from './Filter'
+import { Wallpaper } from './Wallpaper'
 
 export function HomeScreen() {
   return (
@@ -10,7 +10,7 @@ export function HomeScreen() {
         flex: 1,
         backgroundColor: color.background,
       }}>
-      <Filter />
+      <Wallpaper />
     </View>
   )
 }
