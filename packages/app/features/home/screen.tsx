@@ -17,3 +17,5 @@ export function HomeScreen() {
     </View>
   )
 }
+
+export default HomeScreen
