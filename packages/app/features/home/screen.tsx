@@ -1,8 +1,9 @@
 import React from 'react'
-import { View } from 'dripsy'
+import { Text, View } from 'dripsy'
 import { color } from '@arcadecity/ui/src/theme'
 import { Wallpaper } from './Wallpaper'
 import { Logo } from './Logo'
+import { Button } from './Button'
 
 export function HomeScreen() {
   return (
@@ -25,7 +26,24 @@ export function HomeScreen() {
         }}>
         <Logo />
       </View>
+
       <Wallpaper />
+
+      <View
+        style={{
+          backgroundColor: 'transparent',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 30,
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9010,
+        }}>
+        <Button width={200}>
+          <Text sx={{ color: 'white' }}>JOIN ARCADE CITY</Text>
+        </Button>
+      </View>
     </View>
   )
 }
