@@ -4,6 +4,7 @@ import { color, palette } from '@arcadecity/ui/src/theme'
 import { Wallpaper } from './Wallpaper'
 import { Logo } from './Logo'
 import { Button } from './Button'
+import { TouchableOpacity } from 'react-native'
 
 export function HomeScreen() {
   return (
@@ -40,7 +41,7 @@ export function HomeScreen() {
           alignItems: 'center',
           zIndex: 9010,
         }}>
-        <Button width={300} height={70}>
+        <Button width={300} height={70} onPress={() => console.log('Join')}>
           <P
             sx={{
               color: palette.moonRaker,
@@ -52,6 +53,19 @@ export function HomeScreen() {
             JOIN ARCADE CITY
           </P>
         </Button>
+
+        <TouchableOpacity activeOpacity={0.8} onPress={() => console.log('Login')}>
+          <P
+            sx={{
+              // color: palette.moonRaker,
+              fontSize: 16,
+              letterSpacing: 0.5,
+              textAlign: 'center',
+              fontWeight: '500',
+            }}>
+            Enter access code
+          </P>
+        </TouchableOpacity>
       </View>
     </View>
   )

@@ -8,13 +8,20 @@ const WIDTH = HEIGHT
 const RADIUS = 10
 
 export const Button = (props) => {
-  const { panelClose = false, subtle = false, children, width = WIDTH, height = HEIGHT } = props
+  const {
+    panelClose = false,
+    subtle = false,
+    children,
+    width = WIDTH,
+    height = HEIGHT,
+    ...rest
+  } = props
   const CARD_HEIGHT = height - 5
   const CARD_WIDTH = width - 5
   return (
     <TouchableOpacity
       style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-      {...props}
+      {...rest}
       activeOpacity={DEFAULT_ACTIVE_OPACITY}>
       <BackgroundGradient
         width={width}
