@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'dripsy'
+import { P, Text, View } from 'dripsy'
 import { color, palette } from '@arcadecity/ui/src/theme'
 import { Wallpaper } from './Wallpaper'
 import { Logo } from './Logo'
@@ -40,11 +40,17 @@ export function HomeScreen() {
           alignItems: 'center',
           zIndex: 9010,
         }}>
-        <Button width={250} height={70}>
-          <Text
-            sx={{ color: palette.moonRaker, fontSize: 20, letterSpacing: 2, textAlign: 'center' }}>
+        <Button width={300} height={70}>
+          <P
+            sx={{
+              color: palette.moonRaker,
+              fontSize: 20,
+              letterSpacing: 2,
+              textAlign: 'center',
+              fontWeight: '700',
+            }}>
             JOIN ARCADE CITY
-          </Text>
+          </P>
         </Button>
       </View>
     </View>
