@@ -9,7 +9,7 @@ import { FadeInMap } from '@arcadecity/ui/src/molecules/map/FadeInMap'
 
 const background = Platform.OS === 'web' ? <Wallpaper /> : <FadeInMap />
 
-export function HomeScreen() {
+export function HomeScreen({ navigation }) {
   return (
     <View
       sx={{
@@ -57,7 +57,7 @@ export function HomeScreen() {
           </P>
         </Button>
 
-        <TouchableOpacity activeOpacity={0.8} onPress={() => console.log('Login')}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('login')}>
           <P
             sx={{
               // color: palette.moonRaker,
