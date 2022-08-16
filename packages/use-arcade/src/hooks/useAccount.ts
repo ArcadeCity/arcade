@@ -29,19 +29,19 @@ export const useAccount = () => {
       }
     }
 
-    console.log('Creating new keys.')
-    const newAccountKeys = createNewAccount()
-    store.accountKeys = newAccountKeys
-    store.accountMetadata = {
-      name: 'ArcadeAnon',
-      about: 'New user',
-      picture: 'https://placekitten.com/200/200',
-    }
-    if (storeAvailable) {
-      await SecureStore.setItemAsync('ARCADE_NPUB', newAccountKeys.publicKey)
-      await SecureStore.setItemAsync('ARCADE_NSEC', newAccountKeys.privateKey)
-      await SecureStore.setItemAsync('ARCADE_MNEMONIC', newAccountKeys.mnemonic)
-    }
+    // console.log('Creating new keys.')
+    // const newAccountKeys = createNewAccount()
+    // store.accountKeys = newAccountKeys
+    // store.accountMetadata = {
+    //   name: 'ArcadeAnon',
+    //   about: 'New user',
+    //   picture: 'https://placekitten.com/200/200',
+    // }
+    // if (storeAvailable) {
+    //   await SecureStore.setItemAsync('ARCADE_NPUB', newAccountKeys.publicKey)
+    //   await SecureStore.setItemAsync('ARCADE_NSEC', newAccountKeys.privateKey)
+    //   await SecureStore.setItemAsync('ARCADE_MNEMONIC', newAccountKeys.mnemonic)
+    // }
     setLoading(false)
   }
 
@@ -64,6 +64,7 @@ export const useAccount = () => {
         const { privateKey, publicKey } = getKeysForMnemonic(mnemonic)
         const newAccountKeys: AccountKeys = { mnemonic, privateKey, publicKey }
         store.accountKeys = newAccountKeys
+        console.log('store.accountKeys set.')
         const storeAvailable = await SecureStore.isAvailableAsync()
         if (storeAvailable) {
           await SecureStore.setItemAsync('ARCADE_NPUB', newAccountKeys.publicKey)

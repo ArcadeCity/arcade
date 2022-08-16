@@ -12,7 +12,7 @@ import {
 } from '@arcadecity/use-arcade/src'
 
 export function ChatScreen() {
-  useNostr()
+  // useNostr()
   const channels: Channel[] = useChannelsCreated()
   const context = useContext(ArcadeContext) as any
   const actions = context.actions as UseArcadeRelayActions

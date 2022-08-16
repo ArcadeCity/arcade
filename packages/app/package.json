@@ -10,6 +10,9 @@
     "cdt2d": "^1.0.0",
     "dripsy": "^3.6.0",
     "expo-linking": "^3.0.0",
+    "mobx": "6.6.1",
+    "mobx-react-lite": "3.4.0",
+    "mobx-state-tree": "5.1.5",
     "moti": "canary",
     "react-native-reanimated": "2.8.0",
     "solito": "latest"

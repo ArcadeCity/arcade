@@ -9,7 +9,7 @@ export const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (keys && keys.publicKey) {
-      Alert.alert('Logged in as ' + keys.publicKey)
+      // Alert.alert('Logged in as ' + keys.publicKey)
       navigation.goBack()
     }
   }, [keys])

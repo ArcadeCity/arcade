@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react'
-import { useAccount } from '@arcadecity/use-arcade'
+import React from 'react'
 import { AuthedNavigator } from './authed'
 import { UnauthedNavigator } from './unauthed'
+import { observer } from 'mobx-react-lite'
+import { useStores } from '../../stores'
 
-export function NativeNavigation() {
-  const [account] = useAccount()
-  const authed = useMemo(() => !!account, [account])
-  return authed ? <AuthedNavigator /> : <UnauthedNavigator />
-}
+export const NativeNavigation = observer(() => {
+  const { user } = useStores()
+  return !!user.publicKey ? <AuthedNavigator /> : <UnauthedNavigator />
+})

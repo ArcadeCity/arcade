@@ -4,6 +4,7 @@ import { color, palette, typography } from '@arcadecity/ui'
 import { FontAwesome5 } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { ChatScreen } from 'app/features/chat/screen'
+import { AccountScreen } from 'app/features/account/AccountScreen'
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -49,7 +50,7 @@ export function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name='AccountHome'
-        component={ChatScreen}
+        component={AccountScreen}
         options={{
           title: 'Account',
           tabBarIcon: ({ color, focused }) => (
