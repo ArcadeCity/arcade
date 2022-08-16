@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { Alert, StyleSheet, TextInput, View } from 'react-native'
 import { color, palette, spacing } from 'ui/src'
 import { hexToNsec, useAccount, useAccountKeys } from '@arcadecity/use-arcade/src'
 
@@ -9,6 +9,7 @@ export const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (keys && keys.publicKey) {
+      Alert.alert('Logged in as ' + keys.publicKey)
       navigation.goBack()
     }
   }, [keys])
