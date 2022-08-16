@@ -1,17 +1,17 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { ChatScreen } from 'app/features/chat/screen'
+import { BottomTabNavigator } from './tab-navigator'
 
 const Stack = createNativeStackNavigator<{
-  chat: undefined
+  tabs: undefined
 }>()
 
 export function AuthedNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='chat'
-        component={ChatScreen}
+        name='tabs'
+        component={BottomTabNavigator}
         options={{
           headerShown: false,
           title: 'Home',
