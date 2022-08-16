@@ -27,14 +27,12 @@ export function ChatScreen() {
         alignItems: 'center',
         p: 16,
         backgroundColor: color.background,
-      }}
-    >
-      <View style={{ paddingTop: 40 }}>
+      }}>
+      <View style={{ flex: 1, width: '100%', paddingTop: 40 }}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={createChannel}
-          style={{ backgroundColor: palette.electricIndigo, borderRadius: 10, marginVertical: 20 }}
-        >
+          style={{ backgroundColor: palette.electricIndigo, borderRadius: 10, marginVertical: 20 }}>
           <P sx={{ color: palette.moonRaker, fontWeight: 'bold', textAlign: 'center' }}>
             Create demo channel
           </P>
