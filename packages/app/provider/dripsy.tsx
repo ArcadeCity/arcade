@@ -1,6 +1,7 @@
 import React from 'react'
 import { DripsyProvider, makeTheme } from 'dripsy'
 import { palette } from '../../ui/src/theme/palette'
+import { Platform } from 'react-native'
 
 const theme = makeTheme({
   // https://www.dripsy.xyz/usage/theming/create
@@ -11,6 +12,7 @@ const theme = makeTheme({
     p: {
       color: palette.blueBell,
       fontSize: 16,
+      fontFamily: Platform.OS === 'web' ? 'monospace' : 'Courier New',
     },
     h1: {
       color: palette.moonRaker,

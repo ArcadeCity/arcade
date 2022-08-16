@@ -32,6 +32,7 @@ __export(src_exports, {
   ChannelPreview: () => ChannelPreview,
   ChannelPreviewScreen: () => ChannelPreviewScreen,
   ChannelView: () => ChannelView,
+  FadeInMap: () => FadeInMap,
   Map: () => Map,
   MessageInput: () => MessageInput,
   MessageList: () => MessageList,
@@ -309,6 +310,9 @@ function ChannelPreviewScreen() {
   </import_dripsy2.View>;
 }
 
+// src/molecules/map/FadeInMap.tsx
+var import_dripsy3 = require("dripsy");
+
 // ../../node_modules/ui/src/theme/palette.ts
 var palette2 = {
   arwes: "rgb(0, 248, 248)",
@@ -377,6 +381,23 @@ var typography2 = {
 var import_react_native_webview = require("react-native-webview");
 var Map = () => {
   return <import_react_native_webview.WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
+};
+
+// src/molecules/map/FadeInMap.tsx
+var FadeInMap = () => {
+  return <>
+    <import_dripsy3.View style={{
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      position: "absolute",
+      zIndex: 7888,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }} />
+    <Map />
+  </>;
 };
 
 // src/molecules/message/message.tsx
@@ -508,13 +529,13 @@ var ChannelAvatar = ({ metadata }) => {
 };
 
 // src/organisms/ChannelList.tsx
-var import_use_arcade = require("@arcadecity/use-arcade");
+var import_src = require("@arcadecity/use-arcade/src");
 var import_react_native8 = require("react-native");
 var ChannelList = ({ channels }) => {
   return <import_react_native8.FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
 };
 var keyExtractor = (item) => item.id;
-var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => (0, import_use_arcade.setActiveChannelId)(item.id)} />;
+var renderItem = ({ item }) => <ChannelPreview channel={item} onPress={() => (0, import_src.setActiveChannelId)(item.id)} />;
 var styles2 = import_react_native8.StyleSheet.create({
   flatList: { flex: 1 },
   flatListContentContainer: { flexGrow: 1 },
@@ -522,17 +543,17 @@ var styles2 = import_react_native8.StyleSheet.create({
 });
 
 // src/organisms/ChannelView.tsx
-var import_use_arcade4 = require("@arcadecity/use-arcade");
+var import_src4 = require("@arcadecity/use-arcade/src");
 
 // src/organisms/MessageInput.tsx
 var import_react_native9 = require("react-native");
 var import_vector_icons = require("@expo/vector-icons");
 var import_react = require("react");
-var import_use_arcade2 = require("@arcadecity/use-arcade");
+var import_src2 = require("@arcadecity/use-arcade/src");
 var MessageInput = () => {
   const [text, setText] = (0, import_react.useState)("Bro");
-  const context = (0, import_react.useContext)(import_use_arcade2.ArcadeContext);
-  const activeChannelId = (0, import_use_arcade2.useActiveChannelId)();
+  const context = (0, import_react.useContext)(import_src2.ArcadeContext);
+  const activeChannelId = (0, import_src2.useActiveChannelId)();
   const actions = context.actions;
   const inputBoxRef = (0, import_react.useRef)(null);
   const submitInput = () => {
@@ -593,11 +614,11 @@ var styles3 = import_react_native9.StyleSheet.create({
 });
 
 // src/organisms/MessageList.tsx
-var import_use_arcade3 = require("@arcadecity/use-arcade");
+var import_src3 = require("@arcadecity/use-arcade/src");
 var import_react_native10 = require("react-native");
 var MessageList = () => {
-  const activeChannelId = (0, import_use_arcade3.useActiveChannelId)();
-  const messages = (0, import_use_arcade3.useChannelMessages)(activeChannelId);
+  const activeChannelId = (0, import_src3.useActiveChannelId)();
+  const messages = (0, import_src3.useChannelMessages)(activeChannelId);
   console.log("MessageList has messages:", messages.length);
   if (!activeChannelId)
     return <></>;
@@ -621,8 +642,8 @@ var styles4 = import_react_native10.StyleSheet.create({
 
 // src/organisms/ChannelView.tsx
 var ChannelView = () => {
-  const activeChannelId = (0, import_use_arcade4.useActiveChannelId)();
-  const messages = (0, import_use_arcade4.useChannelMessages)(activeChannelId);
+  const activeChannelId = (0, import_src4.useActiveChannelId)();
+  const messages = (0, import_src4.useChannelMessages)(activeChannelId);
   console.log(activeChannelId, messages.length);
   if (!activeChannelId)
     return <></>;
@@ -640,6 +661,7 @@ var ChannelView = () => {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  FadeInMap,
   Map,
   MessageInput,
   MessageList,

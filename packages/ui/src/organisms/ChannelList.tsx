@@ -1,5 +1,5 @@
 import React from 'react'
-import { Channel, setActiveChannelId } from '@arcadecity/use-arcade'
+import { Channel, setActiveChannelId } from '@arcadecity/use-arcade/src'
 import { FlatList, StyleSheet } from 'react-native'
 import { ChannelPreview } from '../molecules/ChannelPreview'
 

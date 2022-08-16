@@ -263,6 +263,9 @@ function ChannelPreviewScreen() {
   </View2>;
 }
 
+// src/molecules/map/FadeInMap.tsx
+import { View as View3 } from "dripsy";
+
 // ../../node_modules/ui/src/theme/palette.ts
 var palette2 = {
   arwes: "rgb(0, 248, 248)",
@@ -333,8 +336,25 @@ var Map = () => {
   return <WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
 };
 
+// src/molecules/map/FadeInMap.tsx
+var FadeInMap = () => {
+  return <>
+    <View3 style={{
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      position: "absolute",
+      zIndex: 7888,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }} />
+    <Map />
+  </>;
+};
+
 // src/molecules/message/message.tsx
-import { Image as Image2, View as View3 } from "react-native";
+import { Image as Image2, View as View4 } from "react-native";
 import moment from "moment";
 
 // src/molecules/message/message.presets.ts
@@ -441,17 +461,17 @@ var MessagePreview = ({ message, preset }) => {
   const delivered = true;
   const messagePreset = messagePresets[preset];
   const deliveryTime = moment(date).fromNow();
-  return <View3 key={`${deliveryTime}`}>
-    <View3 style={messagePreset.container}>
-      <View3 style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></View3>
-      {delivered && <View3 style={{ flexDirection: "column-reverse" }}><Image2 source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></View3>}
-    </View3>
-    <View3>{delivered ? <View3 style={messagePreset.date}><Text style={messagePreset.dateText}>
+  return <View4 key={`${deliveryTime}`}>
+    <View4 style={messagePreset.container}>
+      <View4 style={messagePreset.textBubble}><Text style={messagePreset.textContent} text={text} /></View4>
+      {delivered && <View4 style={{ flexDirection: "column-reverse" }}><Image2 source={{ uri: photo }} style={{ width: 40, height: 40, borderRadius: 8 }} /></View4>}
+    </View4>
+    <View4>{delivered ? <View4 style={messagePreset.date}><Text style={messagePreset.dateText}>
       {username}
       {" - "}
       {deliveryTime}
-    </Text></View3> : null}</View3>
-  </View3>;
+    </Text></View4> : null}</View4>
+  </View4>;
 };
 
 // src/molecules/ChannelAvatar.tsx
@@ -462,7 +482,7 @@ var ChannelAvatar = ({ metadata }) => {
 };
 
 // src/organisms/ChannelList.tsx
-import { setActiveChannelId } from "@arcadecity/use-arcade";
+import { setActiveChannelId } from "@arcadecity/use-arcade/src";
 import { FlatList, StyleSheet as StyleSheet2 } from "react-native";
 var ChannelList = ({ channels }) => {
   return <FlatList data={channels} keyExtractor={keyExtractor} renderItem={renderItem} style={[styles2.flatList, { backgroundColor: "#120B29" }]} />;
@@ -476,13 +496,16 @@ var styles2 = StyleSheet2.create({
 });
 
 // src/organisms/ChannelView.tsx
-import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useChannelMessages2 } from "@arcadecity/use-arcade";
+import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useChannelMessages2 } from "@arcadecity/use-arcade/src";
 
 // src/organisms/MessageInput.tsx
-import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View4 } from "react-native";
+import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View5 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useContext, useRef, useState } from "react";
-import { ArcadeContext, useActiveChannelId } from "@arcadecity/use-arcade";
+import {
+  ArcadeContext,
+  useActiveChannelId
+} from "@arcadecity/use-arcade/src";
 var MessageInput = () => {
   const [text, setText] = useState("Bro");
   const context = useContext(ArcadeContext);
@@ -500,10 +523,10 @@ var MessageInput = () => {
     }
     actions.sendChannelMessage(activeChannelId, text);
   };
-  return <View4 style={styles3.container}><View4 style={styles3.composerContainer}><View4 style={styles3.inputContainer}>
+  return <View5 style={styles3.container}><View5 style={styles3.composerContainer}><View5 style={styles3.inputContainer}>
     <TextInput autoCorrect={false} defaultValue="Bro" multiline editable={false} ref={inputBoxRef} spellCheck={false} style={styles3.inputBox} />
     <TouchableOpacity2 activeOpacity={0.8} onPress={submitInput} style={styles3.sendButtonContainer}><FontAwesome name="send" size={24} color={palette.blueBell} /></TouchableOpacity2>
-  </View4></View4></View4>;
+  </View5></View5></View5>;
 };
 var styles3 = StyleSheet3.create({
   composerContainer: {
@@ -547,15 +570,15 @@ var styles3 = StyleSheet3.create({
 });
 
 // src/organisms/MessageList.tsx
-import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade";
-import { FlatList as FlatList2, StyleSheet as StyleSheet4, View as View5 } from "react-native";
+import { useActiveChannelId as useActiveChannelId2, useChannelMessages } from "@arcadecity/use-arcade/src";
+import { FlatList as FlatList2, StyleSheet as StyleSheet4, View as View6 } from "react-native";
 var MessageList = () => {
   const activeChannelId = useActiveChannelId2();
   const messages = useChannelMessages(activeChannelId);
   console.log("MessageList has messages:", messages.length);
   if (!activeChannelId)
     return <></>;
-  return <View5 style={styles4.container}><FlatList2 data={messages} keyExtractor={keyExtractor2} renderItem={renderItem2} style={[styles4.flatList, { backgroundColor: "#120B29" }]} /></View5>;
+  return <View6 style={styles4.container}><FlatList2 data={messages} keyExtractor={keyExtractor2} renderItem={renderItem2} style={[styles4.flatList, { backgroundColor: "#120B29" }]} /></View6>;
 };
 var keyExtractor2 = (item) => item.id;
 var pubkey = "d67fe59472f658c1b2dec9ffd60b86af260a2f8460b441f9a891761f87b67a5d";
@@ -593,6 +616,7 @@ export {
   ChannelPreview,
   ChannelPreviewScreen,
   ChannelView,
+  FadeInMap,
   Map,
   MessageInput,
   MessageList,

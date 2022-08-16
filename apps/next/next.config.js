@@ -14,6 +14,11 @@ const nextConfig = {
       allowFutureImage: true,
     },
   },
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false }
+
+    return config
+  },
 }
 
 const { withExpo } = require('@expo/next-adapter')

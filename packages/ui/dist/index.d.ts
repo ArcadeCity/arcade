@@ -1,7 +1,8 @@
 import * as react_native from 'react-native';
 import { TextStyle, TextProps as TextProps$1, StyleProp, ViewStyle } from 'react-native';
 import React$1 from 'react';
-import { Message, Channel as Channel$1 } from '@arcadecity/use-arcade';
+import { Message } from '@arcadecity/use-arcade';
+import { Channel as Channel$1 } from '@arcadecity/use-arcade/src';
 
 /**
  * All the variations of text styling within the app.
@@ -350,6 +351,8 @@ declare const Text: (props: TextProps) => JSX.Element;
 
 declare function ChannelPreviewScreen(): JSX.Element;
 
+declare const FadeInMap: () => JSX.Element;
+
 declare const Map: () => JSX.Element;
 
 declare const messagePresets: {
@@ -661,4 +664,4 @@ declare const typography: {
     code: string | undefined;
 };
 
-export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, Map, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };
+export { ACTIVE_OPACITY, ChannelAvatar, ChannelList, ChannelPreview, ChannelPreviewScreen, ChannelView, FadeInMap, Map, MessageInput, MessageList, MessagePreview, Text, color, palette, spacing, typography };

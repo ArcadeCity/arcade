@@ -1,23 +1,15 @@
 import React from 'react'
-import { ChannelList, ChannelView } from '@arcadecity/ui'
-import { Channel, useNostr, useChannelsCreated } from '@arcadecity/use-arcade'
+import { View } from 'react-native'
+import { WithSkiaWeb } from '@shopify/react-native-skia/lib/module/web'
 
-export default function () {
-  useNostr()
-  const channels: Channel[] = useChannelsCreated()
+export default function App() {
   return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <ChannelList channels={channels} />
-      </div>
-      <ChannelView />
-    </div>
+    <WithSkiaWeb
+      opts={{
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/canvaskit-wasm@0.35.0/bin/full/${file}`,
+      }}
+      getComponent={async () => await import('app/features/home/screen')}
+      fallback={<View style={{ flex: 1, backgroundColor: '#000' }} />}
+    />
   )
-}
-
-const styles = {
-  container: 'h-screen w-screen bg-haiti flex text-moonraker',
-  sidebar:
-    'scrollbar w-full md:!w-[350px] h-screen flex-shrink-0 overflow-y-auto overflow-x-hidden',
-  main: 'flex h-screen flex-grow flex-col items-stretch bg-haiti',
 }
