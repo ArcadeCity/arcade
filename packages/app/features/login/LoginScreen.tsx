@@ -1,24 +1,28 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
 import { color, palette, spacing } from 'ui/src'
-import { hexToNsec, useAccount } from '@arcadecity/use-arcade/src'
+import { hexToNsec, useAccount, useAccountKeys } from '@arcadecity/use-arcade/src'
 
-export const LoginScreen = () => {
-  const [loginAs, setLoginAs] = useState('')
+export const LoginScreen = ({ navigation }) => {
   const [account, accountActions] = useAccount() as any
+  const keys = useAccountKeys()
+
+  useEffect(() => {
+    if (keys && keys.publicKey) {
+      navigation.goBack()
+    }
+  }, [keys])
+
   if (!account || !accountActions) return <></>
 
-  const onChangeText = (text: string) => {
-    setLoginAs(text)
+  const onChangeText = (loginAs: string) => {
     try {
       if (loginAs.split(' ').length === 12) {
         accountActions.login({ mnemonic: loginAs })
       } else if (loginAs.startsWith('nsec')) {
         accountActions.login({ nsec: loginAs })
-      } else if (isHex(loginAs)) {
+      } else if (loginAs.length > 12 && isHex(loginAs)) {
         accountActions.login({ nsec: hexToNsec(loginAs) })
-      } else {
-        console.log('Not valid access code')
       }
     } catch (e) {
       console.log('Error trying to validate access code')
