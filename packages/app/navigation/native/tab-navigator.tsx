@@ -57,8 +57,8 @@ export function BottomTabNavigator() {
           ),
           headerStyle: {
             backgroundColor: color.tabbar,
-            borderBottomWidth: 2,
-            borderBottomColor: palette.portGore,
+            shadowRadius: 1,
+            shadowColor: palette.portGore,
           },
           headerTitleStyle: {
             color: color.text,
