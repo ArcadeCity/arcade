@@ -31,6 +31,9 @@ export const getKeysForNsec = (nsec: string) => {
   console.log('decoded', decoded)
   console.log('privateKey after decode:', privateKey)
   console.log('privateKey length:', privateKey.length)
+  if (privateKey.length !== 32) {
+    throw new Error('Invalid private key')
+  }
   const publicKey = getPublicKey(Buffer.from(privateKey))
   console.log('GOT PUBLICKEY:', publicKey)
   const hexKey = toHexString(privateKey)

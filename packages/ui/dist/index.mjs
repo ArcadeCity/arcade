@@ -263,9 +263,6 @@ function ChannelPreviewScreen() {
   </View2>;
 }
 
-// src/molecules/map/FadeInMap.tsx
-import { View as View3 } from "dripsy";
-
 // ../../node_modules/ui/src/theme/palette.ts
 var palette2 = {
   arwes: "rgb(0, 248, 248)",
@@ -336,18 +333,524 @@ var Map = () => {
   return <WebView style={{ backgroundColor: palette2.haiti, flex: 1 }} source={{ uri: "https://map-demo.arcade.city" }} />;
 };
 
+// ../../node_modules/moti/build/core/motify.js
+import React, { forwardRef } from "react";
+import Animated from "react-native-reanimated";
+
+// ../../node_modules/framer-motion/dist/es/context/PresenceContext.mjs
+import { createContext } from "react";
+var PresenceContext = createContext(null);
+
+// ../../node_modules/framer-motion/dist/es/utils/use-constant.mjs
+import { useRef } from "react";
+function useConstant(init) {
+  var ref = useRef(null);
+  if (ref.current === null) {
+    ref.current = init();
+  }
+  return ref.current;
+}
+
+// ../../node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence.mjs
+import { useContext, useEffect } from "react";
+
+// ../../node_modules/framer-motion/dist/es/utils/use-id.mjs
+var counter = 0;
+var incrementId = function() {
+  return counter++;
+};
+var useId = function() {
+  return useConstant(incrementId);
+};
+
+// ../../node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence.mjs
+function usePresence() {
+  var context = useContext(PresenceContext);
+  if (context === null)
+    return [true, null];
+  var isPresent = context.isPresent, onExitComplete = context.onExitComplete, register = context.register;
+  var id = useId();
+  useEffect(function() {
+    return register(id);
+  }, []);
+  var safeToRemove = function() {
+    return onExitComplete === null || onExitComplete === void 0 ? void 0 : onExitComplete(id);
+  };
+  return !isPresent && onExitComplete ? [false, safeToRemove] : [true];
+}
+
+// ../../node_modules/moti/build/core/use-motify.js
+import { useCallback, useContext as useContext2, useEffect as useEffect2 } from "react";
+import { useAnimatedStyle, useSharedValue, withDecay, withSpring, withTiming, withDelay, withRepeat, withSequence, runOnJS } from "react-native-reanimated";
+
+// ../../node_modules/moti/build/core/constants/package-name.js
+var PackageName = "moti";
+
+// ../../node_modules/moti/build/core/use-motify.js
+var debug = (...args) => {
+  "worklet";
+  if (!global.shouldDebugMoti) {
+    return;
+  }
+  if (args) {
+  }
+  console.log("[moti]", ...args);
+};
+var isColor = (styleKey) => {
+  "worklet";
+  const keys = {
+    backgroundColor: true,
+    borderBottomColor: true,
+    borderLeftColor: true,
+    borderRightColor: true,
+    borderTopColor: true,
+    color: true,
+    shadowColor: true,
+    borderColor: true,
+    borderEndColor: true,
+    borderStartColor: true
+  };
+  return Boolean(keys[styleKey]);
+};
+var isTransform = (styleKey) => {
+  "worklet";
+  const transforms = {
+    perspective: true,
+    rotate: true,
+    rotateX: true,
+    rotateY: true,
+    rotateZ: true,
+    scale: true,
+    scaleX: true,
+    scaleY: true,
+    translateX: true,
+    translateY: true,
+    skewX: true,
+    skewY: true
+  };
+  return Boolean(transforms[styleKey]);
+};
+function animationDelay(_key, transition, defaultDelay) {
+  var _a, _b;
+  "worklet";
+  const key = _key;
+  let delayMs = defaultDelay;
+  if (((_a = transition == null ? void 0 : transition[key]) == null ? void 0 : _a.delay) != null) {
+    delayMs = (_b = transition == null ? void 0 : transition[key]) == null ? void 0 : _b.delay;
+  } else if ((transition == null ? void 0 : transition.delay) != null) {
+    delayMs = transition.delay;
+  }
+  return {
+    delayMs
+  };
+}
+function animationConfig(styleProp, transition) {
+  var _a, _b, _c, _d;
+  "worklet";
+  const key = styleProp;
+  let repeatCount = 0;
+  let repeatReverse = true;
+  let animationType = "spring";
+  if (isColor(key) || key === "opacity")
+    animationType = "timing";
+  const styleSpecificTransition = transition == null ? void 0 : transition[key];
+  if (styleSpecificTransition == null ? void 0 : styleSpecificTransition.type) {
+    animationType = styleSpecificTransition.type;
+  } else if (transition == null ? void 0 : transition.type) {
+    animationType = transition.type;
+  }
+  const loop = (styleSpecificTransition == null ? void 0 : styleSpecificTransition.loop) ?? (transition == null ? void 0 : transition.loop);
+  if (loop != null) {
+    repeatCount = loop ? -1 : 0;
+  }
+  if ((styleSpecificTransition == null ? void 0 : styleSpecificTransition.repeat) != null) {
+    repeatCount = styleSpecificTransition == null ? void 0 : styleSpecificTransition.repeat;
+  } else if ((transition == null ? void 0 : transition.repeat) != null) {
+    repeatCount = transition.repeat;
+  }
+  if ((styleSpecificTransition == null ? void 0 : styleSpecificTransition.repeatReverse) != null) {
+    repeatReverse = styleSpecificTransition.repeatReverse;
+  } else if ((transition == null ? void 0 : transition.repeatReverse) != null) {
+    repeatReverse = transition.repeatReverse;
+  }
+  let config = {};
+  let animation = (...props) => props;
+  if (animationType === "timing") {
+    const duration = ((_a = transition == null ? void 0 : transition[key]) == null ? void 0 : _a.duration) ?? (transition == null ? void 0 : transition.duration);
+    const easing = ((_b = transition == null ? void 0 : transition[key]) == null ? void 0 : _b.easing) ?? (transition == null ? void 0 : transition.easing);
+    if (easing) {
+      config["easing"] = easing;
+    }
+    if (duration != null) {
+      config["duration"] = duration;
+    }
+    animation = withTiming;
+  } else if (animationType === "spring") {
+    animation = withSpring;
+    config = {};
+    const configKeys = [
+      "damping",
+      "mass",
+      "overshootClamping",
+      "restDisplacementThreshold",
+      "restSpeedThreshold",
+      "stiffness",
+      "velocity"
+    ];
+    for (const configKey of configKeys) {
+      const styleSpecificConfig = (_c = transition == null ? void 0 : transition[key]) == null ? void 0 : _c[configKey];
+      const transitionConfigForKey = transition == null ? void 0 : transition[configKey];
+      if (styleSpecificConfig != null) {
+        config[configKey] = styleSpecificConfig;
+      } else if (transitionConfigForKey != null) {
+        config[configKey] = transitionConfigForKey;
+      }
+    }
+  } else if (animationType === "decay") {
+    animation = withDecay;
+    config = {
+      velocity: 2,
+      deceleration: 2
+    };
+    const configKeys = [
+      "clamp",
+      "velocity",
+      "deceleration",
+      "velocityFactor"
+    ];
+    for (const configKey of configKeys) {
+      const styleSpecificConfig = (_d = transition == null ? void 0 : transition[key]) == null ? void 0 : _d[configKey];
+      const transitionConfigForKey = transition == null ? void 0 : transition[configKey];
+      if (styleSpecificConfig != null) {
+        config[configKey] = styleSpecificConfig;
+      } else if (transitionConfigForKey != null) {
+        config[configKey] = transitionConfigForKey;
+      }
+    }
+  }
+  return {
+    animation,
+    config,
+    repeatReverse,
+    repeatCount,
+    shouldRepeat: !!repeatCount
+  };
+}
+function useMotify({ animate: animateProp, from: fromProp = false, transition: transitionProp, exitTransition: exitTransitionProp, delay: defaultDelay, state, stylePriority = "animate", onDidAnimate, exit: exitProp, animateInitialState = false }) {
+  const isMounted = useSharedValue(false);
+  const [isPresent, safeToUnmount] = usePresence();
+  const presence = useContext2(PresenceContext);
+  const disableInitialAnimation = (presence == null ? void 0 : presence.initial) === false && !animateInitialState;
+  const custom = useCallback(() => {
+    "worklet";
+    return presence == null ? void 0 : presence.custom;
+  }, [presence]);
+  const reanimatedSafeToUnmount = useCallback(() => {
+    safeToUnmount == null ? void 0 : safeToUnmount();
+  }, [safeToUnmount]);
+  const reanimatedOnDidAnimated = useCallback((...args) => {
+    onDidAnimate == null ? void 0 : onDidAnimate(...args);
+  }, [onDidAnimate]);
+  const hasExitStyle = Boolean(typeof exitProp === "function" || typeof exitProp === "object" && exitProp && Object.keys(exitProp).length > 0);
+  const style = useAnimatedStyle(() => {
+    var _a, _b, _c, _d, _e, _f;
+    const final = {
+      transform: []
+    };
+    const variantStyle = ((_a = state == null ? void 0 : state.__state) == null ? void 0 : _a.value) || {};
+    let animateStyle;
+    if (typeof animateProp == "function") {
+      animateStyle = animateProp() || {};
+    } else if (animateProp && "value" in animateProp) {
+      animateStyle = animateProp.value || {};
+    } else {
+      animateStyle = animateProp || {};
+    }
+    debug("style", animateStyle);
+    const initialStyle = fromProp || {};
+    let exitStyle = exitProp || {};
+    if (typeof exitStyle === "function") {
+      exitStyle = exitStyle(custom());
+    }
+    const isExiting = !isPresent && hasExitStyle;
+    let mergedStyles = {};
+    if (stylePriority === "state") {
+      mergedStyles = Object.assign({}, animateStyle, variantStyle);
+    } else {
+      mergedStyles = Object.assign({}, variantStyle, animateStyle);
+    }
+    if (!isMounted.value && !disableInitialAnimation && Object.keys(initialStyle).length) {
+      mergedStyles = initialStyle;
+    } else {
+      mergedStyles = Object.assign({}, initialStyle, mergedStyles);
+    }
+    if (isExiting && exitStyle) {
+      mergedStyles = Object.assign({}, exitStyle);
+    }
+    const exitingStyleProps = {};
+    for (const key in exitStyle || {}) {
+      const disabledExitStyles = {
+        position: true
+      };
+      if (!disabledExitStyles[key]) {
+        exitingStyleProps[key] = true;
+      }
+    }
+    let transition;
+    if (transitionProp && "value" in transitionProp) {
+      transition = transitionProp.value;
+    } else {
+      transition = transitionProp;
+    }
+    if (isExiting && exitTransitionProp) {
+      let exitTransition;
+      if (exitTransitionProp && "value" in exitTransitionProp) {
+        exitTransition = exitTransitionProp.value;
+      } else if (typeof exitTransitionProp == "function") {
+        exitTransition = exitTransitionProp(custom());
+      } else {
+        exitTransition = exitTransitionProp;
+      }
+      transition = Object.assign({}, transition, exitTransition);
+    }
+    for (const _key in mergedStyles) {
+      const key = _key;
+      const value = mergedStyles[key];
+      const { animation, config, shouldRepeat, repeatCount, repeatReverse } = animationConfig(key, transition);
+      const callback = (completed, recentValue) => {
+        if (onDidAnimate) {
+          runOnJS(reanimatedOnDidAnimated)(
+            key,
+            completed,
+            recentValue,
+            {
+              attemptedValue: value
+            }
+          );
+        }
+        if (isExiting) {
+          exitingStyleProps[key] = false;
+          const areStylesExiting = Object.values(exitingStyleProps).some(Boolean);
+          if (!areStylesExiting) {
+            runOnJS(reanimatedSafeToUnmount)();
+          }
+        }
+      };
+      let { delayMs } = animationDelay(key, transition, defaultDelay);
+      if (value == null || value === false) {
+        continue;
+      }
+      const getSequenceArray = (sequenceKey, sequenceArray) => {
+        const sequence = [];
+        for (const step of sequenceArray) {
+          const shouldPush = typeof step === "object" ? step && (step == null ? void 0 : step.value) != null && (step == null ? void 0 : step.value) !== false : step != null && step !== false;
+          if (shouldPush) {
+            let stepDelay = delayMs;
+            let stepValue = step;
+            let stepConfig = Object.assign({}, config);
+            let stepAnimation = animation;
+            if (typeof step === "object") {
+              const stepTransition = Object.assign({}, step);
+              delete stepTransition.delay;
+              delete stepTransition.value;
+              const { config: inlineStepConfig, animation: animation2 } = animationConfig(sequenceKey, stepTransition);
+              stepConfig = Object.assign({}, stepConfig, inlineStepConfig);
+              stepAnimation = animation2;
+              if (step.delay != null) {
+                stepDelay = step.delay;
+              }
+              stepValue = step.value;
+            }
+            const sequenceValue = stepAnimation(stepValue, stepConfig, callback);
+            if (stepDelay != null) {
+              sequence.push(withDelay(stepDelay, sequenceValue));
+            } else {
+              sequence.push(sequenceValue);
+            }
+          }
+        }
+        return sequence;
+      };
+      if (key === "transform") {
+        if (!Array.isArray(value)) {
+          console.error(`[${PackageName}]: Invalid transform value. Needs to be an array.`);
+        } else {
+          for (const transformObject of value) {
+            final["transform"] = final["transform"] || [];
+            const transformKey = Object.keys(transformObject)[0];
+            const transformValue = transformObject[transformKey];
+            const transform = {};
+            if (Array.isArray(transformValue)) {
+              const sequence = getSequenceArray(transformKey, transformValue);
+              if (sequence.length) {
+                let finalValue = withSequence(sequence[0], ...sequence.slice(1));
+                if (shouldRepeat) {
+                  finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+                }
+                transform[transformKey] = finalValue;
+              }
+            } else {
+              if (((_b = transition == null ? void 0 : transition[transformKey]) == null ? void 0 : _b.delay) != null) {
+                delayMs = (_c = transition == null ? void 0 : transition[transformKey]) == null ? void 0 : _c.delay;
+              }
+              let finalValue = animation(transformValue, config, callback);
+              if (shouldRepeat) {
+                finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+              }
+              if (delayMs != null) {
+                transform[transformKey] = withDelay(delayMs, finalValue);
+              } else {
+                transform[transformKey] = finalValue;
+              }
+            }
+            if (Object.keys(transform).length) {
+              final["transform"].push(transform);
+            }
+          }
+        }
+      } else if (Array.isArray(value)) {
+        const sequence = getSequenceArray(key, value);
+        let finalValue = withSequence(sequence[0], ...sequence.slice(1));
+        if (shouldRepeat) {
+          finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+        }
+        if (isTransform(key)) {
+          final["transform"] = final["transform"] || [];
+          if (sequence.length) {
+            const transform = {};
+            transform[key] = finalValue;
+            final["transform"].push(transform);
+          }
+        } else {
+          if (sequence.length) {
+            final[key] = finalValue;
+          }
+        }
+      } else if (isTransform(key)) {
+        final["transform"] = final["transform"] || [];
+        if (((_d = transition == null ? void 0 : transition[key]) == null ? void 0 : _d.delay) != null) {
+          delayMs = (_e = transition == null ? void 0 : transition[key]) == null ? void 0 : _e.delay;
+        }
+        const transform = {};
+        let finalValue = animation(value, config, callback);
+        if (shouldRepeat) {
+          finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+        }
+        if (delayMs != null) {
+          transform[key] = withDelay(delayMs, finalValue);
+        } else {
+          transform[key] = finalValue;
+        }
+        final["transform"].push(transform);
+      } else if (typeof value === "object") {
+        final[key] = {};
+        for (const innerStyleKey in value || {}) {
+          let finalValue = animation(value, config, callback);
+          if (shouldRepeat) {
+            finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+          }
+          if (delayMs != null) {
+            final[key][innerStyleKey] = withDelay(delayMs, finalValue);
+          } else {
+            final[key][innerStyleKey] = finalValue;
+          }
+        }
+      } else {
+        let finalValue = animation(value, config, callback);
+        if (shouldRepeat) {
+          finalValue = withRepeat(finalValue, repeatCount, repeatReverse);
+        }
+        if (delayMs != null && typeof delayMs === "number") {
+          final[key] = withDelay(delayMs, finalValue);
+        } else {
+          final[key] = finalValue;
+        }
+      }
+    }
+    if (!((_f = final.transform) == null ? void 0 : _f.length)) {
+      delete final.transform;
+    }
+    return final;
+  }, [
+    animateProp,
+    custom,
+    defaultDelay,
+    disableInitialAnimation,
+    exitProp,
+    exitTransitionProp,
+    fromProp,
+    hasExitStyle,
+    isMounted,
+    isPresent,
+    onDidAnimate,
+    reanimatedOnDidAnimated,
+    reanimatedSafeToUnmount,
+    state,
+    stylePriority,
+    transitionProp
+  ]);
+  useEffect2(() => {
+    isMounted.value = true;
+  }, [isMounted]);
+  useEffect2(function allowUnMountIfMissingExit() {
+    if (!isPresent && !hasExitStyle) {
+      reanimatedSafeToUnmount();
+    }
+  }, [hasExitStyle, isPresent, reanimatedSafeToUnmount]);
+  return {
+    style
+  };
+}
+
+// ../../node_modules/moti/build/core/motify.js
+var { createAnimatedComponent } = Animated;
+function motify(ComponentWithoutAnimation) {
+  const Component = createAnimatedComponent(ComponentWithoutAnimation);
+  const withAnimations = () => {
+    const Motified = forwardRef(function Moti({ animate, style, from, transition, delay, state, stylePriority, onDidAnimate, exit, animateInitialState, exitTransition, ...props }, ref) {
+      const animated = useMotify({
+        animate,
+        from,
+        transition,
+        delay,
+        state,
+        stylePriority,
+        onDidAnimate,
+        exit,
+        exitTransition,
+        animateInitialState
+      });
+      return React.createElement(Component, Object.assign({}, props, { style: style ? [style, animated.style] : animated.style, ref }));
+    });
+    Motified.displayName = `Moti.${ComponentWithoutAnimation.displayName || ComponentWithoutAnimation.name || "NoName"}`;
+    return Motified;
+  };
+  return withAnimations;
+}
+
+// ../../node_modules/moti/build/components/view.js
+import { View as RView } from "react-native";
+var View3 = motify(RView)();
+
 // src/molecules/map/FadeInMap.tsx
 var FadeInMap = () => {
   return <>
-    <View3 style={{
+    <View3 delay={2500} transition={{
+      type: "timing",
+      duration: 2500
+    }} style={{
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.3)",
+      backgroundColor: palette2.haiti,
       position: "absolute",
       zIndex: 7888,
       top: 0,
       left: 0,
       right: 0,
       bottom: 0
+    }} from={{
+      opacity: 1
+    }} animate={{
+      opacity: 0.2
     }} />
     <Map />
   </>;
@@ -501,17 +1004,17 @@ import { useActiveChannelId as useActiveChannelId3, useChannelMessages as useCha
 // src/organisms/MessageInput.tsx
 import { Alert, StyleSheet as StyleSheet3, TextInput, TouchableOpacity as TouchableOpacity2, View as View5 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useContext, useRef, useState } from "react";
+import { useContext as useContext3, useRef as useRef2, useState } from "react";
 import {
   ArcadeContext,
   useActiveChannelId
 } from "@arcadecity/use-arcade/src";
 var MessageInput = () => {
   const [text, setText] = useState("Bro");
-  const context = useContext(ArcadeContext);
+  const context = useContext3(ArcadeContext);
   const activeChannelId = useActiveChannelId();
   const actions = context.actions;
-  const inputBoxRef = useRef(null);
+  const inputBoxRef = useRef2(null);
   const submitInput = () => {
     if (text.length < 1) {
       Alert.alert("Message too short", "What is that, a message for ants?");

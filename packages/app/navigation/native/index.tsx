@@ -1,34 +1,10 @@
 import React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { AuthedNavigator } from './authed'
+import { UnauthedNavigator } from './unauthed'
+import { observer } from 'mobx-react-lite'
+import { useStores } from '../../stores'
 
-import { HomeScreen } from '../../features/home/screen'
-import { UserDetailScreen } from '../../features/user/detail-screen'
-
-const Stack = createNativeStackNavigator<{
-  home: undefined
-  'user-detail': {
-    id: string
-  }
-}>()
-
-export function NativeNavigation() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name='home'
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          title: 'Home',
-        }}
-      />
-      <Stack.Screen
-        name='user-detail'
-        component={UserDetailScreen}
-        options={{
-          title: 'User',
-        }}
-      />
-    </Stack.Navigator>
-  )
-}
+export const NativeNavigation = observer(() => {
+  const { user } = useStores()
+  return !!user.publicKey ? <AuthedNavigator /> : <UnauthedNavigator />
+})
